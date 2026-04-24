@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { SystemData, ComponentData, FMEARowData } from '../types';
+import { SystemData, FMEARowData } from '../types';
 import { calculateRPN, calculateActionPriority } from '../utils/calculations';
 
 // Hot Rolling Mill FMEA Data (imported from Aluminum_Hot_Mill_FMEA.xlsx)

@@ -3,11 +3,7 @@ import { Sparkles, Loader2, PlusCircle } from 'lucide-react';
 import { useFMEA } from '../../context/FMEAContext';
 import { suggestFailureModes } from '../../utils/llm';
 
-const MOCK_API_RESPONSE = [
-  "Bearing seizure due to lack of lubrication",
-  "Fretting wear from excessive vibration",
-  "Spalling from fatigue or overload"
-];
+
 
 const SmartSuggestPanel: React.FC = () => {
   const { systems, selectedComponentId, updateFMEARow, selectedRowId } = useFMEA();

@@ -4,7 +4,7 @@ import { AlertTriangle, ShieldAlert, Activity, ArrowRight } from 'lucide-react';
 import { getAPColor } from '../../utils/calculations';
 
 const Dashboard: React.FC = () => {
-  const { systems, setSelectedComponentId, setSelectedRowId, setEditingRowId } = useFMEA();
+  const { systems, setSelectedComponentId, setSelectedRowId } = useFMEA();
 
   // Aggregate data
   const allRows: any[] = [];
