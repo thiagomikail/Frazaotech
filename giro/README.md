@@ -44,6 +44,21 @@ entre sessão, banco e tela — e isso só aparece dirigindo o app de verdade.
 interface está escrita em **português com acento**: produto brasileiro sem
 acento parece feito às pressas.
 
+## Manual do usuário
+
+`manual/` guarda um manual navegável com capturas reais de cada tela e quatro
+clipes curtos feitos em Remotion. Tudo é gerado a partir do app rodando, então
+o manual não envelhece sozinho: mudou a tela, roda de novo.
+
+```bash
+npm run manual          # captura, converte e monta manual/manual.html
+npm run manual:olhar    # confere nos dois temas e no celular
+npm run manual:video    # renderiza os quatro clipes
+npm run manual:conferir # valida codec, duração e peso dos clipes
+```
+
+Detalhes e armadilhas em [`manual/LEIAME.md`](manual/LEIAME.md).
+
 ## As duas famílias de dado
 
 Isto é o que separa o Giro de um CRM com chatbot colado:

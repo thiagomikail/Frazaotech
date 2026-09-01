@@ -1,0 +1,1034 @@
+<title>Manual do Giro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ------------------------------------------------------------ tokens
+     A paleta vem do proprio app: brasa, papel, tinta, mata, mel. Um manual
+     que nao parece com o produto obriga o leitor a traduzir duas vezes. */
+  :root {
+    --ground: #faf8f5;
+    --surface: #ffffff;
+    --surface-2: #f3efe9;
+    --ink: #14181f;
+    --muted: #6b6f76;
+    --rule: #e6e1d9;
+    --rule-strong: #d4cec3;
+    --accent: #c8481a;
+    --accent-soft: #fbeee8;
+    --positive: #166b4b;
+    --positive-soft: #e8f3ee;
+    --caution: #8f5f0a;
+    --caution-soft: #fbf3e2;
+    --shadow: 0 1px 2px rgba(20, 24, 31, .06), 0 8px 28px rgba(20, 24, 31, .07);
+
+    --display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+    --body: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #15130f;
+      --surface: #1d1a16;
+      --surface-2: #242019;
+      --ink: #efe9e0;
+      --muted: #a09a90;
+      --rule: #2e2a24;
+      --rule-strong: #423c33;
+      --accent: #f0793f;
+      --accent-soft: #2c1c14;
+      --positive: #4bb98a;
+      --positive-soft: #16261f;
+      --caution: #d9a441;
+      --caution-soft: #2a2213;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 28px rgba(0, 0, 0, .35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #15130f;
+    --surface: #1d1a16;
+    --surface-2: #242019;
+    --ink: #efe9e0;
+    --muted: #a09a90;
+    --rule: #2e2a24;
+    --rule-strong: #423c33;
+    --accent: #f0793f;
+    --accent-soft: #2c1c14;
+    --positive: #4bb98a;
+    --positive-soft: #16261f;
+    --caution: #d9a441;
+    --caution-soft: #2a2213;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 28px rgba(0, 0, 0, .35);
+  }
+
+  /* ------------------------------------------------------------- base */
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--display);
+    font-variation-settings: "wdth" 112;
+    line-height: 1.15;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+  code, .campo-ui {
+    font-family: var(--mono);
+    font-size: .86em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: .1em .38em;
+    white-space: nowrap;
+  }
+
+  /* --------------------------------------------------------- estrutura */
+  .folha {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+    display: grid;
+    grid-template-columns: 208px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .folha { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .indice { position: static; margin-bottom: 40px; }
+  }
+
+  /* ------------------------------------------------------------- capa */
+  .capa {
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface);
+  }
+
+  .capa-dentro {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 64px 24px 52px;
+  }
+
+  .marca {
+    font-family: var(--display);
+    font-variation-settings: "wdth" 100;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -.01em;
+  }
+  .marca span { color: var(--accent); }
+
+  .capa h1 {
+    font-size: clamp(38px, 6vw, 62px);
+    font-weight: 700;
+    letter-spacing: -.025em;
+    margin: 28px 0 0;
+    max-width: 15ch;
+  }
+
+  .capa p {
+    max-width: 56ch;
+    margin: 18px 0 0;
+    font-size: 19px;
+    color: var(--muted);
+  }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: .02em;
+  }
+
+  /* ----------------------------------------------------------- indice */
+  .indice {
+    position: sticky;
+    top: 28px;
+    padding-top: 56px;
+    font-size: 14.5px;
+  }
+
+  .indice p {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+
+  .indice ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+
+  .indice a {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 6px;
+    padding: 5px 8px 5px 0;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  .indice a:hover { color: var(--ink); }
+  .indice a b { font-family: var(--mono); font-weight: 400; font-size: 12px; color: var(--rule-strong); padding-top: 2px; }
+
+  /* ---------------------------------------------------------- secoes */
+  main { padding-top: 56px; }
+
+  section { scroll-margin-top: 24px; padding-bottom: 12px; }
+  section + section { margin-top: 64px; padding-top: 56px; border-top: 1px solid var(--rule); }
+
+  .num {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--accent);
+    letter-spacing: .08em;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  section h2 {
+    font-size: clamp(26px, 3.4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+
+  section h3 {
+    font-size: 19px;
+    font-weight: 600;
+    font-variation-settings: "wdth" 105;
+    margin: 36px 0 0;
+  }
+
+  section p, section ul, section ol { max-width: 66ch; }
+  section > p:first-of-type { margin-top: 14px; }
+  p { margin: 16px 0 0; }
+
+  ul, ol { margin: 14px 0 0; padding-left: 22px; }
+  li { margin-top: 7px; }
+  li::marker { color: var(--rule-strong); }
+
+  .guia { color: var(--muted); }
+
+  /* -------------------------------------------------------- imagem */
+  figure {
+    margin: 32px 0 0;
+    width: 100%;
+  }
+
+  /* Sangra para a margem direita so quando ela existe de verdade. A 1280px a
+     margem tem 50px e o antigo +96px empurrava a pagina para o lado. */
+  @media (min-width: 1400px) {
+    figure.larga { width: calc(100% + 96px); }
+  }
+
+  .moldura {
+    position: relative;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    line-height: 0;
+  }
+
+  .moldura img { width: 100%; height: auto; display: block; }
+
+  .moldura.estreita { max-width: 300px; }
+
+  figcaption {
+    margin-top: 12px;
+    font-size: 14.5px;
+    color: var(--muted);
+    max-width: 66ch;
+    line-height: 1.55;
+  }
+
+  /* marcador numerado sobre a captura */
+  .marcador {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 26px;
+    text-align: center;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .92), 0 2px 6px rgba(0, 0, 0, .3);
+  }
+
+  .legenda-marcadores {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+    display: grid;
+    gap: 8px;
+    max-width: 66ch;
+  }
+  .legenda-marcadores li {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.5;
+  }
+  .legenda-marcadores b {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  /* --------------------------------------------------------- blocos */
+  .nota {
+    margin: 28px 0 0;
+    padding: 16px 18px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    max-width: 66ch;
+  }
+  .nota p { margin: 0; font-size: 16px; }
+  .nota p + p { margin-top: 10px; }
+  .nota strong { font-family: var(--display); font-variation-settings: "wdth" 105; }
+
+  .nota.atencao { border-left-color: var(--caution); background: var(--caution-soft); }
+
+  .passos {
+    counter-reset: passo;
+    list-style: none;
+    padding: 0;
+    margin: 26px 0 0;
+    display: grid;
+    gap: 2px;
+    max-width: 68ch;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--rule);
+  }
+  .passos li {
+    counter-increment: passo;
+    margin: 0;
+    padding: 18px 20px 18px 60px;
+    position: relative;
+    background: var(--surface);
+  }
+  .passos li::before {
+    content: counter(passo);
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 24px;
+    text-align: center;
+  }
+  .passos b { display: block; font-family: var(--display); font-variation-settings: "wdth" 105; font-weight: 600; font-size: 16.5px; }
+  .passos span { display: block; margin-top: 3px; font-size: 15.5px; color: var(--muted); line-height: 1.55; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 26px 0 0;
+    font-size: 15.5px;
+  }
+  .rolagem { overflow-x: auto; margin-top: 26px; }
+  .rolagem table { margin-top: 0; min-width: 480px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 11.5px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom-color: var(--rule-strong);
+  }
+  td:first-child { white-space: nowrap; font-weight: 600; }
+  .num-col { font-variant-numeric: tabular-nums; }
+
+  .etapa {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+  }
+
+  details {
+    border-bottom: 1px solid var(--rule);
+    max-width: 66ch;
+  }
+  details summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 15px 28px 15px 0;
+    font-family: var(--display);
+    font-variation-settings: "wdth" 105;
+    font-weight: 600;
+    font-size: 17px;
+    position: relative;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after {
+    content: "+";
+    position: absolute;
+    right: 4px;
+    top: 14px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 18px;
+  }
+  details[open] summary::after { content: "−"; }
+  details p { margin: 0 0 16px; color: var(--muted); font-size: 16px; }
+
+  video {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+    background: #000;
+  }
+
+  .videos { display: grid; gap: 28px; margin-top: 28px; }
+  @media (min-width: 860px) { .videos { grid-template-columns: 1fr 1fr; } }
+  .videos figcaption { margin-top: 10px; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 80px;
+    padding: 28px 24px 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+  html { scroll-behavior: smooth; }
+</style>
+
+<header class="capa">
+  <div class="capa-dentro">
+    <div class="marca">Giro<span>.</span></div>
+    <h1>Manual do usuário</h1>
+    <p>
+      Como registrar seu negócio no Giro e como usar o consultor de IA que lê esses
+      números. Escrito para quem toca a empresa e não tem tempo de aprender sistema.
+    </p>
+    <div class="selo">beta · setembro de 2026</div>
+  </div>
+</header>
+
+<div class="folha">
+  <nav class="indice" aria-label="Índice">
+    <p>Índice</p>
+    <ol>
+      <li><a href="#o-que-e"><b>01</b> O que o Giro faz</a></li>
+      <li><a href="#comecar"><b>02</b> Criar a conta</a></li>
+      <li><a href="#dez-minutos"><b>03</b> Os dez primeiros minutos</a></li>
+      <li><a href="#painel"><b>04</b> O painel</a></li>
+      <li><a href="#clientes"><b>05</b> Clientes</a></li>
+      <li><a href="#negocios"><b>06</b> Negócios</a></li>
+      <li><a href="#caixa"><b>07</b> Caixa</a></li>
+      <li><a href="#tarefas"><b>08</b> Tarefas</a></li>
+      <li><a href="#consultor"><b>09</b> O consultor</a></li>
+      <li><a href="#diagnostico"><b>10</b> O diagnóstico</a></li>
+      <li><a href="#conta"><b>11</b> Conta e plano</a></li>
+      <li><a href="#celular"><b>12</b> No celular</a></li>
+      <li><a href="#duvidas"><b>13</b> Dúvidas</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <!-- ============================================================ 01 -->
+    <section id="o-que-e">
+      <span class="num">01</span>
+      <h2>O que o Giro faz</h2>
+      <p>
+        O Giro guarda quatro coisas sobre a sua empresa. Só quatro, e de propósito —
+        elas existem em padaria, salão, oficina, consultoria ou agência de viagens:
+      </p>
+
+      <div class="rolagem">
+        <table>
+          <thead>
+            <tr><th>Registro</th><th>O que é</th><th>Para que serve</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cliente</td>
+              <td>Quem compra de você, com contato e origem.</td>
+              <td>Saber quem sumiu e quem sustenta o caixa.</td>
+            </tr>
+            <tr>
+              <td>Negócio</td>
+              <td>Um orçamento ou uma venda em andamento.</td>
+              <td>Ver onde a venda trava antes de fechar.</td>
+            </tr>
+            <tr>
+              <td>Lançamento</td>
+              <td>Dinheiro que entrou ou saiu, com categoria.</td>
+              <td>Saber se sobrou, e para onde o dinheiro vai.</td>
+            </tr>
+            <tr>
+              <td>Tarefa</td>
+              <td>O que precisa ser feito, com prazo.</td>
+              <td>Não perder o follow-up que fecha a venda.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Em cima desses quatro registros mora o <strong>consultor</strong>: uma IA que lê
+        os seus números, aponta o que está sangrando e escreve o que fazer na semana.
+        Ele não é um chat genérico — ele consulta o seu cadastro antes de responder.
+      </p>
+
+      <div class="nota">
+        <p>
+          <strong>O que o Giro não faz.</strong> Não emite nota fiscal, não controla
+          estoque e não substitui contador. Ele convive com o que você já usa.
+        </p>
+      </div>
+
+      <div class="nota atencao">
+        <p>
+          <strong>Sobre as telas deste manual.</strong> Todas vêm de uma empresa de
+          demonstração, a Panificadora São Jorge, com seis meses de movimento fictício.
+          Os números não são inventados: foram calculados de verdade a partir desses dados.
+        </p>
+        <p>
+          As respostas de IA foram geradas por um servidor local de teste, e não pelo
+          OpenRouter — por isso, na tela de diagnóstico, aparece
+          <span class="campo-ui">espelho/local</span> onde normalmente aparece o nome do
+          modelo que você configurou.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================ 02 -->
+    <section id="comecar">
+      <span class="num">02</span>
+      <h2>Criar a conta</h2>
+      <p>
+        Não pedimos cartão. Durante o beta o plano <strong>Consultor</strong> está
+        liberado para todo mundo.
+      </p>
+
+      <figure>
+        <div class="moldura">{{IMG:02-criar-conta}}</div>
+        <figcaption>
+          O campo <span class="campo-ui">Ramo</span> não é enfeite: o consultor usa ele
+          para calibrar o conselho. Escreva do jeito que você diria a um cliente —
+          “padaria”, “salão de beleza”, “oficina mecânica”, “agência de viagens”.
+        </figcaption>
+      </figure>
+
+      <p>
+        A senha precisa de pelo menos 8 caracteres. Depois disso você já cai direto no
+        painel — não há passo de confirmação por e-mail.
+      </p>
+
+      <figure>
+        <div class="moldura">{{IMG:03-entrar}}</div>
+        <figcaption>A tela de entrada, para as próximas vezes.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ============================================================ 03 -->
+    <section id="dez-minutos">
+      <span class="num">03</span>
+      <h2>Os dez primeiros minutos</h2>
+      <p>
+        Esta é a parte que decide se o Giro vai te servir. O consultor só consegue
+        dizer alguma coisa útil depois que existe número para ler — e dez minutos de
+        digitação bastam para ele começar a falar coisa que presta.
+      </p>
+
+      <ol class="passos">
+        <li>
+          <b>Cadastre os clientes que mais compram</b>
+          <span>Cinco a dez já bastam. Com WhatsApp, porque é por ali que você vai
+          reativar quem sumir.</span>
+        </li>
+        <li>
+          <b>Lance a última semana de caixa</b>
+          <span>O que entrou e o que saiu. Vincule as entradas ao cliente que pagou —
+          é isso que permite ao consultor avisar quando alguém parar de comprar.</span>
+        </li>
+        <li>
+          <b>Coloque no funil os orçamentos que estão na rua</b>
+          <span>Cada proposta que você mandou e ainda não teve resposta é um negócio
+          na etapa <span class="campo-ui">Proposta</span>.</span>
+        </li>
+        <li>
+          <b>Rode o primeiro diagnóstico</b>
+          <span>Leva menos de um minuto e já aponta o que merece sua atenção.</span>
+        </li>
+      </ol>
+
+      <div class="nota atencao">
+        <p>
+          <strong>Registro furado, diagnóstico furado.</strong> Se você passar duas
+          semanas sem lançar nada, o Giro avisa antes de opinar — em vez de inventar
+          análise em cima de dado velho. É por isso que ele também vigia o seu uso do
+          app, não só o seu negócio.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================ 04 -->
+    <section id="painel">
+      <span class="num">04</span>
+      <h2>O painel</h2>
+      <p>
+        A primeira tela depois de entrar. Ela responde “como está o mês” em cinco
+        segundos e mostra o que precisa da sua atenção hoje.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">
+          {{IMG:04-painel}}
+          <span class="marcador" style="left:6.2%;top:12.2%">1</span>
+          <span class="marcador" style="left:6.2%;top:23%">2</span>
+          <span class="marcador" style="left:58%;top:23%">3</span>
+          <span class="marcador" style="left:58%;top:44%">4</span>
+          <span class="marcador" style="left:6.2%;top:55%">5</span>
+        </div>
+        <ol class="legenda-marcadores">
+          <li><b>1</b><span><strong>Os números do mês.</strong> Entradas, saídas, saldo e o valor parado no funil. A comparação é sempre com o <em>mesmo período</em> do mês passado — no dia 3, compara com os três primeiros dias do mês anterior, não com o mês inteiro.</span></li>
+          <li><b>2</b><span><strong>O que merece sua atenção.</strong> Sinais calculados pelo Giro: cliente que sumiu, proposta empilhada, ticket caindo. Não é IA — é conta.</span></li>
+          <li><b>3</b><span><strong>Funil.</strong> Quantos negócios e quanto dinheiro em cada etapa.</span></li>
+          <li><b>4</b><span><strong>Tarefas.</strong> O que está aberto, incluindo o que o consultor sugeriu.</span></li>
+          <li><b>5</b><span><strong>Últimos lançamentos.</strong> Conferência rápida do que foi registrado.</span></li>
+        </ol>
+      </figure>
+    </section>
+
+    <!-- ============================================================ 05 -->
+    <section id="clientes">
+      <span class="num">05</span>
+      <h2>Clientes</h2>
+      <p>
+        A lista vem ordenada por quanto cada um já gastou, não por ordem alfabética.
+        Quem sustenta o caixa aparece primeiro.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:05-clientes}}</div>
+        <figcaption>
+          A marca <span class="campo-ui">sumiu há 72d</span> aparece sozinha quando o
+          cliente passa 60 dias sem nenhuma entrada vinculada a ele. É o aviso mais
+          barato de perder faturamento que existe.
+        </figcaption>
+      </figure>
+
+      <h3>Cadastrar e editar</h3>
+      <p>
+        Só o nome é obrigatório. O resto você preenche quando souber.
+      </p>
+
+      <figure>
+        <div class="moldura">{{IMG:06-cliente-formulario}}</div>
+        <figcaption>
+          <span class="campo-ui">Como chegou até você</span> aceita texto livre e sugere
+          as origens que você já usou. Com o tempo isso responde de onde vem cliente bom.
+        </figcaption>
+      </figure>
+
+      <div class="nota">
+        <p>
+          <strong>Vale gastar 10 segundos no WhatsApp.</strong> Cliente sem contato não
+          tem como ser reativado, e o consultor cobra isso: quando um quarto da sua base
+          está sem telefone nem e-mail, vira um sinal no diagnóstico.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================ 06 -->
+    <section id="negocios">
+      <span class="num">06</span>
+      <h2>Negócios</h2>
+      <p>
+        Cada orçamento que sai da sua mão é um negócio. O funil tem cinco etapas, e a
+        única regra é: mova o cartão quando a conversa mudar de estado.
+      </p>
+
+      <div class="rolagem">
+        <table>
+          <thead>
+            <tr><th>Etapa</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="etapa">Novo</span></td><td>Chegou o pedido, você ainda não falou com a pessoa.</td></tr>
+            <tr><td><span class="etapa">Em contato</span></td><td>Conversando, levantando o que a pessoa precisa.</td></tr>
+            <tr><td><span class="etapa">Proposta</span></td><td>Você mandou preço e está esperando resposta.</td></tr>
+            <tr><td><span class="etapa">Ganho</span></td><td>Fechou.</td></tr>
+            <tr><td><span class="etapa">Perdido</span></td><td>Não fechou — inclusive quando a pessoa só sumiu.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:07-negocios}}</div>
+        <figcaption>
+          O aviso <span class="campo-ui">parado há 22 dias</span> aparece quando um
+          negócio fica duas semanas sem ser mexido. Proposta empilhada é dinheiro
+          esfriando.
+        </figcaption>
+      </figure>
+
+      <h3>Marcar perdido é o que mais vale</h3>
+      <p>
+        É a etapa que ninguém preenche, e é a mais útil. Sem ela sua taxa de conversão
+        aparece como 100% — e o consultor vai dizer isso na sua cara em vez de te dar
+        parabéns por um número falso.
+      </p>
+
+      <figure>
+        <div class="moldura">{{IMG:08-negocio-formulario}}</div>
+        <figcaption>
+          Ao escolher <span class="campo-ui">Perdido</span> aparece o campo do motivo.
+          Depois de uma dúzia de perdas registradas dá para perguntar ao consultor qual
+          é o padrão — e normalmente não é preço.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ============================================================ 07 -->
+    <section id="caixa">
+      <span class="num">07</span>
+      <h2>Caixa</h2>
+      <p>
+        Entrou e saiu, agrupado por dia, com o saldo de cada dia à direita. Os três
+        cartões no topo fecham o mês corrente.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:09-caixa}}</div>
+        <figcaption>Os últimos três meses ficam na tela; o resto continua no banco e o consultor enxerga.</figcaption>
+      </figure>
+
+      <h3>Lançar</h3>
+
+      <figure>
+        <div class="moldura">{{IMG:10-caixa-formulario}}</div>
+        <figcaption>
+          O valor aceita do jeito que você digita: <span class="campo-ui">1.234,56</span>,
+          <span class="campo-ui">1234,56</span> ou <span class="campo-ui">R$ 80</span>.
+        </figcaption>
+      </figure>
+
+      <p>Duas escolhas neste formulário pagam por si depois:</p>
+      <ul>
+        <li>
+          <strong>Categoria.</strong> Fugir de <span class="campo-ui">Outros</span> é o
+          que permite responder “para onde meu dinheiro está indo”. Quando mais de 30%
+          dos lançamentos caem em Outros, o Giro reclama.
+        </li>
+        <li>
+          <strong>De quem veio.</strong> Vincular a entrada ao cliente é o que liga o
+          caixa à sua base. Sem isso o Giro não sabe quem sumiu.
+        </li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ 08 -->
+    <section id="tarefas">
+      <span class="num">08</span>
+      <h2>Tarefas</h2>
+      <p>
+        Lista simples, com prazo. O que passou do prazo fica marcado em vermelho e vira
+        sinal no painel.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:11-tarefas}}</div>
+        <figcaption>
+          Tarefas com a marca <span class="campo-ui">consultor</span> foram criadas pela
+          IA quando você aceitou uma sugestão dela na conversa.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ============================================================ 09 -->
+    <section id="consultor">
+      <span class="num">09</span>
+      <h2>O consultor</h2>
+      <p>
+        Aqui você pergunta o que quiser sobre o seu negócio. Antes de responder, ele
+        consulta o seu cadastro — e a linha cinza acima da resposta mostra exatamente o
+        que ele foi ler.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:13-consultor}}</div>
+        <figcaption>
+          <span class="campo-ui">leu o retrato do negócio</span> — essa linha é a
+          prestação de contas dele. Todo valor citado na resposta saiu de lá.
+        </figcaption>
+      </figure>
+
+      <h3>Perguntas que funcionam bem</h3>
+      <ul>
+        <li>Por que sobrou menos dinheiro este mês?</li>
+        <li>Quais clientes eu deveria chamar esta semana?</li>
+        <li>Para onde meu dinheiro está indo?</li>
+        <li>Onde meu funil está travando?</li>
+        <li>Meu ticket médio está caindo? Desde quando?</li>
+      </ul>
+
+      <h3>O que ele faz e o que não faz</h3>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Faz</th><th>Não faz</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="white-space:normal;font-weight:400">Cita valores tirados do seu cadastro, sempre com a data.</td>
+              <td style="white-space:normal;font-weight:400">Estimar ou arredondar de cabeça. Se não consultou, ele diz que não sabe.</td>
+            </tr>
+            <tr>
+              <td style="white-space:normal;font-weight:400">Termina com <em>uma</em> ação concreta para a semana.</td>
+              <td style="white-space:normal;font-weight:400">Dar conselho jurídico, fiscal ou de investimento — isso é caso de contador.</td>
+            </tr>
+            <tr>
+              <td style="white-space:normal;font-weight:400">Cria a tarefa se você aceitar a sugestão.</td>
+              <td style="white-space:normal;font-weight:400">Elogiar número que pode estar inflado por falta de registro.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nota">
+        <p>
+          <strong>Por que ele não chuta número.</strong> O Giro calcula faturamento,
+          margem, ticket e dias sem comprar em código, antes de falar com a IA. O modelo
+          recebe os números prontos e só pode citar o que recebeu — ele não tem acesso
+          direto ao banco de dados.
+        </p>
+      </div>
+
+      <figure>
+        <div class="moldura">{{IMG:12-consultor-vazio}}</div>
+        <figcaption>
+          Na conversa em branco ele sugere por onde começar. O contador de perguntas do
+          mês fica logo abaixo do título.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ============================================================ 10 -->
+    <section id="diagnostico">
+      <span class="num">10</span>
+      <h2>O diagnóstico</h2>
+      <p>
+        O consultor responde quando você pergunta. O diagnóstico fala sem você pedir —
+        toda segunda-feira de manhã, e sempre que você clicar em
+        <span class="campo-ui">Rodar diagnóstico</span>.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:14-diagnostico}}</div>
+        <figcaption>
+          À esquerda, o que a IA escreveu. À direita, os sinais que o Giro apurou
+          sozinho — a matéria-prima do texto. Se algo do lado esquerdo te parecer
+          estranho, o lado direito mostra a conta.
+        </figcaption>
+      </figure>
+
+      <h3>Como ler</h3>
+      <ul>
+        <li><strong>Resumo</strong> — duas ou três frases sobre como o negócio está.</li>
+        <li><strong>Próximos passos</strong> — três ações para os próximos sete dias, na ordem de fazer, com o esforço estimado.</li>
+        <li><strong>Achados</strong> — o que sustenta os passos, do mais grave para o menos.</li>
+      </ul>
+
+      <p>
+        Os sinais vêm em três níveis: <span class="etapa">urgente</span>,
+        <span class="etapa">atenção</span> e <span class="etapa">ajuste</span>. Alguns
+        deles não falam do seu negócio, e sim do seu <em>registro</em> — por exemplo
+        “nenhum negócio foi marcado como perdido”. Esses vêm primeiro de propósito:
+        enquanto o registro estiver furado, o resto do diagnóstico não se sustenta.
+      </p>
+
+      <p>
+        Cada diagnóstico fica guardado. Comparar o de hoje com o de três semanas atrás é
+        a forma mais honesta de saber se você melhorou.
+      </p>
+    </section>
+
+    <!-- ============================================================ 11 -->
+    <section id="conta">
+      <span class="num">11</span>
+      <h2>Conta e plano</h2>
+      <p>
+        Aqui você muda o nome e o ramo da empresa e acompanha quanto do consultor você
+        usou no mês.
+      </p>
+
+      <figure class="larga">
+        <div class="moldura">{{IMG:15-conta}}</div>
+        <figcaption>
+          Durante o beta o plano Consultor está liberado sem cobrança, mas a medição roda
+          desde o primeiro dia — para o preço, quando existir, sair de consumo real.
+        </figcaption>
+      </figure>
+
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Plano</th><th class="num-col">Preço</th><th>Perguntas/mês</th><th>Diagnósticos/mês</th></tr></thead>
+          <tbody>
+            <tr><td>Caderno</td><td class="num-col">Grátis</td><td class="num-col">3</td><td class="num-col">1</td></tr>
+            <tr><td>Consultor</td><td class="num-col">R$ 97</td><td class="num-col">300</td><td class="num-col">30 + automático toda segunda</td></tr>
+            <tr><td>Estúdio</td><td class="num-col">R$ 249</td><td class="num-col">1.000</td><td class="num-col">120 · até 5 empresas</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="guia">
+        Registrar cliente, negócio, lançamento e tarefa é ilimitado em todos os planos,
+        inclusive no grátis. O que se paga é o consultor.
+      </p>
+    </section>
+
+    <!-- ============================================================ 12 -->
+    <section id="celular">
+      <span class="num">12</span>
+      <h2>No celular</h2>
+      <p>
+        O Giro foi desenhado para ser usado em pé, no balcão, com uma mão. No celular a
+        navegação vai para o rodapé, onde o polegar alcança, e todos os botões têm pelo
+        menos 44 pixels de altura.
+      </p>
+
+      <div class="videos">
+        <figure style="margin-top:0">
+          <div class="moldura estreita">{{IMG:16-celular-painel}}</div>
+          <figcaption>O painel inteiro cabe na rolagem vertical — nada corta para o lado.</figcaption>
+        </figure>
+        <figure style="margin-top:0">
+          <div class="moldura estreita">{{IMG:17-celular-lancar}}</div>
+          <figcaption>O formulário de lançamento sobe do rodapé, como uma gaveta.</figcaption>
+        </figure>
+      </div>
+
+      <p>
+        Não há aplicativo para instalar. Abra o endereço no navegador do celular e, se
+        quiser, use “adicionar à tela de início”.
+      </p>
+    </section>
+
+    <!-- ============================================================ 13 -->
+    <section id="duvidas">
+      <span class="num">13</span>
+      <h2>Dúvidas</h2>
+
+      <details>
+        <summary>Preciso trocar o sistema que eu já uso?</summary>
+        <p>
+          Não. O Giro não emite nota fiscal e não quer ser seu ERP. Ele cuida de cliente,
+          funil e caixa — e da leitura desses números. Muita gente usa junto com o que
+          já tem.
+        </p>
+      </details>
+
+      <details>
+        <summary>E se eu registrar pouca coisa?</summary>
+        <p>
+          Ele diz isso na sua cara, em vez de inventar análise em cima de dado furado.
+          Falta de registro aparece no diagnóstico como o primeiro problema a resolver.
+        </p>
+      </details>
+
+      <details>
+        <summary>Meus dados viram treinamento de IA?</summary>
+        <p>
+          Não. Seus dados ficam no seu banco. O que vai ao modelo é o recorte necessário
+          para responder à pergunta que você fez, e nada é usado para treinar modelo
+          nenhum.
+        </p>
+      </details>
+
+      <details>
+        <summary>Posso apagar um lançamento errado?</summary>
+        <p>
+          Pode. O ícone de lixeira fica no fim de cada linha do caixa, e o app pede
+          confirmação antes.
+        </p>
+      </details>
+
+      <details>
+        <summary>O consultor pode mexer nos meus dados?</summary>
+        <p>
+          Só numa coisa: criar tarefa, e apenas quando você pede ou concorda com a
+          sugestão. Ele não edita cliente, negócio nem lançamento.
+        </p>
+      </details>
+
+      <details>
+        <summary>Quantas pessoas podem usar a mesma conta?</summary>
+        <p>
+          Nos planos Caderno e Consultor, uma empresa por conta. O plano Estúdio atende
+          até cinco empresas e vários usuários — foi pensado para contador e consultor
+          que cuidam da gestão de mais de um cliente.
+        </p>
+      </details>
+
+      <details>
+        <summary>Vai continuar de graça?</summary>
+        <p>
+          O plano Caderno sim, sempre. Durante o beta o Consultor também está liberado,
+          e você será avisado com antecedência antes de qualquer cobrança começar.
+        </p>
+      </details>
+    </section>
+  </main>
+</div>
+
+<footer>
+  Giro · manual do usuário · beta de setembro de 2026
+</footer>

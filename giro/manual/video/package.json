@@ -1,0 +1,19 @@
+{
+  "name": "giro-manual-video",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "estudio": "remotion studio src/index.ts",
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.520",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.520"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "^4.0.520",
+    "@remotion/renderer": "^4.0.520"
+  }
+}

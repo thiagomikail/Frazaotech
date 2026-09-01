@@ -15,7 +15,13 @@
     "olhar:sinais": "tsx --conditions=react-server scripts/olhar-sinais.ts",
     "testar": "node scripts/testar.mjs",
     "testar:ia": "tsx --conditions=react-server scripts/testar-ia.ts",
-    "servir": "sh scripts/servir.sh"
+    "servir": "sh scripts/servir.sh",
+    "manual": "node scripts/capturar-telas.mjs && node scripts/converter-telas.mjs && node scripts/gerar-manual.mjs",
+    "manual:telas": "node scripts/capturar-telas.mjs",
+    "manual:montar": "node scripts/converter-telas.mjs && node scripts/gerar-manual.mjs",
+    "manual:olhar": "node scripts/olhar-manual.mjs",
+    "manual:video": "cd manual/video && npm install --no-audit --no-fund && mkdir -p public/telas && cp ../telas/*.png public/telas/ && node render.mjs",
+    "manual:conferir": "node scripts/conferir-videos.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
@@ -41,6 +47,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "playwright-core": "^1.62.1",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5"

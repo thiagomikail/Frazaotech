@@ -43,12 +43,22 @@ function Campos({
 }) {
   const [estado, acao] = useActionState<Resultado, FormData>(salvarLancamento, undefined);
   const [tipo, setTipo] = useState<"ENTRADA" | "SAIDA">("ENTRADA");
+  // A categoria e controlada porque a lista muda junto com o tipo. Com
+  // `defaultValue` o select ficava com um valor que nao existe mais na nova
+  // lista e o navegador caia em "Outros" — logo a categoria que o proprio
+  // diagnostico depois aponta como problema.
+  const [categoria, setCategoria] = useState(CATEGORIAS_ENTRADA[0]);
 
   useEffect(() => {
     if (estado?.ok) aoSalvar();
   }, [estado, aoSalvar]);
 
   const categorias = tipo === "ENTRADA" ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA;
+
+  function trocarTipo(novo: "ENTRADA" | "SAIDA") {
+    setTipo(novo);
+    setCategoria((novo === "ENTRADA" ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA)[0]);
+  }
 
   return (
     <form action={acao} className="space-y-4">
@@ -59,7 +69,7 @@ function Campos({
           <button
             key={t}
             type="button"
-            onClick={() => setTipo(t)}
+            onClick={() => trocarTipo(t)}
             aria-pressed={tipo === t}
             className={`min-h-11 rounded-md text-[15px] font-semibold transition ${
               tipo === t
@@ -107,7 +117,13 @@ function Campos({
         <label className="rotulo" htmlFor="categoria">
           Categoria
         </label>
-        <select id="categoria" name="categoria" className="campo" defaultValue={categorias[0]}>
+        <select
+          id="categoria"
+          name="categoria"
+          className="campo"
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+        >
           {categorias.map((c) => (
             <option key={c} value={c}>
               {c}
