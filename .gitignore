@@ -25,3 +25,9 @@ Thumbs.db
 
 # Data files (large, not needed for runtime)
 *.xlsx
+
+# Saida do `tsc -b`: cache incremental e o vite.config compilado.
+# Sao artefatos de build, nao fonte — o vite.config de verdade e o .ts.
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
