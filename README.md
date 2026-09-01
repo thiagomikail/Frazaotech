@@ -78,6 +78,16 @@ src/
 |----------|-------------|
 | `VITE_GOOGLE_API_KEY` | Google AI Studio API key for Gemini |
 
+## Also in this repository
+
+| Directory | Project |
+|---|---|
+| `/` | **FrazaoTech FMEA** — the reliability engineering platform documented above |
+| `/giro` | **Giro** — management dashboard for small Brazilian businesses with an AI consultant that reads their numbers and writes the next steps. Next.js 16 + Prisma 7 + Postgres, model access through OpenRouter. See [`giro/README.md`](giro/README.md). |
+
+The two apps are independent: separate `package.json`, separate build, separate
+deploy. On Vercel, set the project root directory to `giro` to deploy Giro.
+
 ## License
 
 MIT

@@ -1,0 +1,243 @@
+// Giro — painel de gestao para pequenas empresas com um consultor de IA junto.
+//
+// Duas familias de dado convivem aqui de proposito:
+//   1. dado do NEGOCIO (cliente, negocio, lancamento, tarefa) — o que a empresa faz;
+//   2. dado de USO (Evento, UsoIA) — como a empresa usa o app.
+// O agente le as duas. Sem a segunda ele nao consegue dizer "seu diagnostico
+// esta cego porque voce nao registra saida ha 12 dias", que e metade do valor.
+//
+// Dinheiro e sempre Int em CENTAVOS. Decimal do Prisma nao atravessa a
+// fronteira server->client sem serializacao manual, e float em dinheiro e bug.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------------------ conta
+
+enum Plano {
+  FREE
+  PRO
+  ESTUDIO
+}
+
+enum Papel {
+  DONO
+  EQUIPE
+}
+
+model Empresa {
+  id        String   @id @default(cuid())
+  nome      String
+  segmento  String // texto livre: "padaria", "consultoria", "agencia de viagens"
+  plano     Plano    @default(FREE)
+  planoAte  DateTime?
+  criadaEm  DateTime @default(now())
+
+  usuarios     Usuario[]
+  clientes     Cliente[]
+  negocios     Negocio[]
+  lancamentos  Lancamento[]
+  tarefas      Tarefa[]
+  eventos      Evento[]
+  diagnosticos Diagnostico[]
+  conversas    Conversa[]
+  usos         UsoIA[]
+}
+
+model Usuario {
+  id           String   @id @default(cuid())
+  empresaId    String
+  empresa      Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome         String
+  email        String   @unique
+  senhaHash    String
+  papel        Papel    @default(DONO)
+  criadoEm     DateTime @default(now())
+  ultimoAcesso DateTime @default(now())
+
+  eventos Evento[]
+
+  @@index([empresaId])
+}
+
+// --------------------------------------------------------------- negocio
+
+model Cliente {
+  id         String   @id @default(cuid())
+  empresaId  String
+  empresa    Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome       String
+  whatsapp   String?
+  email      String?
+  origem     String? // indicacao, instagram, google, balcao...
+  observacao String?
+  arquivado  Boolean  @default(false)
+  criadoEm   DateTime @default(now())
+
+  negocios    Negocio[]
+  lancamentos Lancamento[]
+  tarefas     Tarefa[]
+
+  @@index([empresaId, arquivado])
+}
+
+enum EtapaNegocio {
+  NOVO
+  CONTATO
+  PROPOSTA
+  GANHO
+  PERDIDO
+}
+
+model Negocio {
+  id            String       @id @default(cuid())
+  empresaId     String
+  empresa       Empresa      @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  clienteId     String?
+  cliente       Cliente?     @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  titulo        String
+  valorCentavos Int          @default(0)
+  etapa         EtapaNegocio @default(NOVO)
+  motivoPerda   String?
+  criadoEm      DateTime     @default(now())
+  atualizadoEm  DateTime     @updatedAt
+  fechadoEm     DateTime?
+
+  lancamentos Lancamento[]
+  tarefas     Tarefa[]
+
+  @@index([empresaId, etapa])
+}
+
+enum TipoLancamento {
+  ENTRADA
+  SAIDA
+}
+
+model Lancamento {
+  id            String         @id @default(cuid())
+  empresaId     String
+  empresa       Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  tipo          TipoLancamento
+  valorCentavos Int
+  categoria     String
+  descricao     String?
+  data          DateTime
+  clienteId     String?
+  cliente       Cliente?       @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  negocioId     String?
+  negocio       Negocio?       @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  criadoEm      DateTime       @default(now())
+
+  @@index([empresaId, data])
+}
+
+enum OrigemTarefa {
+  MANUAL
+  CONSULTOR // criada pelo agente de IA
+}
+
+model Tarefa {
+  id        String       @id @default(cuid())
+  empresaId String
+  empresa   Empresa      @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  titulo    String
+  detalhe   String?
+  prazo     DateTime?
+  feita     Boolean      @default(false)
+  feitaEm   DateTime?
+  origem    OrigemTarefa @default(MANUAL)
+  clienteId String?
+  cliente   Cliente?     @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  negocioId String?
+  negocio   Negocio?     @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  criadoEm  DateTime     @default(now())
+
+  @@index([empresaId, feita])
+}
+
+// ------------------------------------------------------------------- uso
+
+/// Telemetria de uso do proprio app. O agente le isso para apontar lacuna de
+/// adocao ("voce nunca marcou um negocio como perdido — o funil nao fecha").
+model Evento {
+  id        String   @id @default(cuid())
+  empresaId String
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuarioId String?
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  tipo      String // "cliente.criado", "diagnostico.rodado", "consultor.pergunta"
+  meta      Json?
+  criadoEm  DateTime @default(now())
+
+  @@index([empresaId, criadoEm])
+  @@index([empresaId, tipo])
+}
+
+// -------------------------------------------------------------------- ia
+
+model Diagnostico {
+  id            String   @id @default(cuid())
+  empresaId     String
+  empresa       Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  geradoEm      DateTime @default(now())
+  modelo        String
+  resumo        String
+  achados       Json // [{ titulo, gravidade, evidencia }]
+  proximosPassos Json // [{ titulo, porque, esforco }]
+  dadosBase     Json // o retrato deterministico que alimentou o prompt
+  tokensEntrada Int      @default(0)
+  tokensSaida   Int      @default(0)
+
+  @@index([empresaId, geradoEm])
+}
+
+model Conversa {
+  id        String   @id @default(cuid())
+  empresaId String
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  titulo    String   @default("Nova conversa")
+  criadaEm  DateTime @default(now())
+  atualizadaEm DateTime @updatedAt
+
+  mensagens Mensagem[]
+
+  @@index([empresaId, atualizadaEm])
+}
+
+enum PapelMensagem {
+  USUARIO
+  ASSISTENTE
+}
+
+model Mensagem {
+  id          String        @id @default(cuid())
+  conversaId  String
+  conversa    Conversa      @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+  papel       PapelMensagem
+  conteudo    String
+  ferramentas Json? // quais consultas o agente rodou, para a UI mostrar
+  criadaEm    DateTime      @default(now())
+
+  @@index([conversaId, criadaEm])
+}
+
+/// Medidor de consumo de IA por mes. E a regua que vira cobranca quando o
+/// beta gratuito acabar — por isso ele existe desde o primeiro dia.
+model UsoIA {
+  id            String  @id @default(cuid())
+  empresaId     String
+  empresa       Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  competencia   String // "2026-09"
+  chamadas      Int     @default(0)
+  tokensEntrada Int     @default(0)
+  tokensSaida   Int     @default(0)
+
+  @@unique([empresaId, competencia])
+}
