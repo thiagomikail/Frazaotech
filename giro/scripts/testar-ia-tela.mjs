@@ -42,18 +42,27 @@ try {
   conferir("mostra qual ferramenta o agente usou", /leu o retrato do neg/i.test(resposta));
   await p.screenshot({ path: `${TELAS}/9-consultor.png`, fullPage: true });
 
-  console.log("\n[B] A conversa fica salva");
+  console.log("\n[B] O contador de cota acompanha");
+  await p.waitForTimeout(2000);
+  const cabecalho = await p.evaluate(() => document.body.innerText);
+  conferir(
+    "a cota na tela cai depois da pergunta",
+    /299 de 300 perguntas restantes/.test(cabecalho),
+    cabecalho.match(/\d+ de 300 perguntas restantes/)?.[0] ?? "nao achou o contador",
+  );
+
+  console.log("\n[C] A conversa fica salva");
   await p.reload({ waitUntil: "networkidle" });
   conferir("a conversa persiste depois do recarregamento", /Entraram R\$/.test(await p.evaluate(() => document.body.innerText)));
 
-  console.log("\n[C] O consumo e medido");
+  console.log("\n[D] O consumo e medido");
   await p.goto(`${BASE}/conta`, { waitUntil: "networkidle" });
   const conta = (await p.evaluate(() => document.body.innerText)).replace(/\u00a0/g, " ");
   const usadas = conta.match(/(\d+)\s+de\s+300/);
   conferir("contou a pergunta na cota", usadas !== null && Number(usadas[1]) >= 1, `leu: ${usadas?.[0]}`);
   conferir("registrou tokens consumidos", /chamadas ao modelo/.test(conta) && !/^0 chamadas/.test(conta));
 
-  console.log("\n[D] Diagnostico");
+  console.log("\n[E] Diagnostico");
   await p.goto(`${BASE}/diagnostico`, { waitUntil: "networkidle" });
   await p.getByRole("button", { name: /Rodar diagn/ }).first().click();
   await p.waitForSelector("text=/Próximos passos desta semana/", { timeout: 90000 });
@@ -64,13 +73,13 @@ try {
   conferir("guarda o modelo que gerou", /espelho\/local/.test(diag));
   await p.screenshot({ path: `${TELAS}/10-diagnostico.png`, fullPage: true });
 
-  console.log("\n[E] Historico do diagnostico");
+  console.log("\n[F] Historico do diagnostico");
   await p.getByRole("button", { name: /Rodar de novo/ }).first().click();
   await p.waitForTimeout(6000);
   await p.reload({ waitUntil: "networkidle" });
   conferir("o anterior vira historico", /Diagnósticos anteriores/.test(await p.evaluate(() => document.body.innerText)));
 
-  console.log("\n[F] Catraca de cota");
+  console.log("\n[G] Catraca de cota");
   const resp = await p.request.post(`${BASE}/api/diagnostico`);
   const corpo = await resp.json();
   conferir(

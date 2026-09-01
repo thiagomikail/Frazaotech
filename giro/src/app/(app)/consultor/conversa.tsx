@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles, Wrench } from "lucide-react";
 
@@ -33,6 +34,7 @@ export function Conversa({
   const [erro, setErro] = useState<string | null>(null);
   const [id, setId] = useState(conversaId);
   const fim = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fim.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -65,6 +67,9 @@ export function Conversa({
         ...atual,
         { papel: "ASSISTENTE", conteudo: dados.texto, ferramentas: dados.passos },
       ]);
+      // O contador de cota vive no componente de servidor acima. Sem isto ele
+      // continua mostrando o numero de antes da pergunta.
+      router.refresh();
     } catch {
       setErro("Falha de conexao. Tente de novo.");
     } finally {
