@@ -1,0 +1,46 @@
+{
+  "name": "hotmart-crm",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate --config prisma7.config.ts && next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:push": "prisma db push --config prisma7.config.ts",
+    "db:studio": "prisma studio --config prisma7.config.ts",
+    "gerar:client": "prisma generate --config prisma7.config.ts",
+    "gerar:segredos": "node scripts/gerar-segredos.mjs",
+    "hotmart:testar": "tsx --conditions=react-server scripts/testar-credenciais.ts",
+    "hotmart:backfill": "tsx --conditions=react-server scripts/backfill.ts",
+    "hotmart:sincronizar": "tsx --conditions=react-server scripts/sincronizar.ts",
+    "webhook:simular": "tsx scripts/simular-webhook.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "clsx": "^2.1.1",
+    "jose": "^6.1.0",
+    "lucide-react": "^1.34.0",
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "recharts": "^3.10.1",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.3",
+    "prisma": "7.10.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.12",
+    "typescript": "^5"
+  }
+}

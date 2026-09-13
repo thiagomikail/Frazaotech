@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/*
+  Painel de leitura densa: muitos numeros por tela, hierarquia feita por peso
+  e cor, nao por tamanho. Fundo levemente fora do branco pra que os cartoes
+  brancos tenham borda sem precisar de sombra.
+*/
+@theme {
+  --color-fundo: oklch(0.98 0.003 250);
+  --color-superficie: oklch(1 0 0);
+  --color-borda: oklch(0.91 0.005 250);
+  --color-tinta: oklch(0.25 0.01 250);
+  --color-tinta-fraca: oklch(0.55 0.012 250);
+  --color-marca: oklch(0.62 0.19 25);
+  --color-positivo: oklch(0.58 0.13 150);
+  --color-negativo: oklch(0.58 0.19 25);
+  --color-atencao: oklch(0.72 0.15 75);
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-fundo: oklch(0.19 0.012 250);
+    --color-superficie: oklch(0.23 0.014 250);
+    --color-borda: oklch(0.31 0.016 250);
+    --color-tinta: oklch(0.95 0.004 250);
+    --color-tinta-fraca: oklch(0.68 0.012 250);
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-tinta);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numero em tabela so alinha se a fonte for tabular. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

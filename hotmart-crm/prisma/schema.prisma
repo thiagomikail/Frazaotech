@@ -1,0 +1,325 @@
+// hotmart-crm — espelho local do negocio na Hotmart.
+//
+// Duas decisoes carregam o schema inteiro:
+//
+// 1. DINHEIRO E INTEIRO EM CENTAVOS. Float em dinheiro acumula erro em
+//    somatorio de MRR e LTV, e nao existe conserto depois. Toda coluna
+//    monetaria termina em `Centavos`.
+//
+// 2. STATUS E STRING, NAO ENUM. A Hotmart adiciona status e metodo de
+//    pagamento sem avisar. Com enum, um valor novo derruba a ingestao e o
+//    dado se perde; com string ele entra e aparece como desconhecido no
+//    painel. Os valores conhecidos vivem em lib/hotmart/tipos.ts, onde
+//    errar custa um build e nao um dia de vendas.
+//
+// Modelo misto de propósito: produto avulso vive em Transacao, produto
+// recorrente vive em Assinatura, e as duas apontam pra mesma Pessoa.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------------------ pessoa
+
+/// A unidade do CRM. Deduplicada por e-mail normalizado — que e o unico
+/// campo que a Hotmart sempre devolve em toda compra, avulsa ou recorrente.
+model Pessoa {
+  id        String  @id @default(cuid())
+  email     String  @unique
+  nome      String?
+  telefone  String?
+  documento String? @unique
+  pais      String?
+  estado    String?
+  cidade    String?
+
+  // Agregados mantidos na escrita (lib/ingestao/pessoas.ts) porque a tela de
+  // busca ordena por eles e recalcular por pessoa a cada consulta nao escala.
+  primeiraCompraEm DateTime?
+  ultimaCompraEm   DateTime?
+  ultimoAcessoEm   DateTime?
+  ltvCentavos      Int       @default(0)
+  comprasAprovadas Int       @default(0)
+  reembolsos       Int       @default(0)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  transacoes   Transacao[]
+  assinaturas  Assinatura[]
+  engajamentos EngajamentoAluno[]
+  eventos      Evento[]
+  notas        Nota[]
+
+  @@index([ultimaCompraEm])
+  @@index([ltvCentavos])
+  @@index([nome])
+}
+
+// ---------------------------------------------------------------- catalogo
+
+model Produto {
+  id           String   @id
+  nome         String
+  ehRecorrente Boolean  @default(false)
+  criadoEm     DateTime @default(now())
+
+  ofertas      Oferta[]
+  transacoes   Transacao[]
+  assinaturas  Assinatura[]
+  engajamentos EngajamentoAluno[]
+}
+
+model Oferta {
+  codigo    String   @id
+  produtoId String
+  nome      String?
+  criadoEm  DateTime @default(now())
+
+  produto    Produto     @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  transacoes Transacao[]
+
+  @@index([produtoId])
+}
+
+model Afiliado {
+  codigo   String   @id
+  nome     String?
+  criadoEm DateTime @default(now())
+
+  transacoes Transacao[]
+}
+
+// ------------------------------------------------------------- transacoes
+
+/// Uma cobranca. Numa assinatura existe uma Transacao por cobranca mensal,
+/// todas apontando para a mesma Assinatura via `assinaturaCodigo`.
+model Transacao {
+  codigo String @id
+
+  pessoaId         String
+  produtoId        String
+  ofertaCodigo     String?
+  afiliadoCodigo   String?
+  /// Codigo da assinatura como a Hotmart mandou. NAO e chave estrangeira de
+  /// proposito: a cobranca costuma chegar antes da assinatura ser
+  /// sincronizada, e uma FK obrigaria a ingestao a respeitar uma ordem que
+  /// quem manda o dado nao respeita. Indexado; o join e explicito.
+  assinaturaCodigo String?
+
+  status       String
+  /// PRODUCER | COAUTHOR | AFFILIATE — de onde vem a sua parte.
+  comissaoComo String?
+  /// Numero da cobranca dentro da assinatura (1 = adesao).
+  recorrencia  Int?
+  ehAssinatura Boolean @default(false)
+
+  moeda           String  @default("BRL")
+  /// O que o comprador pagou.
+  brutoCentavos   Int     @default(0)
+  /// Taxa da Hotmart + impostos retidos.
+  taxaCentavos    Int     @default(0)
+  /// O que efetivamente cai pra voce. Toda metrica de receita usa este.
+  liquidoCentavos Int     @default(0)
+  parcelas        Int?
+  metodoPagamento String?
+
+  origemSrc   String?
+  origemSck   String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  compradaEm    DateTime
+  aprovadaEm    DateTime?
+  confirmadaEm  DateTime?
+  garantiaAte   DateTime?
+  reembolsadaEm DateTime?
+
+  sincronizadaEm DateTime @default(now())
+  atualizadaEm   DateTime @updatedAt
+
+  pessoa     Pessoa      @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
+  produto    Produto     @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  oferta     Oferta?     @relation(fields: [ofertaCodigo], references: [codigo])
+  afiliado   Afiliado?   @relation(fields: [afiliadoCodigo], references: [codigo])
+
+  @@index([pessoaId])
+  @@index([produtoId])
+  @@index([status])
+  @@index([compradaEm])
+  @@index([aprovadaEm])
+  @@index([assinaturaCodigo])
+  @@index([afiliadoCodigo])
+  @@index([origemSrc])
+}
+
+// ------------------------------------------------------------- assinaturas
+
+model Assinatura {
+  codigo String @id
+
+  pessoaId  String
+  produtoId String
+  planoId   String?
+  planoNome String?
+
+  status String
+
+  moeda         String @default("BRL")
+  valorCentavos Int    @default(0)
+  /// MONTHLY, BIMONTHLY, QUARTERLY, SEMIANNUAL, ANNUAL.
+  periodicidade String?
+  /// Meses cobertos por cobranca. Guardado derivado pra que o MRR seja uma
+  /// divisao simples em SQL em vez de um CASE espalhado por cinco consultas.
+  mesesPeriodo  Int    @default(1)
+
+  aderiuEm           DateTime
+  proximaCobrancaEm  DateTime?
+  canceladaEm        DateTime?
+  motivoCancelamento String?
+  cobrancasPagas     Int      @default(0)
+  trocouDePlanoEm    DateTime?
+
+  sincronizadaEm DateTime @default(now())
+  atualizadaEm   DateTime @updatedAt
+
+  pessoa  Pessoa  @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@index([pessoaId])
+  @@index([status])
+  @@index([aderiuEm])
+  @@index([proximaCobrancaEm])
+  @@index([canceladaEm])
+}
+
+// -------------------------------------------------------------- engajamento
+
+/// Progresso na area de membros. E o unico sinal que antecede o churn:
+/// quem cancela para de assistir semanas antes de clicar em cancelar.
+model EngajamentoAluno {
+  id        String @id @default(cuid())
+  pessoaId  String
+  produtoId String
+
+  primeiroAcessoEm DateTime?
+  ultimoAcessoEm   DateTime?
+  aulasConcluidas  Int       @default(0)
+  aulasTotais      Int       @default(0)
+  progressoPct     Float     @default(0)
+
+  atualizadoEm DateTime @updatedAt
+
+  pessoa  Pessoa  @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@unique([pessoaId, produtoId])
+  @@index([ultimoAcessoEm])
+}
+
+// ----------------------------------------------------------------- timeline
+
+/// Linha do tempo unificada da pessoa. Alimentada pela ingestao e pelo
+/// webhook; e o que a tela de perfil 360 le.
+model Evento {
+  id String @id @default(cuid())
+
+  tipo             String
+  pessoaId         String?
+  produtoId        String?
+  transacaoCodigo  String?
+  assinaturaCodigo String?
+
+  ocorridoEm    DateTime
+  resumo        String?
+  valorCentavos Int?
+  dados         Json?
+
+  criadoEm DateTime @default(now())
+
+  pessoa Pessoa? @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
+
+  @@unique([tipo, transacaoCodigo, ocorridoEm])
+  @@index([pessoaId, ocorridoEm])
+  @@index([tipo, ocorridoEm])
+}
+
+// ------------------------------------------------------------------ webhook
+
+/// Payload cru, gravado antes de qualquer interpretacao. Se a normalizacao
+/// tiver bug, o dado continua aqui e o reprocessamento e possivel — sem isto
+/// um erro de parsing vira perda permanente, porque webhook nao se repete.
+model EventoWebhook {
+  id           String    @id
+  tipo         String
+  versao       String?
+  recebidoEm   DateTime  @default(now())
+  processadoEm DateTime?
+  tentativas   Int       @default(0)
+  erro         String?
+  payload      Json
+
+  @@index([processadoEm])
+  @@index([tipo, recebidoEm])
+}
+
+/// Carrinho abandonado so existe via webhook e NAO tem backfill: o que nao
+/// foi capturado no momento esta perdido pra sempre. Por isso mora em tabela
+/// propria, e nao pendurado numa transacao que nunca existiu.
+model CarrinhoAbandonado {
+  id String @id @default(cuid())
+
+  email         String
+  nome          String?
+  telefone      String?
+  produtoId     String?
+  ofertaCodigo  String?
+  valorCentavos Int?
+
+  abandonadoEm DateTime
+  /// Preenchido pela ingestao quando aparece compra aprovada do mesmo e-mail
+  /// depois desta data — e assim que se mede recuperacao de carrinho.
+  convertidoEm DateTime?
+
+  @@index([email])
+  @@index([abandonadoEm])
+  @@index([convertidoEm])
+}
+
+// --------------------------------------------------------------------- CRM
+
+model Nota {
+  id       String   @id @default(cuid())
+  pessoaId String
+  texto    String
+  autor    String?
+  criadoEm DateTime @default(now())
+
+  pessoa Pessoa @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
+
+  @@index([pessoaId, criadoEm])
+}
+
+// ------------------------------------------------------------ sincronizacao
+
+/// Marca ate onde a ingestao ja chegou. A sincronizacao incremental le o
+/// maior `janelaFim` com status OK e retoma dali, com folga de sobreposicao.
+model SincronizacaoLog {
+  id           String    @id @default(cuid())
+  tipo         String
+  janelaInicio DateTime
+  janelaFim    DateTime
+  registros    Int       @default(0)
+  status       String    @default("EXECUTANDO")
+  erro         String?
+  iniciadoEm   DateTime  @default(now())
+  terminadoEm  DateTime?
+
+  @@index([tipo, status, janelaFim])
+}
