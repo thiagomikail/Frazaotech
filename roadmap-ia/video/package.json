@@ -1,0 +1,22 @@
+{
+  "name": "roadmap-ia-video",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts Divulgacao out/divulgacao.mp4 --crf=20",
+    "capa": "remotion still src/index.ts Divulgacao out/capa.png --frame=60"
+  },
+  "dependencies": {
+    "@fontsource/montserrat": "^5.3.0",
+    "@remotion/cli": "^4.0.527",
+    "@remotion/fonts": "^4.0.527",
+    "@remotion/transitions": "^4.0.527",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.527"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
