@@ -1,7 +1,9 @@
 # Roadmap de IA · Go Agentes
 
 Diagnóstico aberto pros alunos da Go Agentes: a agência responde ~22 perguntas
-e recebe uma análise **crítica** + roadmap de 90 dias de adoção de IA.
+e recebe **por e-mail** uma análise **crítica** + roadmap de 90 dias de adoção de IA.
+
+O aluno não vê relatório no site, nunca. Só o admin (Thiago) vê tudo, em `/admin`.
 
 A pergunta que o relatório TEM que responder: **onde a IA adiciona mais valor
 pro negócio?** — no singular. Relatório que recomenda IA em tudo não recomenda nada.
@@ -16,6 +18,8 @@ npm run db:criar                     # schema roadmap_ia (idempotente, nunca apa
 npm run testar:analise -- --seco     # imprime o prompt de um caso fixo
 npm run testar:analise               # chama o Gemini de verdade
 npm run testar                       # Playwright no site (precisa do dev rodando + ADMIN_CHAVE)
+# Testar e-mail sem mandar de verdade: python3 -m aiosmtpd -n -l localhost:1025
+#   e SMTP_HOST=localhost SMTP_PORT=1025 no .env.local
 ```
 
 ## Como a análise funciona
@@ -28,20 +32,24 @@ npm run testar                       # Playwright no site (precisa do dev rodand
 2. `lib/analise.ts` — o Gemini recebe respostas + pontuação como chão e devolve
    JSON com esquema fixo: veredito, UMA frente, o que não fazer, verdades
    incômodas, roadmap em 3 fases com critério de sucesso **e de parada**.
-3. Se a IA falhar, o relatório sai com a parte determinística e um botão de
-   tentar de novo. As respostas são gravadas ANTES da chamada.
+3. `lib/processar.ts` — roda em `after()` depois de responder o aluno: gera a
+   análise e manda o e-mail (`lib/email-relatorio.ts`, HTML de e-mail com tudo
+   escapado). Falha de IA ou de SMTP vira coluna no banco; o `/admin` mostra
+   "não enviado" e tem o botão "Gerar e enviar". As respostas são gravadas ANTES.
 
 Mudar o tom da análise = mexer no prompt de `lib/analise.ts` e rodar
 `testar:analise`. Mudar a ordem das frentes = `PESO` e `AREAS.adequacao`.
 
 ## Regras
 
-- **Login só com e-mail, sem senha** — pedido explícito. Não é autenticação:
-  quem souber o e-mail vê o relatório. Por isso faturamento é faixa, nunca número,
-  e a home avisa. Upgrade futuro: link mágico, tudo em `lib/sessao.ts`.
-- **Admin** em `/admin` com `ADMIN_CHAVE`. Vê tudo, abre qualquer relatório, baixa CSV.
+- **Relatório só por e-mail.** Mandar pro endereço digitado é o que garante que
+  só o dono lê — por isso `/relatorio/[id]` dá 404 pra quem não é admin.
+- **Admin** em `/admin` com `ADMIN_CHAVE`. Vê tudo, abre qualquer relatório,
+  reenvia e-mail, baixa CSV.
+- **E-mail por SMTP** (`lib/email.ts`): Gmail com senha de app por padrão.
 - **Chave do Google compartilhada com o Bancada.** Tetos em `lib/limite.ts`:
-  3 análises/e-mail/24h e `TETO_DIARIO` global (150).
+  3 diagnósticos/e-mail/24h (também impede usar o site pra encher a caixa de
+  alguém) e `TETO_DIARIO` global (150).
 - **Banco**: pode ser o mesmo Supabase do Bancada — tudo no schema `roadmap_ia`.
   Postgres puro (`pg`), sem Prisma: `prisma db push` aqui apagaria as tabelas do Bancada.
 - Constante pura (`perguntas.ts`, `pontuacao.ts`, `analise-tipo.ts`) sem `server-only`;

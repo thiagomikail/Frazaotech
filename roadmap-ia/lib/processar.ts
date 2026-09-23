@@ -1,8 +1,10 @@
 import "server-only";
 import { analisar } from "./analise";
-import { buscar, gravarAnalise, gravarErro } from "./diagnosticos";
+import { buscar, gravarAnalise, gravarErro, gravarErroEnvio, marcarEnviado } from "./diagnosticos";
+import { enviarEmail } from "./email";
+import { emailRelatorio } from "./email-relatorio";
 import { SemIA } from "./gemini";
-import { consumir } from "./limite";
+import { consumirIA } from "./limite";
 import { TODAS_PERGUNTAS, respondida, type Respostas } from "./perguntas";
 
 /** Só aceita o que o questionário conhece: id sabido, opção existente, texto com teto. */
@@ -32,27 +34,41 @@ export function limparRespostas(bruto: unknown): Respostas | null {
 }
 
 /**
- * Gera (ou regera) a análise de um diagnóstico já gravado. Nunca lança:
- * o relatório determinístico existe de qualquer jeito, e a falha vira
- * mensagem na tela com botão de tentar de novo.
+ * Do diagnóstico gravado até a caixa de entrada: gera a análise (se ainda não
+ * existe) e manda o e-mail. Nunca lança — falha vira coluna no banco e
+ * aparece no /admin, com botão de tentar de novo.
+ *
+ * `reenviar`: manda de novo mesmo se já foi (botão do admin).
  */
-export async function gerarAnalise(id: string): Promise<{ ok: true } | { ok: false; erro: string }> {
-  const d = await buscar(id);
+export async function processar(id: string, { reenviar = false } = {}): Promise<{ ok: true } | { ok: false; erro: string }> {
+  let d = await buscar(id);
   if (!d) return { ok: false, erro: "Diagnóstico não encontrado." };
-  if (d.analise) return { ok: true };
+
+  if (!d.analise) {
+    try {
+      await consumirIA();
+      const { analise, modelo } = await analisar(d.respostas, d.pontuacao, d);
+      await gravarAnalise(id, analise, modelo);
+      d = { ...d, analise };
+    } catch (e) {
+      const erro = e instanceof SemIA ? e.message : `A IA não respondeu: ${e instanceof Error ? e.message : e}`;
+      console.error("analise falhou", id, e);
+      await gravarErro(id, erro).catch(() => {});
+      return { ok: false, erro };
+    }
+  }
+
+  if (d.enviado_em && !reenviar) return { ok: true };
 
   try {
-    await consumir(d.email);
-    const { analise, modelo } = await analisar(d.respostas, d.pontuacao, d);
-    await gravarAnalise(id, analise, modelo);
+    const { assunto, html, texto } = emailRelatorio({ ...d, analise: d.analise! });
+    await enviarEmail(d.email, assunto, html, texto);
+    await marcarEnviado(id);
     return { ok: true };
   } catch (e) {
-    const erro =
-      e instanceof SemIA
-        ? e.message
-        : "A IA não respondeu agora. Suas respostas estão salvas — tente de novo em alguns minutos.";
-    console.error("analise falhou", id, e);
-    await gravarErro(id, erro).catch(() => {});
+    const erro = `E-mail não saiu: ${e instanceof Error ? e.message : e}`;
+    console.error("envio falhou", id, e);
+    await gravarErroEnvio(id, erro).catch(() => {});
     return { ok: false, erro };
   }
 }

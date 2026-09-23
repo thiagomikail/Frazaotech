@@ -12,6 +12,10 @@ Detalhes de arquitetura em `CLAUDE.md`.
    - `GOOGLE_API_KEY`
    - `DATABASE_URL` (pooler 6543)
    - `ADMIN_CHAVE` — `openssl rand -hex 16`
+   - `SMTP_USER` — o Gmail que vai mandar os relatórios
+   - `SMTP_PASS` — senha de app desse Gmail (Conta Google → Segurança →
+     Verificação em 2 etapas → Senhas de app). Não é a senha normal.
+   - opcional: `EMAIL_COPIA` (cópia oculta pra você), `EMAIL_RESPONDER`
 4. Deploy. Deixe **Deployment Protection** em "Only Preview Deployments",
    senão os alunos caem na tela de login da Vercel.
 5. Seu painel: `https://<dominio>/admin`.

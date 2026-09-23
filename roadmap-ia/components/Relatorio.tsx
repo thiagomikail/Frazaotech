@@ -12,7 +12,7 @@ const dataLonga = (d: Date) =>
   new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short", year: "numeric", timeZone: "America/Sao_Paulo" }).format(d);
 
 export function Relatorio({
-  analise, pontuacao, respostas, nome, agencia, criadoEm, rodapeAnalise,
+  analise, pontuacao, respostas, nome, agencia, criadoEm,
 }: {
   analise: Analise | null;
   pontuacao: Pontuacao;
@@ -20,7 +20,6 @@ export function Relatorio({
   nome: string | null;
   agencia: string | null;
   criadoEm: Date;
-  rodapeAnalise?: React.ReactNode;
 }) {
   const max = Math.max(...pontuacao.frentes.map((f) => f.valor), 0.01);
   const top = pontuacao.frentes[0];
@@ -37,12 +36,10 @@ export function Relatorio({
           <p className="mt-6 text-lg leading-relaxed">
             Pela conta das suas respostas, a frente com mais retorno é{" "}
             <strong className="text-ouro">{AREAS[top.area].nome.toLowerCase()}</strong>. A análise escrita ainda não
-            ficou pronta — veja abaixo.
+            ficou pronta.
           </p>
         )}
       </header>
-
-      {rodapeAnalise}
 
       {analise && (
         <>

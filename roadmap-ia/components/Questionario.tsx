@@ -1,18 +1,12 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
 import { AREAS, BLOCOS, FAIXAS_HORAS, respondida, type Pergunta, type Respostas } from "@/lib/perguntas";
 
-const ETAPAS_ESPERA = [
-  "Lendo suas respostas…",
-  "Procurando o gargalo real…",
-  "Separando o que é problema de IA do que não é…",
-  "Montando o roadmap de 90 dias…",
-  "Revisando sem elogio…",
-];
+type Rascunho = { passo: number; nome: string; agencia: string; email: string; respostas: Respostas };
 
-type Rascunho = { passo: number; nome: string; agencia: string; respostas: Respostas };
+const CHAVE = "rmia-rascunho";
+const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const semAssinatura = () => () => {};
 
@@ -21,8 +15,8 @@ const semAssinatura = () => () => {};
  * No servidor não há localStorage, então só monta o formulário no navegador,
  * já com o rascunho lido — sem piscar a tela vazia.
  */
-export function Questionario({ email }: { email: string }) {
-  const chave = `rmia-rascunho:${email}`;
+export function Questionario() {
+  const chave = CHAVE;
   const bruto = useSyncExternalStore(
     semAssinatura,
     () => {
@@ -44,33 +38,27 @@ export function Questionario({ email }: { email: string }) {
 }
 
 function Formulario({ chave, inicial }: { chave: string; inicial: Rascunho | null }) {
-  const router = useRouter();
-
   const [passo, setPasso] = useState(inicial?.passo ?? 0);
   const [nome, setNome] = useState(inicial?.nome ?? "");
   const [agencia, setAgencia] = useState(inicial?.agencia ?? "");
+  const [email, setEmail] = useState(inicial?.email ?? "");
+  const [enviado, setEnviado] = useState(false);
   const [respostas, setRespostas] = useState<Respostas>(inicial?.respostas ?? {});
   const [enviando, setEnviando] = useState(false);
-  const [espera, setEspera] = useState(0);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
     try {
-      localStorage.setItem(chave, JSON.stringify({ passo, nome, agencia, respostas } satisfies Rascunho));
+      localStorage.setItem(chave, JSON.stringify({ passo, nome, agencia, email, respostas } satisfies Rascunho));
     } catch {}
-  }, [chave, passo, nome, agencia, respostas]);
+  }, [chave, passo, nome, agencia, email, respostas]);
 
-  useEffect(() => {
-    if (!enviando) return;
-    const t = setInterval(() => setEspera((e) => Math.min(e + 1, ETAPAS_ESPERA.length - 1)), 6000);
-    return () => clearInterval(t);
-  }, [enviando]);
 
   const total = BLOCOS.length + 1;
   const bloco = passo > 0 ? BLOCOS[passo - 1] : null;
   const podeAvancar = bloco
     ? bloco.perguntas.every((p) => respondida(p, respostas))
-    : nome.trim().length > 1 && agencia.trim().length > 1;
+    : nome.trim().length > 1 && agencia.trim().length > 1 && EMAIL_OK.test(email.trim());
 
   const definir = (id: string, v: Respostas[string]) => setRespostas((r) => ({ ...r, [id]: v }));
 
@@ -82,34 +70,35 @@ function Formulario({ chave, inicial }: { chave: string; inicial: Rascunho | nul
 
   async function enviar() {
     setEnviando(true);
-    setEspera(0);
     setErro(null);
     try {
       const res = await fetch("/api/diagnostico", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ nome, agencia, respostas }),
+        body: JSON.stringify({ nome, agencia, email: email.trim(), respostas }),
       });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok || !j.id) throw new Error(j.erro ?? "Não consegui salvar. Tente de novo.");
+      if (!res.ok || !j.ok) throw new Error(j.erro ?? "Não consegui salvar. Tente de novo.");
       try {
         localStorage.removeItem(chave);
       } catch {}
-      router.push(`/relatorio/${j.id}`);
+      setEnviado(true);
+      window.scrollTo({ top: 0 });
     } catch (e) {
       setErro(e instanceof Error ? e.message : "Algo deu errado.");
-      setEnviando(false);
     }
+    setEnviando(false);
   }
 
-  if (enviando) {
+  if (enviado) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-start justify-center gap-6">
-        <div className="h-1 w-full overflow-hidden bg-preto/10">
-          <div className="h-full bg-ouro transition-all duration-[6000ms]" style={{ width: `${((espera + 1) / ETAPAS_ESPERA.length) * 100}%` }} />
-        </div>
-        <p className="text-2xl font-bold">{ETAPAS_ESPERA[espera]}</p>
-        <p className="text-sm text-tinta/70">Leva de 30 segundos a 2 minutos. Não feche a página.</p>
+      <div className="flex min-h-[50vh] flex-col items-start justify-center gap-5">
+        <p className="logo text-xs text-ouro">Recebido</p>
+        <h1 className="text-2xl font-extrabold uppercase leading-tight sm:text-3xl">Seu roadmap vai chegar por e-mail</h1>
+        <p className="text-lg leading-relaxed">
+          Em alguns minutos, em <strong>{email.trim()}</strong>. A análise é feita com calma — pode fechar esta página.
+        </p>
+        <p className="text-sm text-tinta/70">Não chegou em 15 minutos? Olhe o spam e a aba Promoções.</p>
       </div>
     );
   }
@@ -150,6 +139,11 @@ function Formulario({ chave, inicial }: { chave: string; inicial: Rascunho | nul
             <span className="mb-2 block font-semibold">Nome da agência</span>
             <input value={agencia} onChange={(e) => setAgencia(e.target.value)} maxLength={120} className="min-h-12 w-full border border-preto/20 bg-white px-4 outline-none focus:border-ouro" />
           </label>
+          <label className="block">
+            <span className="mb-2 block font-semibold">Seu e-mail</span>
+            <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={200} className="min-h-12 w-full border border-preto/20 bg-white px-4 outline-none focus:border-ouro" />
+            <span className="mt-1 block text-sm text-tinta/70">O relatório chega só aqui — confira se está certo.</span>
+          </label>
         </div>
       )}
 
@@ -165,10 +159,10 @@ function Formulario({ chave, inicial }: { chave: string; inicial: Rascunho | nul
         </button>
         <button
           onClick={avancar}
-          disabled={!podeAvancar}
+          disabled={!podeAvancar || enviando}
           className="min-h-12 bg-preto px-8 font-bold uppercase tracking-wide text-white hover:bg-black disabled:opacity-30"
         >
-          {passo === total - 1 ? "Gerar meu roadmap" : "Continuar"}
+          {passo === total - 1 ? (enviando ? "Enviando…" : "Receber meu roadmap") : "Continuar"}
         </button>
       </div>
     </div>

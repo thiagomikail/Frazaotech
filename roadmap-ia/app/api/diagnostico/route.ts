@@ -1,23 +1,33 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { criarDiagnostico } from "@/lib/diagnosticos";
+import { podeEnviar, POR_EMAIL } from "@/lib/limite";
 import { pontuar } from "@/lib/pontuacao";
-import { gerarAnalise, limparRespostas } from "@/lib/processar";
-import { emailAtual } from "@/lib/sessao";
+import { limparRespostas, processar } from "@/lib/processar";
+import { normalizarEmail } from "@/lib/sessao";
 
-// A análise leva de 20 s a alguns minutos quando o Gemini está disputado.
+// A análise + o e-mail rodam DEPOIS da resposta (`after`), dentro deste prazo.
 export const maxDuration = 300;
 
 export async function POST(req: Request) {
-  const email = await emailAtual();
-  if (!email) return NextResponse.json({ erro: "Entre com seu e-mail primeiro." }, { status: 401 });
-
   const corpo = await req.json().catch(() => null);
+
+  const email = normalizarEmail(String(corpo?.email ?? ""));
+  if (!email) return NextResponse.json({ erro: "Esse e-mail não parece válido." }, { status: 400 });
+
   const respostas = limparRespostas(corpo?.respostas);
   if (!respostas) return NextResponse.json({ erro: "Faltam respostas." }, { status: 400 });
 
+  if (!(await podeEnviar(email))) {
+    return NextResponse.json(
+      { erro: `Este e-mail já pediu ${POR_EMAIL} diagnósticos nas últimas 24h. Confira a caixa de entrada (e o spam).` },
+      { status: 429 },
+    );
+  }
+
   const texto = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : null);
 
-  // Grava ANTES de chamar a IA: se ela falhar, a pessoa não perde 10 minutos de respostas.
+  // Grava ANTES da IA: se ela ou o e-mail falharem, as respostas estão salvas
+  // e o admin reenvia pelo painel.
   const id = await criarDiagnostico({
     email,
     nome: texto(corpo?.nome),
@@ -26,6 +36,8 @@ export async function POST(req: Request) {
     pontuacao: pontuar(respostas),
   });
 
-  const r = await gerarAnalise(id);
-  return NextResponse.json({ id, ...(r.ok ? {} : { erro: r.erro }) });
+  // O aluno não vê relatório na tela — então não precisa esperar a IA.
+  after(() => processar(id));
+
+  return NextResponse.json({ ok: true });
 }

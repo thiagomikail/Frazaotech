@@ -9,11 +9,11 @@ export async function GET() {
   const lista = await todos(5000);
   const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
 
-  const cabecalho = ["data", "email", "nome", "agencia", ...TODAS_PERGUNTAS.map((p) => p.id), "gargalo", "frente_top", "ia_onde_mais_valor", "ia_veredito", "link"];
+  const cabecalho = ["data", "email", "nome", "agencia", ...TODAS_PERGUNTAS.map((p) => p.id), "gargalo", "frente_top", "ia_onde_mais_valor", "ia_veredito", "enviado_em", "link"];
   const linhas = lista.map((d) => [
     d.criado_em.toISOString(), d.email, d.nome, d.agencia,
     ...TODAS_PERGUNTAS.map((p) => rotuloDe(p, d.respostas[p.id])),
-    d.pontuacao.restricao, d.pontuacao.frentes[0]?.area, d.analise?.ondeMaisValor.area, d.analise?.veredito, `/relatorio/${d.id}`,
+    d.pontuacao.restricao, d.pontuacao.frentes[0]?.area, d.analise?.ondeMaisValor.area, d.analise?.veredito, d.enviado_em?.toISOString() ?? "", `/relatorio/${d.id}`,
   ]);
 
   // BOM + ponto e vírgula: o Excel em pt-BR abre sem assistente de importação.

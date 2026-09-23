@@ -31,7 +31,7 @@ export default async function Admin() {
 
   const gargalos = contar(lista.map((d) => d.pontuacao.restricao));
   const topos = contar(lista.map((d) => d.pontuacao.frentes[0]?.area).filter(Boolean));
-  const pendentes = lista.filter((d) => !d.analise).length;
+  const pendentes = lista.filter((d) => !d.enviado_em).length;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -50,9 +50,9 @@ export default async function Admin() {
         <Bloco titulo="Frente nº 1 (conta determinística)">
           {topos.map(([k, n]) => <Linha key={k} rotulo={AREAS[k as keyof typeof AREAS].nome} n={n} />)}
         </Bloco>
-        <Bloco titulo="Análise pendente">
+        <Bloco titulo="E-mail não enviado">
           <p className="text-3xl font-extrabold">{pendentes}</p>
-          <p className="text-sm text-tinta/60">IA falhou ou bateu teto — o aluno vê o botão de tentar de novo.</p>
+          <p className="text-sm text-tinta/60">IA ou e-mail falhou (ou ainda processando). Abra e use &ldquo;Gerar e enviar&rdquo;.</p>
         </Bloco>
       </div>
 
@@ -61,7 +61,7 @@ export default async function Admin() {
           <thead className="bg-preto text-white">
             <tr>
               <th className="p-3">Quando</th><th className="p-3">Agência</th><th className="p-3">E-mail</th>
-              <th className="p-3">Gargalo</th><th className="p-3">Onde a IA vale mais</th><th className="p-3"></th>
+              <th className="p-3">Gargalo</th><th className="p-3">Onde a IA vale mais</th><th className="p-3">E-mail</th><th className="p-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -71,7 +71,8 @@ export default async function Admin() {
                 <td className="p-3"><strong>{d.agencia ?? "—"}</strong><br /><span className="text-tinta/60">{d.nome}</span></td>
                 <td className="p-3">{d.email}</td>
                 <td className="p-3">{d.pontuacao.restricao}</td>
-                <td className="p-3">{d.analise?.ondeMaisValor.area ?? <span className="text-coral">pendente</span>}</td>
+                <td className="p-3">{d.analise?.ondeMaisValor.area ?? <span className="text-coral">sem análise</span>}</td>
+                <td className="p-3">{d.enviado_em ? "✓ enviado" : <span className="text-coral" title={d.erro_envio ?? d.erro ?? ""}>não enviado</span>}</td>
                 <td className="p-3"><Link href={`/relatorio/${d.id}`} className="font-semibold underline">abrir</Link></td>
               </tr>
             ))}

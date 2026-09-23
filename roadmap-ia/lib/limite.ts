@@ -1,37 +1,32 @@
 import "server-only";
+import { recentesDoEmail } from "./diagnosticos";
 import { pg, SCHEMA } from "./db";
 import { SemIA } from "./gemini";
 
 /**
- * O site é aberto: qualquer aluno com o link chama a IA, e a chave é a mesma
- * do Bancada. Dois tetos protegem o saldo:
+ * O site é aberto e cada envio custa uma chamada de IA (chave do Bancada) e
+ * manda um e-mail pra um endereço digitado por quem quer que seja. Dois tetos:
  *
- *   · por e-mail — 3 análises por dia. Refazer o teste 3× já é muito.
- *   · global — `TETO_DIARIO` (padrão 150). Uma turma inteira num dia cabe;
- *     um script em loop não.
+ *   · por e-mail — 3 diagnósticos em 24h. Também impede usar o site pra
+ *     encher a caixa de alguém.
+ *   · global — `TETO_DIARIO` (padrão 150) chamadas de IA por dia.
  *
- * Conta ANTES de chamar o Gemini (contar depois deixaria o gasto acontecer).
- * Falha ABERTO no global: se o contador cair, o aluno não fica sem relatório.
+ * O global conta ANTES de chamar o Gemini e falha ABERTO: se o contador cair,
+ * o aluno não fica sem relatório.
  */
 
-const POR_EMAIL = 3;
+export const POR_EMAIL = 3;
+
+export async function podeEnviar(email: string) {
+  return (await recentesDoEmail(email)) < POR_EMAIL;
+}
 
 function hoje() {
   return new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date());
 }
 
-export async function consumir(email: string) {
+export async function consumirIA() {
   const teto = Number(process.env.TETO_DIARIO ?? 150);
-
-  const { rows: meus } = await pg().query(
-    `select count(*)::int as n from ${SCHEMA}.diagnostico
-      where email = $1 and criado_em > now() - interval '24 hours' and analise is not null`,
-    [email],
-  );
-  if (meus[0].n >= POR_EMAIL) {
-    throw new SemIA("limite_diario", `Você já gerou ${POR_EMAIL} análises nas últimas 24h. Volte amanhã.`);
-  }
-
   try {
     const { rows } = await pg().query(
       `insert into ${SCHEMA}.uso_ia (dia, contagem) values ($1, 1)
@@ -40,7 +35,7 @@ export async function consumir(email: string) {
       [hoje()],
     );
     if (rows[0].contagem > teto) {
-      throw new SemIA("limite_diario", "O site bateu o limite de análises de hoje. Suas respostas estão salvas — gere a análise amanhã.");
+      throw new SemIA("limite_diario", `Passou de ${teto} análises hoje (TETO_DIARIO).`);
     }
   } catch (e) {
     if (e instanceof SemIA) throw e;

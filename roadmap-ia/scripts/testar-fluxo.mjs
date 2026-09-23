@@ -1,37 +1,36 @@
 /**
- * Dirige o site de verdade: entra com e-mail, responde tudo, gera o
- * relatório, confere que outro e-mail NÃO vê, e que o admin vê e baixa CSV.
+ * Dirige o site de verdade: responde tudo, confere a tela de "vai por e-mail",
+ * que ninguém sem chave abre relatório, e que o admin vê tudo e baixa CSV.
  *
  *   npm run dev   (noutro terminal)
- *   ADMIN_CHAVE=... node scripts/testar-fluxo.mjs
+ *   ADMIN_CHAVE=... npm run testar
  *
- * Sem GOOGLE_API_KEY o relatório sai só com a parte determinística — que é
- * exatamente o caminho de falha que também precisa funcionar.
+ * Sem GOOGLE_API_KEY a análise falha e o e-mail não sai — o admin vê
+ * "não enviado", que é justamente o caminho de falha que precisa aparecer.
  */
 import { chromium } from "playwright-core";
 
 const BASE = process.env.ROADMAP_URL ?? "http://localhost:3000";
 const CHAVE = process.env.ADMIN_CHAVE;
 const exe = process.env.CHROMIUM ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+const EMAIL = process.env.EMAIL_TESTE ?? `teste+${Date.now()}@exemplo.com`;
 
 const browser = await chromium.launch({ executablePath: exe });
 const ok = (m) => console.log("✓", m);
 const falha = (m) => { console.error("✗", m); process.exitCode = 1; };
 
 try {
-  const aluno = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const p = await aluno.newPage();
+  const p = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
   await p.goto(BASE);
-  await p.fill('input[name="email"]', `teste+${Date.now()}@exemplo.com`);
   await p.click("text=Começar o diagnóstico");
   await p.waitForURL("**/teste");
-  ok("entrou com e-mail");
 
   await p.getByLabel("Seu nome").fill("Ana Teste");
   await p.getByLabel("Nome da agência").fill("Viagens Teste");
+  await p.getByLabel("Seu e-mail").fill(EMAIL);
   await p.click("text=Continuar");
 
-  // Em cada bloco: primeira opção de cada pergunta única, horas variadas, textos longos.
+  // Em cada bloco: segunda opção de cada pergunta única, horas variadas, textos longos.
   for (let passo = 0; passo < 6; passo++) {
     for (const fs of await p.locator("fieldset").all()) {
       const grades = fs.locator("div.grid-cols-5");
@@ -48,23 +47,13 @@ try {
       const botoes = fs.locator("button");
       if (await botoes.count()) await botoes.nth(1).click();
     }
-    await p.screenshot({ path: `/tmp/roadmap-passo-${passo}.png`, fullPage: true }).catch(() => {});
-    const avancar = p.locator("button", { hasText: passo === 5 ? "Gerar meu roadmap" : "Continuar" });
+    const avancar = p.locator("button", { hasText: passo === 5 ? "Receber meu roadmap" : "Continuar" });
     if (await avancar.isDisabled()) throw new Error(`passo ${passo + 1}: botão travado`);
     await avancar.click();
   }
-  ok("respondeu os 6 blocos");
-
-  await p.waitForURL("**/relatorio/**", { timeout: 300_000 });
-  const url = p.url();
-  await p.waitForSelector("text=Os números por trás");
-  await p.screenshot({ path: "/tmp/roadmap-relatorio.png", fullPage: true });
-  ok(`relatório em ${url}`);
-
-  const intruso = await (await browser.newContext()).newPage();
-  const r = await intruso.goto(url);
-  if (r.status() === 404) ok("sem e-mail → 404");
-  else falha(`sem e-mail viu o relatório (${r.status()})`);
+  await p.waitForSelector("text=Seu roadmap vai chegar por e-mail");
+  await p.screenshot({ path: "/tmp/roadmap-enviado.png" });
+  ok("respondeu e viu a tela de e-mail");
 
   if (CHAVE) {
     const adm = await (await browser.newContext()).newPage();
@@ -74,13 +63,21 @@ try {
     await adm.waitForSelector("text=Baixar CSV");
     await adm.screenshot({ path: "/tmp/roadmap-admin.png", fullPage: true });
     ok("admin entrou");
-    const csv = await adm.request.get(`${BASE}/admin/csv`);
-    const corpo = await csv.text();
-    if (corpo.includes("Viagens Teste")) ok("CSV traz o diagnóstico");
+
+    const csv = await (await adm.request.get(`${BASE}/admin/csv`)).text();
+    if (csv.includes(EMAIL)) ok("CSV traz o diagnóstico");
     else falha("CSV sem o diagnóstico");
-    const r2 = await adm.goto(url);
-    if (r2.status() === 200) ok("admin abre relatório alheio");
+
+    const link = await adm.locator("tr", { hasText: EMAIL }).locator("a", { hasText: "abrir" }).getAttribute("href");
+    const r = await adm.goto(`${BASE}${link}`);
+    if (r.status() === 200) ok("admin abre o relatório");
     else falha("admin não abriu");
+
+    const intruso = await (await browser.newContext()).newPage();
+    const r2 = await intruso.goto(`${BASE}${link}`);
+    if (r2.status() === 404) ok("sem chave → 404 no relatório");
+    else falha(`sem chave viu o relatório (${r2.status()})`);
+    console.log(`id: ${link.split("/").pop()}`);
   }
 } catch (e) {
   falha(e.message);

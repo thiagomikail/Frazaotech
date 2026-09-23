@@ -24,6 +24,10 @@ create table if not exists roadmap_ia.diagnostico (
   erro        text,
   criado_em   timestamptz not null default now()
 );
+-- O relatório só chega por e-mail: estas duas colunas dizem se chegou.
+alter table roadmap_ia.diagnostico add column if not exists enviado_em timestamptz;
+alter table roadmap_ia.diagnostico add column if not exists erro_envio text;
+
 create index if not exists diagnostico_email on roadmap_ia.diagnostico (email, criado_em desc);
 
 create table if not exists roadmap_ia.uso_ia (

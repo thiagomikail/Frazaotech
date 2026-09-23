@@ -1,9 +1,5 @@
 import Link from "next/link";
 import { Cabecalho } from "@/components/Cabecalho";
-import { FormEmail } from "@/components/FormEmail";
-import { emailAtual } from "@/lib/sessao";
-
-export const dynamic = "force-dynamic";
 
 const ENTREGA = [
   ["Uma frente, não sete", "O relatório aponta UM lugar onde a IA dá mais retorno no seu negócio — com a evidência tirada das suas respostas."],
@@ -11,12 +7,10 @@ const ENTREGA = [
   ["Roadmap de 90 dias", "Pré-requisitos, piloto e a decisão de escalar ou matar — cada passo com critério de sucesso e de parada."],
 ];
 
-export default async function Inicio() {
-  const email = await emailAtual();
-
+export default function Inicio() {
   return (
     <>
-      <Cabecalho email={email} />
+      <Cabecalho />
       <main>
         <section className="bg-preto text-white">
           <div className="mx-auto max-w-4xl px-4 pb-16 pt-12 sm:pb-24 sm:pt-20">
@@ -26,24 +20,13 @@ export default async function Inicio() {
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">
               22 perguntas, uns 12 minutos. No fim, uma análise <strong className="text-white">crítica</strong> do seu
-              negócio e um roadmap de adoção de IA que cabe no seu tempo e no seu bolso. Sem enrolação.
+              negócio e um roadmap de adoção de IA que cabe no seu tempo e no seu bolso — direto no seu e-mail. Sem enrolação.
             </p>
             <div className="mt-10">
-              {email ? (
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Link href="/teste" className="flex min-h-12 items-center justify-center bg-ouro px-6 font-bold uppercase tracking-wide text-preto hover:brightness-110">
-                    Fazer o diagnóstico
-                  </Link>
-                  <Link href="/meus" className="flex min-h-12 items-center justify-center border border-white/40 px-6 font-semibold hover:border-white">
-                    Ver meus relatórios
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  <FormEmail />
-                  <p className="mt-3 text-sm text-white/60">Sem senha. O e-mail é a chave pra voltar e ver seus relatórios.</p>
-                </>
-              )}
+              <Link href="/teste" className="inline-flex min-h-12 items-center justify-center bg-ouro px-8 font-bold uppercase tracking-wide text-preto hover:brightness-110">
+                Começar o diagnóstico
+              </Link>
+              <p className="mt-3 text-sm text-white/60">Sem cadastro. O relatório chega no seu e-mail.</p>
             </div>
           </div>
         </section>
@@ -72,14 +55,9 @@ export default async function Inicio() {
           </div>
 
           <div className="mt-14 border-l-4 border-preto bg-white p-5 text-sm leading-relaxed">
-            <strong>Sobre as suas respostas:</strong> ficam salvas e visíveis pra você e pra equipe que conduz o
-            programa, que usa o conjunto pra entender a turma. Não pedimos número de faturamento, só faixa. Qualquer
-            pessoa que digite o seu e-mail acessa seus relatórios — não coloque aqui nada que não diria numa aula.
-            {!email && (
-              <div className="mt-4">
-                Já fez o teste? <span className="font-semibold">Digite o e-mail acima</span> e vá em &ldquo;Meus relatórios&rdquo;.
-              </div>
-            )}
+            <strong>Sobre as suas respostas:</strong> o relatório vai só para o e-mail que você informar. As respostas
+            ficam salvas e são vistas também pela equipe que conduz o programa, que usa o conjunto pra entender a turma.
+            Não pedimos número de faturamento, só faixa.
           </div>
         </section>
       </main>
