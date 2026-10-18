@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/petri", "destination": "/petri/index.html" }]
+}
