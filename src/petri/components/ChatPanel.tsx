@@ -141,6 +141,11 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
       data-testid="assistant-message"
     >
       {msg.text && <p className="whitespace-pre-wrap">{msg.text}</p>}
+      {msg.detail?.map((d) => (
+        <p key={d} className="mt-1 break-words font-mono text-[11px] text-red-200/80" data-testid="error-detail">
+          {d}
+        </p>
+      ))}
       {msg.summary && (
         <p className="mt-1.5 font-mono text-[11px] text-sky-300">
           {t('chat.netSummary', { places: msg.summary.places, transitions: msg.summary.transitions })}

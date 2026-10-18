@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useLang, useT } from '../i18n';
-import { generateJson, LlmError } from '../llm/gemini';
+import { generateJson, LlmError, reasons } from '../llm/gemini';
 import { analysisSummary, buildTurns, readAnswer, RESPONSE_SCHEMA, SYSTEM_PROMPT } from '../llm/prompt';
 import type { Example } from '../model/examples';
 import { layoutNet } from '../model/layout';
@@ -98,6 +98,7 @@ export function useActions() {
           role: 'assistant',
           text: t(`err.${kind}`),
           error: kind,
+          detail: kind === 'aborted' || !(e instanceof Error) ? undefined : reasons(e.message),
           retry: kind === 'aborted' ? undefined : request,
         },
       });

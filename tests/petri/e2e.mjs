@@ -138,6 +138,7 @@ await check('chat: Gemini answer becomes the net, failures offer a retry', async
   await page.fill('[data-testid="chat-input"]', 'mais rápido');
   await page.press('[data-testid="chat-input"]', 'Enter');
   await page.waitForSelector('text=Tentar de novo', { timeout: 20000 });
+  assert.equal(await page.textContent('[data-testid="error-detail"]'), '503 busy', "Google's reason is shown");
   assert.ok(seen.at(-1).contents.at(-1).parts[0].text.includes('CURRENT NET'), 'second request carries the net');
   await page.click('text=Desfazer esta mudança');
   assert.deepEqual(await nodes(page), []);

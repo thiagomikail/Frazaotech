@@ -4,7 +4,7 @@
  * LLMs actually send back.
  */
 import assert from 'node:assert/strict';
-import { generateJson, LlmError, MODEL_CHAIN } from '../../src/petri/llm/gemini';
+import { generateJson, LlmError, MODEL_CHAIN, reasons } from '../../src/petri/llm/gemini';
 import { buildTurns, readAnswer } from '../../src/petri/llm/prompt';
 import { compile } from '../../src/petri/model/net';
 
@@ -74,6 +74,22 @@ await assert.rejects(
   (e: unknown) => e instanceof LlmError && e.kind === 'auth',
 );
 assert.equal(calls.length, 1);
+
+// 5b. A 403 on one model is not the end: the key may just not reach that model.
+r = await run([{ status: 403, body: { error: { message: 'Permission denied on this model' } } }, ok({ reply: 'e' })]);
+assert.equal(r.model, MODEL_CHAIN[1]);
+
+// 5c. Refused by every model (or refused and not found) is the key: say so, with Google's words.
+const leaked = 'Your API key was reported as leaked. Please use another API key.';
+await assert.rejects(
+  run([
+    { status: 403, body: { error: { message: leaked } } },
+    { status: 404, body: { error: { message: 'models/x is not found' } } },
+    ...MODEL_CHAIN.slice(2).map(() => ({ status: 403, body: { error: { message: leaked } } })),
+  ]),
+  (e: unknown) => e instanceof LlmError && e.kind === 'auth' && reasons(e.message)[0] === `403 ${leaked}`,
+);
+assert.equal(calls.length, MODEL_CHAIN.length, 'one call per model, no retries on 403/404');
 
 // 6. Quota on every model.
 await assert.rejects(

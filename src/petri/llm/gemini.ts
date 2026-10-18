@@ -80,6 +80,12 @@ export interface JsonRequest {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** The distinct reasons Google gave, without the model prefix — what a person needs to fix the key. */
+export function reasons(message: string): string[] {
+  const lines = message.split('\n').map((l) => l.replace(/^gemini-[\w.-]+: /, '').trim());
+  return [...new Set(lines.filter(Boolean))].slice(0, 2).map((r) => r.slice(0, 240));
+}
+
 /** First JSON object in the text — tolerates code fences and chatter around it. */
 export function extractJson(text: string): unknown {
   const trimmed = text
@@ -107,6 +113,9 @@ export async function generateJson(req: JsonRequest): Promise<{ data: unknown; m
 
   const errors: string[] = [];
   let sawQuota = false;
+  // Per model: refused (401/403), or missing (404) — when that is all there is, the key is the problem.
+  let refused = 0;
+  let missing = 0;
   let useSchema = Boolean(req.schema);
 
   for (const model of MODEL_CHAIN) {
@@ -160,7 +169,11 @@ export async function generateJson(req: JsonRequest): Promise<{ data: unknown; m
         errors.push(`${model}: ${res.status} ${msg.slice(0, 160)}`);
 
         if (res.status === 400 && /api key/i.test(msg)) throw new LlmError('auth', msg);
-        if (res.status === 401 || res.status === 403) throw new LlmError('auth', msg);
+        // A 403 can be about one model the key may not use, not the key itself: try the next model.
+        if (res.status === 401 || res.status === 403) {
+          refused++;
+          break;
+        }
         if (res.status === 400 && useSchema && /schema|response_schema|responseSchema/i.test(msg)) {
           useSchema = false;
           continue;
@@ -169,7 +182,10 @@ export async function generateJson(req: JsonRequest): Promise<{ data: unknown; m
           sawQuota = true;
           break;
         }
-        if (res.status === 404 || res.status === 400) break;
+        if (res.status === 404 || res.status === 400) {
+          missing++;
+          break;
+        }
         if (attempt < 2) await sleep(1200);
       } catch (e) {
         if (e instanceof LlmError) throw e;
@@ -186,6 +202,7 @@ export async function generateJson(req: JsonRequest): Promise<{ data: unknown; m
   }
 
   const summary = errors.join('\n');
+  if (refused > 0 && refused + missing === MODEL_CHAIN.length) throw new LlmError('auth', summary);
   if (sawQuota) throw new LlmError('quota', summary);
   if (errors.every((e) => /fetch|network|Failed/i.test(e))) throw new LlmError('network', summary);
   if (errors.some((e) => /not JSON|empty answer/.test(e))) throw new LlmError('bad-response', summary);

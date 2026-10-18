@@ -17,6 +17,8 @@ export interface ChatMessage {
   notes?: string[];
   model?: string;
   error?: LlmErrorKind;
+  /** What Google said, verbatim, so the key or quota problem can be fixed. */
+  detail?: string[];
   /** The net as it was before this answer changed it — the per-message undo. */
   before?: PetriNet;
   undone?: boolean;
