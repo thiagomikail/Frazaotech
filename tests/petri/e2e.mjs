@@ -12,7 +12,8 @@ import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
 const PORT = 4179;
-const BASE = `http://localhost:${PORT}/petri/`;
+const ROOT = `http://localhost:${PORT}/`;
+const BASE = `${ROOT}petri/`;
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
@@ -189,6 +190,29 @@ await check('files: save JSON, open it back, export SVG', async () => {
   const [svg] = await Promise.all([page.waitForEvent('download'), page.click('text=Export diagram (SVG)')]);
   assert.ok(readFileSync(await svg.path(), 'utf8').startsWith('<svg xmlns="http://www.w3.org/2000/svg"'));
   await page.context().close();
+});
+
+await check('home page opens both apps', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  page.on('pageerror', (e) => errors.push(String(e)));
+  await page.goto(ROOT);
+  await page.click('[data-testid="home-petri"]');
+  await page.waitForSelector('[data-testid="net-canvas"]');
+  await page.goto(ROOT);
+  await page.click('[data-testid="home-fmea"]');
+  await page.waitForSelector('text=Critical Risks Dashboard');
+  await ctx.close();
+});
+
+await check('the canvas follows the device appearance', async () => {
+  const canvasBg = (page) => page.$eval('[data-testid="net-canvas"]', (el) => getComputedStyle(el.parentElement).backgroundColor);
+  const light = await freshPage({ colorScheme: 'light' });
+  assert.equal(await canvasBg(light), 'rgb(255, 255, 255)');
+  await light.context().close();
+  const dark = await freshPage({ colorScheme: 'dark' });
+  assert.equal(await canvasBg(dark), 'rgb(28, 28, 30)');
+  await dark.context().close();
 });
 
 await check('phone: tabs, no horizontal scroll', async () => {

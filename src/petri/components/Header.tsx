@@ -1,14 +1,14 @@
 import { FileDown, FilePlus2, FolderOpen, Image, KeyRound, Menu, Redo2, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { t } from '../strings';
-import { netBounds, C } from './geometry';
+import { netBounds } from './geometry';
 import { normalizeNet, toIdent } from '../model/net';
 import { emptyNet } from '../model/types';
 import { ensureLayout, useStore, useToast } from '../state/store';
 import { downloadText, pickTextFile } from '../util/files';
-import { PetriMark } from './NetCanvas';
+import { currentPalette } from './palette';
 
-/** The diagram as a standalone SVG: world coordinates, dark background, no UI overlays. */
+/** The diagram as a standalone SVG: world coordinates, the current appearance's colors, no UI overlays. */
 function exportSvg(): string | null {
   const svg = document.querySelector<SVGSVGElement>('[data-testid="net-canvas"]');
   if (!svg) return null;
@@ -75,25 +75,27 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
         const w = Math.ceil(b.maxX - b.minX + 60);
         const h = Math.ceil(b.maxY - b.minY + 40);
         const body = markup.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
-        const doc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.minX - 20} ${b.minY - 20} ${w} ${h}" width="${w}" height="${h}" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"><rect x="${b.minX - 20}" y="${b.minY - 20}" width="${w}" height="${h}" fill="${C.bg}"/>${body}</svg>`;
+        const doc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.minX - 20} ${b.minY - 20} ${w} ${h}" width="${w}" height="${h}" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"><rect x="${b.minX - 20}" y="${b.minY - 20}" width="${w}" height="${h}" fill="${currentPalette().bg}"/>${body}</svg>`;
         downloadText(`${baseName}.svg`, doc, 'image/svg+xml');
       },
     },
   ];
 
   return (
-    <header className="flex h-12 shrink-0 items-center gap-2 border-b border-slate-800 bg-slate-950 px-3">
+    <header className="relative z-20 flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 px-3 backdrop-blur-xl backdrop-saturate-150">
       <a href="/petri/" className="flex items-center gap-2">
-        <PetriMark className="h-7 w-7" />
-        <span className="text-sm font-semibold tracking-tight text-slate-100">PetriPLC</span>
+        <img src="/petri-icon.svg" alt="" className="h-7 w-7" />
+        <span className="text-[15px] font-semibold tracking-tight text-ink">PetriPLC</span>
       </a>
-      <span className="hidden text-xs text-slate-500 md:inline">{t('app.tagline')}</span>
-      <a href="/" className="hidden text-xs text-slate-500 hover:text-slate-300 lg:inline">
-        · OT Workbench
+      <span className="hidden text-[13px] text-ink-2 md:inline">{t('app.tagline')}</span>
+      <a href="/" className="hidden items-center gap-1.5 text-[13px] text-ink-3 hover:text-accent lg:flex">
+        <span aria-hidden="true">·</span>
+        <img src="/workbench-icon.svg" alt="" className="h-4 w-4" />
+        OT Workbench
       </a>
       {state.net.name && (
         <span
-          className="ml-2 hidden max-w-[16rem] truncate rounded bg-slate-900 px-2 py-0.5 text-xs text-slate-300 sm:inline"
+          className="ml-2 hidden max-w-[16rem] truncate rounded-full bg-fill px-2.5 py-0.5 text-[12px] font-medium text-ink-2 sm:inline"
           data-testid="net-title"
         >
           {state.net.name}
@@ -106,7 +108,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
           disabled={state.past.length === 0}
           title={t('header.undo')}
           aria-label={t('header.undo')}
-          className="flex h-8 w-8 items-center justify-center rounded text-slate-300 hover:bg-slate-800 disabled:opacity-30"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-accent transition-colors hover:bg-fill disabled:text-ink-3 disabled:opacity-50"
           data-testid="undo"
         >
           <Undo2 size={16} />
@@ -116,7 +118,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
           disabled={state.future.length === 0}
           title={t('header.redo')}
           aria-label={t('header.redo')}
-          className="flex h-8 w-8 items-center justify-center rounded text-slate-300 hover:bg-slate-800 disabled:opacity-30"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-accent transition-colors hover:bg-fill disabled:text-ink-3 disabled:opacity-50"
         >
           <Redo2 size={16} />
         </button>
@@ -127,13 +129,13 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
             title={t('header.file')}
             aria-label={t('header.file')}
             aria-expanded={menu}
-            className="flex h-8 items-center gap-1 rounded px-2 text-sm text-slate-300 hover:bg-slate-800"
+            className="flex h-8 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium text-accent transition-colors hover:bg-fill"
           >
             <Menu size={16} />
             <span className="hidden sm:inline">{t('header.file')}</span>
           </button>
           {menu && (
-            <div className="absolute right-0 top-9 z-30 w-56 overflow-hidden rounded-md border border-slate-700 bg-slate-900 py-1 shadow-xl">
+            <div className="absolute right-0 top-10 z-30 w-60 overflow-hidden rounded-xl border border-line bg-raised/95 p-1 shadow-pop backdrop-blur-xl">
               {items.map(({ icon: Icon, label, run }) => (
                 <button
                   key={label}
@@ -141,9 +143,9 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
                     setMenu(false);
                     void run();
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                  className="group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[13px] text-ink hover:bg-accent hover:text-on-accent"
                 >
-                  <Icon size={15} className="text-slate-400" />
+                  <Icon size={15} className="text-ink-2 group-hover:text-on-accent" />
                   {label}
                 </button>
               ))}
@@ -155,7 +157,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
           onClick={onOpenKey}
           title={t('header.key')}
           aria-label={t('header.key')}
-          className="flex h-8 w-8 items-center justify-center rounded text-slate-300 hover:bg-slate-800"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-accent transition-colors hover:bg-fill"
         >
           <KeyRound size={16} />
         </button>

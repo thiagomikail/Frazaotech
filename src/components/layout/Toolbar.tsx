@@ -49,48 +49,54 @@ const Toolbar: React.FC = () => {
   };
 
   return (
-    <header className="h-14 border-b border-slate-700 bg-slate-800/80 flex items-center px-4 justify-between shrink-0 shadow-sm z-10 relative">
-      <div className="flex items-center space-x-3">
-        <div className="w-8 h-8 rounded bg-primary-500/20 text-primary-500 flex items-center justify-center font-bold text-sm border border-primary-500/30 shadow-inner shadow-primary-500/20">
-          OT
+    <header className="h-[52px] border-b border-line bg-surface/80 backdrop-blur-xl backdrop-saturate-150 flex items-center px-4 justify-between gap-3 shrink-0 z-10 relative">
+      <div className="flex items-center gap-3 min-w-0">
+        <a href="/" className="flex items-center gap-2 shrink-0" title="OT Workbench home">
+          <img src="/workbench-icon.svg" alt="" className="h-7 w-7" />
+          <span className="hidden sm:inline font-semibold text-[15px] tracking-tight text-ink">OT Workbench</span>
+        </a>
+        <div className="h-5 w-px bg-line shrink-0"></div>
+        <div className="flex items-center gap-2 shrink-0">
+          <img src="/fmea-icon.svg" alt="" className="h-6 w-6" />
+          <h1 className="text-[15px] font-medium text-ink-2">FMEA</h1>
         </div>
-        <h1 className="font-semibold text-lg tracking-tight text-slate-100">OT Workbench</h1>
-        
+
         {error && (
-          <div className="ml-4 flex items-center text-xs text-danger-400 bg-danger-500/10 px-2 py-1 rounded border border-danger-500/20">
-            <AlertCircle size={14} className="mr-1" />
-            {error}
+          <div className="ml-1 flex items-center min-w-0 rounded-full bg-red/10 px-3 py-1 text-xs text-red-ink">
+            <AlertCircle size={14} className="mr-1 shrink-0" />
+            <span className="truncate">{error}</span>
           </div>
         )}
       </div>
-      
-      <div className="flex items-center space-x-3 text-sm font-medium">
-        <input 
-          type="file" 
-          accept=".docx" 
-          ref={fileInputRef} 
-          className="hidden" 
+
+      <div className="flex items-center gap-2 shrink-0 text-[13px] font-medium">
+        <input
+          type="file"
+          accept=".docx"
+          ref={fileInputRef}
+          className="hidden"
           onChange={handleFileChange}
         />
-        
-        <button 
+
+        <button
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading || !selectedComponentId}
-          className="flex items-center px-3 py-1.5 rounded bg-slate-800 border border-slate-600 hover:bg-slate-700 hover:border-slate-500 text-slate-300 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center h-8 px-3.5 rounded-full bg-fill enabled:hover:bg-fill-strong text-ink transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           title={!selectedComponentId ? "Select a component first" : "Upload Word Document"}
+          aria-label="Import .docx"
         >
-          {isUploading ? <Loader2 size={16} className="animate-spin mr-2" /> : <Upload size={16} className="mr-2" />}
-          Import .docx
+          {isUploading ? <Loader2 size={15} className="animate-spin sm:mr-1.5" /> : <Upload size={15} className="sm:mr-1.5" />}
+          <span className="hidden sm:inline">Import .docx</span>
         </button>
 
-        <button className="px-3 py-1.5 rounded bg-slate-800 border border-slate-600 hover:bg-slate-700 hover:border-slate-500 text-slate-300 transition-all shadow-sm">
+        <button className="hidden lg:flex items-center h-8 px-3.5 rounded-full bg-fill hover:bg-fill-strong text-ink transition-colors">
           Connect to CMMS
         </button>
-        <button className="px-3 py-1.5 rounded bg-slate-800 border border-slate-600 hover:bg-slate-700 hover:border-slate-500 text-slate-300 transition-all shadow-sm">
+        <button className="hidden lg:flex items-center h-8 px-3.5 rounded-full bg-fill hover:bg-fill-strong text-ink transition-colors">
           Export to DVP&R
         </button>
-        <div className="h-4 w-px bg-slate-600 mx-2"></div>
-        <button className="px-3 py-1.5 rounded bg-primary-600 hover:bg-primary-500 text-white transition-all shadow-sm shadow-primary-600/20 border border-primary-500">
+        <div className="hidden lg:block h-5 w-px bg-line mx-1"></div>
+        <button className="flex items-center h-8 px-3.5 rounded-full bg-accent hover:bg-accent-hover text-on-accent transition-colors">
           FRACAS Sync
         </button>
       </div>

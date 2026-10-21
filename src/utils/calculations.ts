@@ -41,12 +41,12 @@ export function calculateActionPriority(severity: number, occurrence: number, de
 export function getAPColor(ap: 'High' | 'Medium' | 'Low' | 'None'): string {
   switch (ap) {
     case 'High':
-      return 'bg-danger-500/20 text-danger-500 border-danger-500/50';
+      return 'bg-red/15 text-red-ink';
     case 'Medium':
-      return 'bg-warning-500/20 text-warning-500 border-warning-500/50';
+      return 'bg-orange/15 text-orange-ink';
     case 'Low':
-      return 'bg-success-500/20 text-success-500 border-success-500/50';
+      return 'bg-green/15 text-green-ink';
     default:
-      return 'bg-slate-800 text-slate-400 border-slate-700';
+      return 'bg-fill text-ink-2';
   }
 }

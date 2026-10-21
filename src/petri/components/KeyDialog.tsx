@@ -15,58 +15,67 @@ export default function KeyDialog({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onPointerDown={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm"
+      onPointerDown={onClose}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="key-title"
-        className="w-full max-w-md rounded-lg border border-slate-700 bg-slate-900 p-4 shadow-2xl"
+        className="w-full max-w-md rounded-2xl bg-raised p-5 shadow-pop"
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center gap-2">
-          <KeyRound size={16} className="text-sky-400" />
-          <h2 id="key-title" className="text-sm font-semibold text-slate-100">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/12 text-accent">
+            <KeyRound size={16} />
+          </span>
+          <h2 id="key-title" className="text-[17px] font-semibold text-ink">
             {t('key.title')}
           </h2>
-          <button onClick={onClose} aria-label={t('key.close')} className="ml-auto text-slate-400 hover:text-white">
-            <X size={16} />
+          <button
+            onClick={onClose}
+            aria-label={t('key.close')}
+            className="ml-auto flex h-7 w-7 items-center justify-center rounded-full bg-fill text-ink-2 hover:bg-fill-strong"
+          >
+            <X size={15} strokeWidth={2.5} />
           </button>
         </div>
-        <p className={`mb-3 text-sm ${hasSite ? 'text-emerald-300' : 'text-amber-300'}`}>
+        <p className={`mb-3 text-[13px] leading-snug ${hasSite ? 'text-green-ink' : 'text-orange-ink'}`}>
           {t(hasSite ? 'key.site' : 'key.noSite')}
         </p>
         {hasSite && (
-          <p className="-mt-2 mb-3 font-mono text-xs text-slate-400" data-testid="key-site-fingerprint">
+          <p className="-mt-2 mb-3 font-mono text-[12px] text-ink-2" data-testid="key-site-fingerprint">
             {t('key.fingerprint', { fp: keyFingerprint(siteKey()) })}
             {!looksLikeGoogleKey(siteKey()) && (
-              <span className="block font-sans text-amber-300">{t('key.badShape')}</span>
+              <span className="block font-sans text-orange-ink">{t('key.badShape')}</span>
             )}
           </p>
         )}
         <label className="block">
-          <span className="mb-1 block text-xs font-medium text-slate-400">{t('key.own')}</span>
+          <span className="mb-1 block text-[12px] font-medium text-ink-2">{t('key.own')}</span>
           <input
             type="password"
             autoComplete="off"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="AIza…"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 font-mono text-[13px] text-ink placeholder:text-ink-3 transition-shadow focus:border-accent focus:ring-3 focus:ring-accent/15 focus:outline-none"
             data-testid="key-input"
           />
         </label>
         {hasOwn && (
-          <p className="mt-1 text-xs text-sky-300">
-            {t('key.ownSet')} <span className="font-mono text-slate-400">{keyFingerprint(ownKey())}</span>
+          <p className="mt-1 text-[12px] text-accent">
+            {t('key.ownSet')} <span className="font-mono text-ink-2">{keyFingerprint(ownKey())}</span>
           </p>
         )}
-        <p className="mt-2 text-[11px] text-slate-500">{t('key.note')}</p>
+        <p className="mt-2 text-[11px] leading-snug text-ink-3">{t('key.note')}</p>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <a
             href="https://aistudio.google.com/apikey"
             target="_blank"
             rel="noreferrer"
-            className="text-xs text-sky-300 underline underline-offset-2 hover:text-sky-200"
+            className="text-[13px] text-accent hover:underline"
           >
             {t('key.get')}
           </a>
@@ -77,7 +86,7 @@ export default function KeyDialog({ onClose }: { onClose: () => void }) {
                   setOwnKey('');
                   onClose();
                 }}
-                className="rounded-md border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+                className="h-8 rounded-full bg-fill px-3.5 text-[13px] font-medium text-ink transition-colors hover:bg-fill-strong"
               >
                 {t('key.remove')}
               </button>
@@ -88,7 +97,7 @@ export default function KeyDialog({ onClose }: { onClose: () => void }) {
                 onClose();
               }}
               disabled={!draft.trim()}
-              className="rounded-md bg-sky-500 px-3 py-1.5 text-sm font-semibold text-slate-950 hover:bg-sky-400 disabled:opacity-40"
+              className="h-8 rounded-full bg-accent px-4 text-[13px] font-semibold text-on-accent transition-colors hover:bg-accent-hover disabled:opacity-40"
               data-testid="key-save"
             >
               {t('key.save')}

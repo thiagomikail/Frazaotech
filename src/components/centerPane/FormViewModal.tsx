@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useFMEA } from '../../context/FMEAContext';
+import { getAPColor } from '../../utils/calculations';
+
+const field = 'w-full rounded-lg border bg-surface px-3 py-2 text-[14px] text-ink outline-none transition-shadow focus:ring-4';
+const plainField = `${field} border-line focus:border-accent focus:ring-accent/15`;
+const failureField = `${field} border-red/40 focus:border-red focus:ring-red/15`;
+const label = 'flex items-center h-5 text-[12px] text-ink-2 mb-1';
 
 const FormViewModal: React.FC = () => {
   const { systems, selectedComponentId, editingRowId, setEditingRowId, updateFMEARow } = useFMEA();
@@ -36,113 +42,114 @@ const FormViewModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 flex justify-center items-center z-50 p-4">
-      <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <div className="flex justify-between items-center p-4 border-b border-slate-700 bg-slate-800/50">
-          <h2 className="text-lg font-semibold text-slate-200">Edit FMEA Record</h2>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+      <div className="bg-surface rounded-2xl shadow-pop w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="flex justify-between items-center px-5 py-4 border-b border-line">
+          <h2 className="text-[17px] font-semibold text-ink">Edit FMEA Record</h2>
           <button 
             onClick={() => setEditingRowId(null)}
-            className="p-1 hover:bg-slate-700 rounded text-slate-400 transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-full bg-fill hover:bg-fill-strong text-ink-2 transition-colors"
+            aria-label="Close"
           >
-            <X size={20} />
+            <X size={16} />
           </button>
         </div>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Functional Analysis */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-primary-400 uppercase tracking-wider">Functional Analysis</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <h3 className="text-[13px] font-semibold text-accent">Functional Analysis</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Function</label>
+                <label className={label}>Function</label>
                 <textarea 
                   value={formData.function} 
                   onChange={(e) => handleChange('function', e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-all"
+                  className={plainField}
                   rows={2}
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1 flex items-center justify-between">
+                <label className={`${label} justify-between`}>
                   <span>Failure Mode</span>
-                  <span className="text-[10px] text-primary-500 bg-primary-500/10 px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary-500/20">Use SmartSuggest ➔</span>
+                  <span className="text-[11px] leading-4 font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full cursor-pointer hover:bg-accent/15">Use SmartSuggest ➔</span>
                 </label>
                 <textarea 
                   value={formData.failureMode} 
                   onChange={(e) => handleChange('failureMode', e.target.value)}
-                  className="w-full bg-slate-800 border border-red-500/50 rounded p-2 text-sm text-slate-200 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all"
+                  className={failureField}
                   rows={2}
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Effect of Failure</label>
+              <label className={label}>Effect of Failure</label>
               <textarea 
                 value={formData.effect} 
                 onChange={(e) => handleChange('effect', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-primary-500 outline-none"
+                className={plainField}
                 rows={2}
               />
             </div>
           </div>
 
-          <div className="border-t border-slate-800 my-4"></div>
+          <div className="border-t border-line my-4"></div>
 
           {/* Risk Assessment */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-warning-400 uppercase tracking-wider">Risk Assessment & Controls</h3>
+            <h3 className="text-[13px] font-semibold text-orange-ink">Risk Assessment & Controls</h3>
             
-            <div className="grid grid-cols-12 gap-4 items-start">
-              <div className="col-span-8">
-                <label className="block text-xs text-slate-400 mb-1">Cause of Failure</label>
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+              <div className="sm:col-span-8">
+                <label className={label}>Cause of Failure</label>
                 <textarea 
                   value={formData.cause} 
                   onChange={(e) => handleChange('cause', e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-warning-500 outline-none"
+                  className={plainField}
                   rows={2}
                 />
               </div>
-              <div className="col-span-4 grid grid-cols-2 gap-2">
+              <div className="sm:col-span-4 grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Severity (S)</label>
+                  <label className={label}>Severity (S)</label>
                   <input 
                     type="number" min="1" max="10" 
                     value={formData.severity} 
                     onChange={(e) => handleChange('severity', parseInt(e.target.value) || 1)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-center text-slate-200 focus:border-warning-500 outline-none"
+                    className={`${plainField} text-center tabular-nums`}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Occurrence (O)</label>
+                  <label className={label}>Occurrence (O)</label>
                   <input 
                     type="number" min="1" max="10" 
                     value={formData.occurrence} 
                     onChange={(e) => handleChange('occurrence', parseInt(e.target.value) || 1)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-center text-slate-200 focus:border-warning-500 outline-none"
+                    className={`${plainField} text-center tabular-nums`}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-12 gap-4 items-start">
-              <div className="col-span-8">
-                <label className="block text-xs text-slate-400 mb-1">Current Control (Prevention/Detection)</label>
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+              <div className="sm:col-span-8">
+                <label className={label}>Current Control (Prevention/Detection)</label>
                 <textarea 
                   value={formData.control} 
                   onChange={(e) => handleChange('control', e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-success-500 outline-none"
+                  className={plainField}
                   rows={2}
                 />
               </div>
-              <div className="col-span-4 grid grid-cols-2 gap-2">
+              <div className="sm:col-span-4 grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Detection (D)</label>
+                  <label className={label}>Detection (D)</label>
                   <input 
                     type="number" min="1" max="10" 
                     value={formData.detection} 
                     onChange={(e) => handleChange('detection', parseInt(e.target.value) || 1)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-center text-slate-200 focus:border-success-500 outline-none"
+                    className={`${plainField} text-center tabular-nums`}
                   />
                 </div>
               </div>
@@ -151,20 +158,20 @@ const FormViewModal: React.FC = () => {
           
         </div>
         
-        <div className="p-4 border-t border-slate-700 bg-slate-800/50 flex justify-between items-center">
-          <div className="flex space-x-4">
-             <div className="bg-slate-900 border border-slate-700 px-3 py-1.5 rounded flex items-center space-x-2">
-                <span className="text-xs text-slate-400">RPN</span>
-                <span className="font-bold text-lg">{formData.rpn}</span>
+        <div className="px-5 py-4 border-t border-line flex justify-between items-center gap-3">
+          <div className="flex flex-wrap gap-2">
+             <div className="rounded-full bg-fill px-3 py-1 flex items-center gap-2">
+                <span className="text-[12px] text-ink-2">RPN</span>
+                <span className="font-semibold text-[15px] tabular-nums text-ink">{formData.rpn}</span>
              </div>
-             <div className="bg-slate-900 border border-slate-700 px-3 py-1.5 rounded flex items-center space-x-2">
-                <span className="text-xs text-slate-400">Action Priority</span>
-                <span className="font-bold text-lg">{formData.actionPriority}</span>
+             <div className="rounded-full bg-fill pl-3 pr-1 py-1 flex items-center gap-2">
+                <span className="text-[12px] text-ink-2">Action Priority</span>
+                <span className={`rounded-full px-2.5 text-[13px] font-semibold leading-6 ${getAPColor(formData.actionPriority)}`}>{formData.actionPriority}</span>
              </div>
           </div>
           <button 
             onClick={() => setEditingRowId(null)}
-            className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded text-sm font-medium transition-colors"
+            className="shrink-0 h-9 px-5 bg-accent hover:bg-accent-hover text-on-accent rounded-full text-[14px] font-medium transition-colors"
           >
             Done
           </button>

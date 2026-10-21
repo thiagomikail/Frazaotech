@@ -15,11 +15,12 @@ import { t } from '../strings';
 import { addArc, addPlace, addTransition, moveNode, removeElement } from '../model/edit';
 import { examples } from '../model/examples';
 import { barSize, LABEL_MAX, layoutNet, PLACE_R, placeLabel, transitionLabel } from '../model/layout';
-import { outputsOf, statusOf, type TransitionStatus } from '../model/simulate';
+import { outputsOf, statusOf } from '../model/simulate';
 import type { Direction, Place, Point, Transition } from '../model/types';
 import { useActions } from '../state/actions';
 import { useDerived, useStore, useToast, type Tool } from '../state/store';
-import { arcShape, C, MONO, netBounds, nodeIndex } from './geometry';
+import { arcShape, MONO, netBounds, nodeIndex } from './geometry';
+import { usePalette } from './palette';
 
 interface View {
   x: number;
@@ -33,14 +34,6 @@ type Drag =
   | { kind: 'arc'; id: string; sx: number; sy: number; moved: boolean }
   | { kind: 'pinch'; dist: number; center: Point; view: View };
 
-const STATUS_COLOR: Record<TransitionStatus, string> = {
-  ready: C.ready,
-  blocked: C.blocked,
-  timing: C.timing,
-  disabled: C.disabled,
-  invalid: C.invalid,
-};
-
 const clampK = (k: number) => Math.min(2.5, Math.max(0.25, k));
 const snap = (v: number) => Math.round(v / 10) * 10;
 const fmtDelay = (ms: number) =>
@@ -53,6 +46,7 @@ export default function NetCanvas() {
   const actions = useActions();
   const { net, sim, mode, tool, selection, arcFrom } = state;
   const dir: Direction = net.layout?.direction ?? 'TB';
+  const C = usePalette();
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -353,7 +347,7 @@ export default function NetCanvas() {
           <circle r={PLACE_R + 5} fill="none" stroke={C.selected} strokeWidth={1.5} strokeDasharray="4 3" />
         )}
         {arcFrom === p.id && <circle r={PLACE_R + 5} fill="none" stroke={C.ready} strokeWidth={2} />}
-        <Tokens n={n} />
+        <Tokens n={n} fill={C.token} />
         {p.capacity > 0 && (
           <text x={PLACE_R - 1} y={-PLACE_R + 1} fontSize={9} fill={C.muted} textAnchor="start">
             ≤{p.capacity}
@@ -382,7 +376,7 @@ export default function NetCanvas() {
 
   const renderTransition = (tr: Transition) => {
     const st = statuses.get(tr.id) ?? { status: 'disabled' as const, progress: 0 };
-    const color = STATUS_COLOR[st.status];
+    const color = C[st.status];
     const lbl =
       dir === 'TB'
         ? { x: bar.w / 2 + 8, y: -1, anchor: 'start' as const }
@@ -603,7 +597,7 @@ export default function NetCanvas() {
             );
           })}
           {tokenTrips.map((trip) => (
-            <TokenTrip key={trip.key} d={trip.d} delay={trip.delay} />
+            <TokenTrip key={trip.key} d={trip.d} delay={trip.delay} fill={C.token} />
           ))}
           {net.transitions.map(renderTransition)}
           {net.places.map(renderPlace)}
@@ -613,12 +607,12 @@ export default function NetCanvas() {
       {/* Mode and tools */}
       <div className="pointer-events-none absolute left-2 right-2 top-2 flex flex-wrap items-start justify-between gap-2">
         <div className="pointer-events-auto flex flex-wrap items-center gap-1.5">
-          <div className="flex rounded-md border border-slate-700 bg-slate-900/90 p-0.5 text-xs font-medium">
+          <div className="flex gap-0.5 rounded-xl border border-line bg-raised/90 p-1 shadow-card backdrop-blur-xl text-[13px] font-medium">
             {(['sim', 'edit'] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => dispatch({ type: 'ui/mode', mode: m })}
-                className={`rounded px-2.5 py-1 transition-colors ${mode === m ? 'bg-sky-500 text-slate-950' : 'text-slate-300 hover:text-white'}`}
+                className={`h-8 rounded-lg px-3 transition-colors ${mode === m ? 'bg-accent/12 text-accent' : 'text-ink-2 hover:bg-fill hover:text-ink'}`}
                 data-testid={`mode-${m}`}
               >
                 {t(m === 'sim' ? 'canvas.sim' : 'canvas.edit')}
@@ -626,7 +620,7 @@ export default function NetCanvas() {
             ))}
           </div>
           {mode === 'edit' && (
-            <div className="flex rounded-md border border-slate-700 bg-slate-900/90 p-0.5">
+            <div className="flex gap-0.5 rounded-xl border border-line bg-raised/90 p-1 shadow-card backdrop-blur-xl">
               {(
                 [
                   ['select', Hand, 'tool.select'],
@@ -659,7 +653,7 @@ export default function NetCanvas() {
             </div>
           )}
         </div>
-        <div className="pointer-events-auto flex rounded-md border border-slate-700 bg-slate-900/90 p-0.5">
+        <div className="pointer-events-auto flex gap-0.5 rounded-xl border border-line bg-raised/90 p-1 shadow-card backdrop-blur-xl">
           <IconButton label={t('canvas.zoomOut')} onClick={() => zoomCenter(1 / 1.25)}>
             <Minus size={15} />
           </IconButton>
@@ -693,12 +687,12 @@ export default function NetCanvas() {
       {empty ? (
         <EmptyState />
       ) : (
-        <div className="pointer-events-none absolute bottom-1.5 left-2 right-2 flex items-center gap-3 text-[11px]">
-          <p className="min-w-0 flex-1 truncate text-slate-500" title={hint}>
+        <div className="pointer-events-none absolute bottom-2 left-3 right-3 flex items-center gap-3 text-[11px]">
+          <p className="min-w-0 flex-1 truncate text-ink-3" title={hint}>
             {hint}
           </p>
           {mode === 'sim' && (
-            <div className="hidden shrink-0 gap-2.5 text-slate-500 md:flex">
+            <div className="hidden shrink-0 gap-3 text-ink-2 md:flex">
               {(
                 [
                   ['ready', 'legend.ready'],
@@ -708,7 +702,7 @@ export default function NetCanvas() {
                 ] as const
               ).map(([s, label]) => (
                 <span key={s} className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-3.5 rounded-sm" style={{ background: STATUS_COLOR[s] }} />
+                  <span className="inline-block h-2 w-3.5 rounded-sm" style={{ background: C[s] }} />
                   {t(label)}
                 </span>
               ))}
@@ -720,8 +714,7 @@ export default function NetCanvas() {
   );
 }
 
-function Tokens({ n }: { n: number }) {
-  const fill = C.token;
+function Tokens({ n, fill }: { n: number; fill: string }) {
   if (n <= 0) return null;
   if (n === 1) return <circle r={5.5} fill={fill} />;
   if (n === 2)
@@ -755,7 +748,7 @@ function Tokens({ n }: { n: number }) {
 }
 
 /** A token gliding along an arc when its transition fires. SMIL, restarted by hand: inserted late, begin=0 is already over. */
-function TokenTrip({ d, delay }: { d: string; delay: number }) {
+function TokenTrip({ d, delay, fill }: { d: string; delay: number; fill: string }) {
   const start = (el: SVGElement | null) => {
     if (!el) return;
     window.setTimeout(() => {
@@ -767,7 +760,7 @@ function TokenTrip({ d, delay }: { d: string; delay: number }) {
     }, delay * 1000);
   };
   return (
-    <circle r={4} fill={C.token} opacity={0} pointerEvents="none">
+    <circle r={4} fill={fill} opacity={0} pointerEvents="none">
       <animateMotion ref={start} begin="indefinite" dur="0.32s" path={d} fill="freeze" />
       <animate ref={start} attributeName="opacity" begin="indefinite" dur="0.36s" values="0.95;0.95;0" fill="freeze" />
     </circle>
@@ -798,8 +791,8 @@ function IconButton({
       disabled={disabled}
       onClick={onClick}
       data-testid={testId}
-      className={`flex h-8 w-8 items-center justify-center rounded transition-colors disabled:opacity-35 ${
-        active ? 'bg-sky-500 text-slate-950' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+      className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors disabled:opacity-35 ${
+        active ? 'bg-accent/12 text-accent' : 'text-ink-2 hover:bg-fill hover:text-ink'
       }`}
     >
       {children}
@@ -812,14 +805,14 @@ function EmptyState() {
   return (
     <div className="absolute inset-0 flex items-center justify-center p-6">
       <div className="max-w-sm text-center">
-        <PetriMark className="mx-auto mb-4 h-12 w-12 opacity-80" />
-        <p className="mb-4 text-sm text-slate-300">{t('canvas.empty')}</p>
+        <img src="/petri-icon.svg" alt="" className="mx-auto mb-4 h-14 w-14 drop-shadow-md" />
+        <p className="mb-5 text-[15px] leading-snug text-ink-2">{t('canvas.empty')}</p>
         <div className="flex flex-wrap justify-center gap-2">
           {examples().map((ex) => (
             <button
               key={ex.id}
               onClick={() => actions.loadExample(ex)}
-              className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 hover:border-sky-500 hover:text-white"
+              className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-[13px] text-accent shadow-sm transition-colors hover:border-accent hover:bg-accent hover:text-on-accent"
             >
               {ex.title}
             </button>
@@ -827,18 +820,5 @@ function EmptyState() {
         </div>
       </div>
     </div>
-  );
-}
-
-/** Logo: a place, a transition, a place — the smallest Petri net that does something. */
-export function PetriMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <circle cx={10} cy={24} r={7} fill="none" stroke="#38bdf8" strokeWidth={2.5} />
-      <circle cx={10} cy={24} r={2.6} fill="#e0f2fe" />
-      <rect x={22} y={13} width={4} height={22} rx={1} fill="#34d399" />
-      <circle cx={38} cy={24} r={7} fill="none" stroke="#7c8aa5" strokeWidth={2.5} />
-      <path d="M17.5 24h3M27.5 24h3" stroke="#7c8aa5" strokeWidth={2} />
-    </svg>
   );
 }

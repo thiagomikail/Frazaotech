@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/petri", "destination": "/petri/index.html" }]
+  "rewrites": [
+    { "source": "/fmea", "destination": "/fmea/index.html" },
+    { "source": "/petri", "destination": "/petri/index.html" }
+  ]
 }

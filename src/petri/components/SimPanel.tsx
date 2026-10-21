@@ -42,24 +42,22 @@ export function SimBar() {
     .join(', ');
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-slate-800 bg-slate-900 px-3 py-2 text-xs">
-      <div className="flex items-center gap-1">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-line bg-surface px-3 py-2 text-[13px]">
+      <div className="flex items-center gap-1.5">
         <button
           onClick={() => dispatch({ type: 'sim/run', running: !running })}
-          className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-medium transition-colors ${
-            running
-              ? 'bg-amber-400 text-slate-950 hover:bg-amber-300'
-              : 'bg-emerald-400 text-slate-950 hover:bg-emerald-300'
+          className={`flex h-8 items-center gap-1.5 rounded-full px-3.5 font-semibold transition-colors ${
+            running ? 'bg-orange/15 text-orange-ink hover:bg-orange/25' : 'bg-green/15 text-green-ink hover:bg-green/25'
           }`}
           data-testid="sim-run"
         >
-          {running ? <Pause size={14} /> : <Play size={14} />}
+          {running ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
           {t(running ? 'sim.pause' : 'sim.run')}
         </button>
         <button
           onClick={() => dispatch({ type: 'sim/scan', compiled, dt: SCAN_MS * speed })}
           disabled={running}
-          className="flex items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1.5 text-slate-200 hover:bg-slate-800 disabled:opacity-40"
+          className="flex h-8 items-center gap-1.5 rounded-full bg-fill px-3.5 font-medium text-ink transition-colors hover:bg-fill-strong disabled:opacity-40"
           data-testid="sim-step"
         >
           <StepForward size={14} />
@@ -67,19 +65,19 @@ export function SimBar() {
         </button>
         <button
           onClick={() => dispatch({ type: 'sim/reset', compiled })}
-          className="flex items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1.5 text-slate-200 hover:bg-slate-800"
+          className="flex h-8 items-center gap-1.5 rounded-full bg-fill px-3.5 font-medium text-ink transition-colors hover:bg-fill-strong"
           data-testid="sim-reset"
         >
           <RotateCcw size={14} />
           {t('sim.reset')}
         </button>
       </div>
-      <label className="flex items-center gap-1.5 text-slate-400">
+      <label className="flex items-center gap-1.5 text-ink-2">
         {t('sim.speed')}
         <select
           value={speed}
           onChange={(e) => dispatch({ type: 'sim/speed', speed: Number(e.target.value) })}
-          className="rounded border border-slate-700 bg-slate-800 px-1.5 py-1 text-slate-200"
+          className="h-8 rounded-lg bg-fill px-2 text-ink focus:outline-none"
         >
           {SPEEDS.map((s) => (
             <option key={s} value={s}>
@@ -88,15 +86,15 @@ export function SimBar() {
           ))}
         </select>
       </label>
-      <span className="font-mono text-slate-300" data-testid="sim-clock">
+      <span className="font-mono tabular-nums text-ink" data-testid="sim-clock">
         {clock(sim.time)}{' '}
-        <span className="text-slate-500">
+        <span className="text-ink-3">
           · {sim.scans} {t('sim.scans')}
         </span>
       </span>
       {fired && (
-        <span className="min-w-0 truncate text-slate-400">
-          {t('sim.fired')}: <span className="font-mono text-emerald-300">{fired}</span>
+        <span className="min-w-0 truncate text-ink-2">
+          {t('sim.fired')}: <span className="font-mono text-green-ink">{fired}</span>
         </span>
       )}
     </div>
@@ -110,11 +108,11 @@ export function IoPanel() {
   const net = state.net;
 
   return (
-    <div className="flex flex-col gap-2 border-t border-slate-800 bg-slate-900/95 px-3 py-2 text-xs sm:flex-row sm:gap-6">
+    <div className="flex flex-col gap-2.5 border-t border-line bg-surface px-3 pb-3 pt-2 text-[12px] sm:flex-row sm:gap-6">
       <div className="min-w-0 flex-1">
-        <div className="mb-1 font-semibold uppercase tracking-wider text-slate-500">{t('io.inputs')}</div>
+        <div className="mb-1.5 text-[11px] font-semibold text-ink-3">{t('io.inputs')}</div>
         <div className="flex flex-wrap gap-1.5">
-          {net.inputs.length === 0 && <span className="text-slate-500">{t('io.none')}</span>}
+          {net.inputs.length === 0 && <span className="text-ink-3">{t('io.none')}</span>}
           {net.inputs.map((s) => {
             const on = state.sim.inputs[s.name] ?? false;
             const pulse = s.kind === 'button';
@@ -127,15 +125,27 @@ export function IoPanel() {
                     ? dispatch({ type: 'sim/input', name: s.name, value: true, pulse: true })
                     : dispatch({ type: 'sim/input', name: s.name, value: !on })
                 }
-                className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono transition-colors ${
-                  on
-                    ? 'border-emerald-400 bg-emerald-400/15 text-emerald-200'
-                    : 'border-slate-700 text-slate-300 hover:border-slate-500'
-                } ${pulse ? 'border-dashed' : ''}`}
+                className={`flex h-8 items-center gap-2 rounded-full font-mono transition-colors ${
+                  pulse
+                    ? `border px-3 ${on ? 'border-accent bg-accent text-on-accent' : 'border-line bg-surface text-ink shadow-sm hover:bg-fill'}`
+                    : 'bg-fill pl-1 pr-3 text-ink hover:bg-fill-strong'
+                }`}
                 data-testid={`input-${s.name}`}
-                aria-pressed={on}
+                {...(pulse ? { 'aria-pressed': on } : { role: 'switch', 'aria-checked': on })}
               >
-                <span className={`inline-block h-2 w-2 rounded-full ${on ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                {pulse ? (
+                  <span
+                    className={`inline-block h-2.5 w-2.5 rounded-full border-2 ${on ? 'border-on-accent' : 'border-ink-3'}`}
+                  />
+                ) : (
+                  <span
+                    className={`relative inline-block h-6 w-10 shrink-0 rounded-full transition-colors ${on ? 'bg-green' : 'bg-fill-strong'}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left] ${on ? 'left-[18px]' : 'left-0.5'}`}
+                    />
+                  </span>
+                )}
                 {s.name}
               </button>
             );
@@ -143,9 +153,9 @@ export function IoPanel() {
         </div>
       </div>
       <div className="min-w-0 sm:max-w-[45%]">
-        <div className="mb-1 font-semibold uppercase tracking-wider text-slate-500">{t('io.outputs')}</div>
-        <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-          {net.outputs.length === 0 && <span className="text-slate-500">{t('io.none')}</span>}
+        <div className="mb-1.5 text-[11px] font-semibold text-ink-3">{t('io.outputs')}</div>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1">
+          {net.outputs.length === 0 && <span className="text-ink-3">{t('io.none')}</span>}
           {net.outputs.map((s) => {
             const on = outputs[s.name] ?? false;
             return (
@@ -157,13 +167,11 @@ export function IoPanel() {
                 data-on={on}
               >
                 <span
-                  className={`inline-block h-3 w-3 rounded-full border ${
-                    on
-                      ? 'border-emerald-300 bg-emerald-400 shadow-[0_0_8px_2px_rgba(52,211,153,0.55)]'
-                      : 'border-slate-600 bg-slate-800'
+                  className={`inline-block h-2.5 w-2.5 rounded-full transition-colors ${
+                    on ? 'bg-green ring-3 ring-green/25' : 'bg-fill-strong'
                   }`}
                 />
-                <span className={on ? 'text-emerald-200' : 'text-slate-400'}>{s.name}</span>
+                <span className={on ? 'text-ink' : 'text-ink-2'}>{s.name}</span>
               </span>
             );
           })}

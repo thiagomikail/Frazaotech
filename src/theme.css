@@ -1,0 +1,131 @@
+/*
+ * OT Workbench look, shared by the home page, FMEA and PetriPLC.
+ *
+ * Apple's system palette and type: light by default, dark when the device is
+ * in dark mode. Components use these names only — the Tailwind palette is
+ * switched off below, so a stray `bg-slate-800` renders nothing and shows up
+ * in review instead of in one mode only.
+ */
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Backgrounds: the page, cards and panels on it, menus above those. */
+  --color-canvas: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-raised: #ffffff;
+  /* Control backgrounds and hover: translucent, so they work on any surface. */
+  --color-fill: rgb(120 120 128 / 0.12);
+  --color-fill-strong: rgb(120 120 128 / 0.2);
+  --color-line: rgb(60 60 67 / 0.18);
+  /* The selected segment of a segmented control. */
+  --color-thumb: #ffffff;
+
+  /* Text: primary, secondary, hints. */
+  --color-ink: #1d1d1f;
+  --color-ink-2: #6e6e73;
+  --color-ink-3: #86868b;
+
+  --color-accent: #0071e3;
+  --color-accent-hover: #0077ed;
+  --color-on-accent: #ffffff;
+
+  /* System colors: the plain one fills shapes, `-ink` is the one that reads as text. */
+  --color-green: #34c759;
+  --color-green-ink: #248a3d;
+  --color-orange: #ff9500;
+  --color-orange-ink: #c93400;
+  --color-red: #ff3b30;
+  --color-red-ink: #d70015;
+  --color-yellow: #ffcc00;
+  --color-indigo: #5856d6;
+  --color-indigo-ink: #3634a3;
+  --color-purple: #af52de;
+  --color-purple-ink: #8944ab;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 6px 24px rgb(0 0 0 / 0.06);
+  --shadow-pop: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 12px 40px rgb(0 0 0 / 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: #000000;
+    --color-surface: #1c1c1e;
+    --color-raised: #2c2c2e;
+    --color-fill: rgb(118 118 128 / 0.24);
+    --color-fill-strong: rgb(118 118 128 / 0.36);
+    --color-line: rgb(84 84 88 / 0.65);
+    --color-thumb: #636366;
+
+    --color-ink: #f5f5f7;
+    --color-ink-2: #a1a1a6;
+
+    --color-accent: #0a84ff;
+    --color-accent-hover: #409cff;
+
+    --color-green: #30d158;
+    --color-green-ink: #30d158;
+    --color-orange: #ff9f0a;
+    --color-orange-ink: #ff9f0a;
+    --color-red: #ff453a;
+    --color-red-ink: #ff6961;
+    --color-yellow: #ffd60a;
+    --color-indigo: #5e5ce6;
+    --color-indigo-ink: #7d7aff;
+    --color-purple: #bf5af2;
+    --color-purple-ink: #da8fff;
+
+    --shadow-card: 0 0 0 0.5px rgb(255 255 255 / 0.06);
+    --shadow-pop: 0 0 0 0.5px rgb(255 255 255 / 0.1), 0 12px 40px rgb(0 0 0 / 0.6);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  }
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+    outline-offset: 1px;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Thin overlay-style scrollbars, like macOS. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(120 120 128 / 0.35);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(120 120 128 / 0.55);
+}

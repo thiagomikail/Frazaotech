@@ -1,4 +1,4 @@
-import { KeyRound, Loader2, RotateCcw, Send, Square, Trash2, Undo2 } from 'lucide-react';
+import { ArrowUp, KeyRound, RotateCcw, Square, Trash2, Undo2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { t } from '../strings';
 import { apiKey } from '../llm/gemini';
@@ -31,7 +31,7 @@ export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div ref={listRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3" data-testid="chat-list">
+      <div ref={listRef} className="min-h-0 flex-1 space-y-2.5 overflow-y-auto p-3" data-testid="chat-list">
         {state.messages.map((m) => (
           <Message key={m.id} msg={m} onOpenKey={onOpenKey} />
         ))}
@@ -39,19 +39,19 @@ export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
       </div>
 
       {!hasKey && (
-        <div className="mx-3 mb-2 flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-100">
-          <KeyRound size={14} className="mt-0.5 shrink-0" />
+        <div className="mx-3 mb-2 flex items-start gap-2 rounded-xl bg-orange/10 px-3 py-2 text-[13px] leading-snug text-ink">
+          <KeyRound size={15} className="mt-0.5 shrink-0 text-orange" />
           <div>
             {t('chat.noKey')}{' '}
-            <button onClick={onOpenKey} className="font-semibold underline underline-offset-2">
+            <button onClick={onOpenKey} className="font-semibold text-accent hover:underline">
               {t('chat.setKey')}
             </button>
           </div>
         </div>
       )}
 
-      <form onSubmit={submit} className="border-t border-slate-800 p-3">
-        <div className="flex items-end gap-2 rounded-lg border border-slate-700 bg-slate-950 p-2 focus-within:border-sky-500">
+      <form onSubmit={submit} className="border-t border-line p-3">
+        <div className="flex items-end gap-2 rounded-[20px] border border-line bg-surface py-1.5 pl-3.5 pr-1.5 transition-colors focus-within:border-accent/60">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -60,7 +60,7 @@ export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
             }}
             rows={3}
             placeholder={t(hasNet ? 'chat.placeholderEdit' : 'chat.placeholder')}
-            className="max-h-48 min-h-[3.5rem] flex-1 resize-none bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+            className="max-h-48 min-h-[3.5rem] flex-1 resize-none bg-transparent py-1 text-[14px] leading-snug text-ink placeholder:text-ink-3 focus:outline-none"
             data-testid="chat-input"
           />
           {state.busy ? (
@@ -68,19 +68,19 @@ export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
               type="button"
               onClick={actions.abort}
               title={t('chat.stop')}
-              className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-700 text-slate-100 hover:bg-slate-600"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fill-strong text-ink hover:bg-fill"
             >
-              <Square size={14} />
+              <Square size={12} fill="currentColor" />
             </button>
           ) : (
             <button
               type="submit"
               disabled={!draft.trim()}
               title={t('chat.send')}
-              className="flex h-9 w-9 items-center justify-center rounded-md bg-sky-500 text-slate-950 hover:bg-sky-400 disabled:opacity-40"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-hover disabled:bg-fill-strong disabled:text-ink-3"
               data-testid="chat-send"
             >
-              <Send size={15} />
+              <ArrowUp size={17} strokeWidth={2.5} />
             </button>
           )}
         </div>
@@ -88,7 +88,7 @@ export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
           <button
             type="button"
             onClick={() => dispatch({ type: 'chat/clear', welcome: welcomeMessage() })}
-            className="mt-2 flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-300"
+            className="mt-2 flex items-center gap-1 text-[12px] text-ink-3 hover:text-ink-2"
           >
             <Trash2 size={11} />
             {t('chat.clear')}
@@ -105,15 +105,15 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
 
   if (msg.welcome)
     return (
-      <div className="rounded-lg border border-slate-800 bg-slate-900 p-3 text-sm text-slate-200">
-        <p className="leading-relaxed">{t('chat.welcome')}</p>
-        <p className="mb-2 mt-3 text-xs text-slate-400">{t('chat.examples')}</p>
+      <div className="mr-4 rounded-[18px] rounded-bl-md bg-fill px-3.5 py-2.5 text-[14px] leading-snug text-ink">
+        <p>{t('chat.welcome')}</p>
+        <p className="mb-2 mt-3 text-[12px] text-ink-2">{t('chat.examples')}</p>
         <div className="flex flex-wrap gap-1.5">
           {examples().map((ex) => (
             <button
               key={ex.id}
               onClick={() => actions.loadExample(ex)}
-              className="rounded-full border border-slate-700 px-2.5 py-1 text-xs text-slate-200 hover:border-sky-500 hover:text-white"
+              className="rounded-full border border-line bg-surface px-3 py-1 text-[13px] text-accent transition-colors hover:border-accent hover:bg-accent hover:text-on-accent"
               data-testid={`example-${ex.id}`}
             >
               {ex.title}
@@ -125,40 +125,38 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
 
   if (msg.role === 'user')
     return (
-      <div className="ml-6 rounded-lg bg-sky-500/15 px-3 py-2 text-sm leading-relaxed text-sky-50 whitespace-pre-wrap">
+      <div className="ml-auto w-fit max-w-[85%] whitespace-pre-wrap rounded-[18px] rounded-br-md bg-accent px-3.5 py-2 text-[14px] leading-snug text-on-accent">
         {msg.text}
       </div>
     );
 
   return (
     <div
-      className={`mr-4 rounded-lg border px-3 py-2 text-sm leading-relaxed ${
-        msg.error ? 'border-red-500/40 bg-red-500/10 text-red-100' : 'border-slate-800 bg-slate-900 text-slate-200'
+      className={`mr-4 rounded-[18px] rounded-bl-md px-3.5 py-2 text-[14px] leading-snug text-ink ${
+        msg.error ? 'bg-red/10' : 'bg-fill'
       }`}
       data-testid="assistant-message"
     >
       {msg.text && <p className="whitespace-pre-wrap">{msg.text}</p>}
       {msg.detail?.map((d) => (
-        <p key={d} className="mt-1 break-words font-mono text-[11px] text-red-200/80" data-testid="error-detail">
+        <p key={d} className="mt-1 break-words font-mono text-[11px] text-red-ink" data-testid="error-detail">
           {d}
         </p>
       ))}
       {msg.summary && (
-        <p className="mt-1.5 font-mono text-[11px] text-sky-300">
+        <p className="mt-1.5 font-mono text-[11px] text-accent">
           {t('chat.netSummary', { places: msg.summary.places, transitions: msg.summary.transitions })}
         </p>
       )}
       {msg.notes?.map((n) => (
-        <p key={n} className="mt-1 text-xs text-slate-400">
+        <p key={n} className="mt-1 text-[12px] text-ink-2">
           {n}
         </p>
       ))}
       {!!msg.assumptions?.length && (
         <div className="mt-2">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            {t('chat.assumptions')}
-          </div>
-          <ul className="mt-0.5 list-disc space-y-0.5 pl-4 text-xs text-slate-300">
+          <div className="text-[12px] font-semibold text-ink-2">{t('chat.assumptions')}</div>
+          <ul className="mt-0.5 list-disc space-y-0.5 pl-4 text-[13px] text-ink-2">
             {msg.assumptions.map((a) => (
               <li key={a}>{a}</li>
             ))}
@@ -167,26 +165,24 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
       )}
       {!!msg.questions?.length && (
         <div className="mt-2">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-amber-400/80">
-            {t('chat.questions')}
-          </div>
-          <ul className="mt-0.5 list-disc space-y-0.5 pl-4 text-xs text-amber-100">
+          <div className="text-[12px] font-semibold text-orange-ink">{t('chat.questions')}</div>
+          <ul className="mt-0.5 list-disc space-y-0.5 pl-4 text-[13px] text-ink">
             {msg.questions.map((q) => (
               <li key={q}>{q}</li>
             ))}
           </ul>
         </div>
       )}
-      <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[11px]">
+      <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[12px]">
         {msg.before &&
           (msg.undone ? (
-            <span className="text-slate-500">{t('chat.changeUndone')}</span>
+            <span className="text-ink-3">{t('chat.changeUndone')}</span>
           ) : (
             <button
               onClick={() => actions.undoMessage(msg.id)}
-              className="flex items-center gap-1 text-slate-400 hover:text-white"
+              className="flex items-center gap-1 text-accent hover:underline"
             >
-              <Undo2 size={11} />
+              <Undo2 size={12} />
               {t('chat.undoChange')}
             </button>
           ))}
@@ -194,19 +190,21 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
           <button
             onClick={() => void actions.send(msg.retry!)}
             disabled={Boolean(state.busy)}
-            className="flex items-center gap-1 font-semibold text-red-200 hover:text-white disabled:opacity-40"
+            className="flex items-center gap-1 font-semibold text-accent hover:underline disabled:opacity-40"
           >
-            <RotateCcw size={11} />
+            <RotateCcw size={12} />
             {t('chat.retry')}
           </button>
         )}
         {(msg.error === 'auth' || msg.error === 'no-key') && (
-          <button onClick={onOpenKey} className="flex items-center gap-1 font-semibold text-red-200 hover:text-white">
-            <KeyRound size={11} />
+          <button onClick={onOpenKey} className="flex items-center gap-1 font-semibold text-accent hover:underline">
+            <KeyRound size={12} />
             {t('chat.setKey')}
           </button>
         )}
-        {msg.model && <span className="ml-auto font-mono text-slate-600">{t('chat.model', { model: msg.model })}</span>}
+        {msg.model && (
+          <span className="ml-auto font-mono text-[10px] text-ink-3">{t('chat.model', { model: msg.model })}</span>
+        )}
       </div>
     </div>
   );
@@ -219,10 +217,18 @@ function Thinking({ model, since }: { model: string; since: number }) {
     return () => window.clearInterval(id);
   }, []);
   return (
-    <div className="mr-4 flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-300">
-      <Loader2 size={14} className="animate-spin text-sky-400" />
+    <div className="mr-4 flex items-center gap-2.5 rounded-[18px] rounded-bl-md bg-fill px-3.5 py-2.5 text-[13px] text-ink-2">
+      <span className="flex gap-1" aria-hidden="true">
+        {[0, 0.2, 0.4].map((delay) => (
+          <span
+            key={delay}
+            className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-3"
+            style={{ animationDelay: `${delay}s` }}
+          />
+        ))}
+      </span>
       {t('chat.thinking', { model: model || 'Gemini' })}
-      <span className="ml-auto font-mono text-[11px] text-slate-500">{Math.round((now - since) / 1000)} s</span>
+      <span className="ml-auto font-mono text-[11px] text-ink-3">{Math.round((now - since) / 1000)} s</span>
     </div>
   );
 }

@@ -1,29 +1,7 @@
 import { barSize, nodeExtent, PLACE_R } from '../model/layout';
 import type { Arc, Direction, PetriNet, Point } from '../model/types';
 
-/** Diagram colors. SVG attributes, not classes, so an exported SVG looks the same. */
-export const C = {
-  bg: '#0b1220',
-  grid: '#1b2640',
-  placeFill: '#0f172a',
-  placeStroke: '#7c8aa5',
-  marked: '#38bdf8',
-  token: '#e0f2fe',
-  text: '#e2e8f0',
-  muted: '#8b9bb4',
-  arc: '#5b6b86',
-  arcHot: '#cbd5e1',
-  ready: '#34d399',
-  blocked: '#f59e0b',
-  timing: '#fbbf24',
-  disabled: '#334155',
-  invalid: '#f87171',
-  selected: '#a78bfa',
-  outOn: '#34d399',
-  outOff: '#64748b',
-};
-
-export const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+export const MONO = "'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
 export interface NodeInfo {
   kind: 'place' | 'transition';

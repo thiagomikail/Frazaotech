@@ -1,9 +1,12 @@
 # OT Workbench
 
-Tools for operational-technology engineers, on one site:
+Tools for operational-technology engineers, on one site. The home page at `/` links to each one:
 
-- **FMEA** at `/` — AI-assisted Failure Mode and Effects Analysis for reliability engineers, following **AIAG-VDA 2026**.
+- **FMEA** at `/fmea/` — AI-assisted Failure Mode and Effects Analysis for reliability engineers, following **AIAG-VDA 2026**.
 - **PetriPLC** at `/petri/` — describe a machine, simulate its Petri net, generate IEC 61131-3 code ([below](#petriplc--petri)).
+
+All three pages share one look (`src/theme.css`): Apple's system colors and type, light or dark following the
+device. Components use the theme's names (`bg-surface`, `text-ink-2`, `bg-accent`…); the Tailwind palette is off.
 
 The FMEA was built to replace static spreadsheets with an interactive, real-time tool.
 

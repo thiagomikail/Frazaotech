@@ -48,18 +48,15 @@ function Toasts() {
   const { state } = useStore();
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 top-14 z-40 flex flex-col items-center gap-2 px-4"
+      className="pointer-events-none fixed inset-x-0 top-1.5 z-40 flex flex-col items-center gap-2 px-4"
       aria-live="polite"
     >
       {state.toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`max-w-md rounded-md border px-3 py-2 text-sm shadow-lg ${
-            toast.tone === 'warn'
-              ? 'border-amber-500/50 bg-amber-950/95 text-amber-100'
-              : 'border-slate-700 bg-slate-900/95 text-slate-100'
-          }`}
+          className="flex max-w-md items-center gap-2 rounded-full border border-line bg-raised/95 px-4 py-2 text-[13px] text-ink shadow-pop backdrop-blur-xl"
         >
+          {toast.tone === 'warn' && <span className="h-2 w-2 shrink-0 rounded-full bg-orange" aria-hidden="true" />}
           {toast.text}
         </div>
       ))}
@@ -88,19 +85,19 @@ function TabButton({
       onClick={() => onPick(tab)}
       className={
         compact
-          ? `relative flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] ${on ? 'text-sky-300' : 'text-slate-400'}`
-          : `relative flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium ${
-              on ? 'border-sky-400 text-slate-100' : 'border-transparent text-slate-400 hover:text-slate-200'
+          ? `relative flex flex-1 flex-col items-center gap-0.5 pb-1 pt-1.5 text-[10px] font-medium ${on ? 'text-accent' : 'text-ink-3'}`
+          : `relative flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[13px] font-medium transition-colors ${
+              on ? 'bg-thumb text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-ink-2 hover:text-ink'
             }`
       }
       aria-current={on ? 'page' : undefined}
       data-testid={`tab-${tab}`}
     >
-      <Icon size={compact ? 18 : 14} />
+      <Icon size={compact ? 22 : 14} strokeWidth={compact ? 1.8 : 2} />
       {t(label)}
       {attention && (
         <span
-          className={`absolute ${compact ? 'right-1/4 top-1' : 'right-0.5 top-1.5'} h-2 w-2 rounded-full bg-red-400`}
+          className={`absolute ${compact ? 'right-[calc(50%-18px)] top-1' : 'right-1.5 top-1.5'} h-2 w-2 rounded-full bg-red`}
         />
       )}
     </button>
@@ -154,24 +151,24 @@ function Shell() {
   const sideTabs: Tab[] = wide ? ['edit', 'check', 'code'] : ['chat', 'edit', 'check', 'code'];
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-slate-950 text-slate-200">
+    <div className="flex h-[100dvh] flex-col bg-canvas text-ink">
       <Header onOpenKey={() => setKeyOpen(true)} />
       {medium ? (
         <main
           className={`grid min-h-0 flex-1 ${wide ? 'grid-cols-[minmax(300px,360px)_1fr_minmax(340px,420px)]' : 'grid-cols-[1fr_minmax(320px,380px)]'}`}
         >
           {wide && (
-            <aside className="flex min-h-0 flex-col border-r border-slate-800 bg-slate-900/60">
-              <div className="flex items-center gap-1.5 border-b border-slate-800 px-3 py-2.5 text-xs font-medium text-slate-300">
-                <Bot size={14} />
+            <aside className="flex min-h-0 flex-col border-r border-line bg-surface">
+              <div className="flex h-11 shrink-0 items-center gap-1.5 border-b border-line px-3 text-[13px] font-semibold text-ink">
+                <Bot size={15} className="text-accent" />
                 {t('tab.chat')}
               </div>
               <div className="min-h-0 flex-1">{panel('chat')}</div>
             </aside>
           )}
           <section className="min-h-0 min-w-0">{panel('net')}</section>
-          <aside className="flex min-h-0 flex-col border-l border-slate-800 bg-slate-900/60">
-            <nav className="flex border-b border-slate-800 px-1">
+          <aside className="flex min-h-0 flex-col border-l border-line bg-canvas">
+            <nav className="m-2 mb-0 flex shrink-0 gap-0.5 rounded-[10px] bg-fill p-0.5">
               {sideTabs.map((tab) => (
                 <TabButton
                   key={tab}
@@ -187,8 +184,8 @@ function Shell() {
         </main>
       ) : (
         <>
-          <main className="min-h-0 flex-1">{panel(mobile)}</main>
-          <nav className="flex border-t border-slate-800 bg-slate-950 pb-[env(safe-area-inset-bottom)]">
+          <main className={`min-h-0 flex-1 ${mobile === 'chat' ? 'bg-surface' : ''}`}>{panel(mobile)}</main>
+          <nav className="flex border-t border-line bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl backdrop-saturate-150">
             {(['chat', 'net', 'edit', 'check', 'code'] as Tab[]).map((tab) => (
               <TabButton
                 key={tab}

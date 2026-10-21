@@ -43,7 +43,7 @@ function TextField({
   const commit = () => {
     if (draft !== value) onCommit(draft);
   };
-  const cls = `w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm text-slate-100 focus:border-sky-500 focus:outline-none ${mono ? 'font-mono' : ''}`;
+  const cls = `w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[14px] text-ink placeholder:text-ink-3 transition-shadow focus:border-accent focus:ring-3 focus:ring-accent/15 focus:outline-none ${mono ? 'font-mono text-[13px]' : ''}`;
   if (multiline)
     return (
       <textarea
@@ -107,7 +107,7 @@ function NumberField({
       onChange={(e) => setDraft(e.target.value)}
       onBlur={commit}
       onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-      className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
+      className="w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 font-mono text-[13px] tabular-nums text-ink placeholder:text-ink-3 transition-shadow focus:border-accent focus:ring-3 focus:ring-accent/15 focus:outline-none"
       data-testid={testId}
     />
   );
@@ -116,21 +116,21 @@ function NumberField({
 function Row({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-400">{label}</span>
+      <span className="mb-1 block text-[12px] font-medium text-ink-2">{label}</span>
       {children}
-      {help && <span className="mt-1 block text-[11px] text-slate-500">{help}</span>}
+      {help && <span className="mt-1 block text-[11px] leading-snug text-ink-3">{help}</span>}
     </label>
   );
 }
 
 function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <section className="border-b border-slate-800 p-3">
-      <div className="mb-2.5 flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h3>
+    <section className="px-3 pt-4">
+      <div className="mb-1.5 flex min-h-6 items-center justify-between px-1">
+        <h3 className="text-[13px] font-semibold text-ink-2">{title}</h3>
         {action}
       </div>
-      <div className="space-y-3">{children}</div>
+      <div className="space-y-3 rounded-xl bg-surface p-3 shadow-card">{children}</div>
     </section>
   );
 }
@@ -149,7 +149,7 @@ export default function Inspector() {
   const deleteButton = (
     <button
       onClick={remove}
-      className="flex items-center gap-1 text-xs text-red-300 hover:text-red-200"
+      className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium text-red-ink hover:bg-red/10"
       data-testid="inspector-delete"
     >
       <Trash2 size={12} />
@@ -158,7 +158,7 @@ export default function Inspector() {
   );
 
   return (
-    <div className="h-full overflow-y-auto" data-testid="inspector">
+    <div className="h-full overflow-y-auto pb-4" data-testid="inspector">
       {place && (
         <Section title={t('insp.place', { id: place.id })} action={deleteButton}>
           <PlaceForm place={place} net={net} edit={edit} />
@@ -174,7 +174,11 @@ export default function Inspector() {
           <ArcForm arc={arc} edit={edit} />
         </Section>
       )}
-      {!selection && <p className="border-b border-slate-800 p-3 text-sm text-slate-400">{t('insp.nothing')}</p>}
+      {!selection && (
+        <p className="mx-3 mt-4 rounded-xl bg-surface p-3 text-[13px] leading-snug text-ink-2 shadow-card">
+          {t('insp.nothing')}
+        </p>
+      )}
 
       <Section
         title={t('insp.signals')}
@@ -182,14 +186,14 @@ export default function Inspector() {
           <div className="flex gap-1.5">
             <button
               onClick={() => edit((n) => addInput(n))}
-              className="flex items-center gap-0.5 rounded border border-slate-700 px-1.5 py-0.5 text-[11px] text-slate-300 hover:border-sky-500"
+              className="flex items-center gap-0.5 rounded-full bg-accent/10 px-2.5 py-0.5 text-[12px] font-medium text-accent hover:bg-accent/15"
             >
               <Plus size={11} />
               {t('insp.addInput')}
             </button>
             <button
               onClick={() => edit((n) => addOutput(n))}
-              className="flex items-center gap-0.5 rounded border border-slate-700 px-1.5 py-0.5 text-[11px] text-slate-300 hover:border-sky-500"
+              className="flex items-center gap-0.5 rounded-full bg-accent/10 px-2.5 py-0.5 text-[12px] font-medium text-accent hover:bg-accent/15"
             >
               <Plus size={11} />
               {t('insp.addOutput')}
@@ -198,7 +202,7 @@ export default function Inspector() {
         }
       >
         <div>
-          <div className="mb-1 text-xs font-medium text-slate-400">{t('io.inputs')}</div>
+          <div className="mb-1 text-[12px] font-medium text-ink-2">{t('io.inputs')}</div>
           <div className="space-y-1.5">
             {net.inputs.map((s) => (
               <div key={s.name} className="grid grid-cols-[1fr_1.4fr_auto_auto] items-center gap-1.5">
@@ -231,7 +235,7 @@ export default function Inspector() {
                       ),
                     }))
                   }
-                  className="rounded-md border border-slate-700 bg-slate-950 px-1 py-1.5 text-xs text-slate-200"
+                  className="rounded-lg border border-line bg-surface px-1.5 py-1.5 text-[12px] text-ink focus:border-accent focus:outline-none"
                   title={t('field.kind')}
                 >
                   {(['button', 'sensor', 'switch'] as const).map((k) => (
@@ -242,7 +246,7 @@ export default function Inspector() {
                 </select>
                 <button
                   onClick={() => edit((n) => removeInput(n, s.name))}
-                  className="p-1 text-slate-500 hover:text-red-300"
+                  className="rounded-full p-1.5 text-ink-3 hover:bg-red/10 hover:text-red-ink"
                   aria-label={t('insp.delete')}
                 >
                   <Trash2 size={13} />
@@ -252,7 +256,7 @@ export default function Inspector() {
           </div>
         </div>
         <div>
-          <div className="mb-1 text-xs font-medium text-slate-400">{t('io.outputs')}</div>
+          <div className="mb-1 text-[12px] font-medium text-ink-2">{t('io.outputs')}</div>
           <div className="space-y-1.5">
             {net.outputs.map((s) => (
               <div key={s.name} className="grid grid-cols-[1fr_1.4fr_auto] items-center gap-1.5">
@@ -277,7 +281,7 @@ export default function Inspector() {
                 />
                 <button
                   onClick={() => edit((n) => removeOutput(n, s.name))}
-                  className="p-1 text-slate-500 hover:text-red-300"
+                  className="rounded-full p-1.5 text-ink-3 hover:bg-red/10 hover:text-red-ink"
                   aria-label={t('insp.delete')}
                 >
                   <Trash2 size={13} />
@@ -322,7 +326,7 @@ function PlaceForm({ place, net, edit }: { place: Place; net: PetriNet; edit: Ed
       </div>
       <Row label={t('field.actions')}>
         {net.outputs.length === 0 ? (
-          <span className="text-xs text-slate-500">{t('insp.noOutputs')}</span>
+          <span className="text-[12px] text-ink-3">{t('insp.noOutputs')}</span>
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {net.outputs.map((o) => {
@@ -338,10 +342,8 @@ function PlaceForm({ place, net, edit }: { place: Place; net: PetriNet; edit: Ed
                         : [...place.actions, o.name],
                     })
                   }
-                  className={`rounded-full border px-2 py-0.5 font-mono text-xs ${
-                    on
-                      ? 'border-emerald-400 bg-emerald-400/15 text-emerald-200'
-                      : 'border-slate-700 text-slate-400 hover:border-slate-500'
+                  className={`rounded-full border px-2.5 py-0.5 font-mono text-[12px] transition-colors ${
+                    on ? 'border-transparent bg-green/15 text-green-ink' : 'border-line text-ink-2 hover:bg-fill'
                   }`}
                   aria-pressed={on}
                 >
@@ -392,7 +394,7 @@ function TransitionForm({ tr, net, edit }: { tr: Transition; net: PetriNet; edit
           placeholder="TRUE"
           testId="transition-guard"
         />
-        {problem && <span className="mt-1 block font-mono text-[11px] text-red-300">⚠ {problem}</span>}
+        {problem && <span className="mt-1 block font-mono text-[11px] text-red-ink">⚠ {problem}</span>}
         {net.inputs.length > 0 && (
           <div className="mt-1.5 flex flex-wrap gap-1">
             {net.inputs.map((s) => (
@@ -401,7 +403,7 @@ function TransitionForm({ tr, net, edit }: { tr: Transition; net: PetriNet; edit
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => insert(s.name)}
-                className="rounded border border-slate-700 px-1.5 py-0.5 font-mono text-[11px] text-slate-300 hover:border-sky-500"
+                className="rounded-md bg-fill px-1.5 py-0.5 font-mono text-[11px] text-ink hover:bg-fill-strong"
               >
                 {s.name}
               </button>
@@ -416,7 +418,7 @@ function TransitionForm({ tr, net, edit }: { tr: Transition; net: PetriNet; edit
                   const open = !base || /(\(|AND|OR|XOR|NOT)$/i.test(base);
                   set({ guard: `${base} ${op === 'NOT' && !open ? 'AND NOT' : op}`.trim() });
                 }}
-                className="rounded border border-slate-800 px-1.5 py-0.5 font-mono text-[11px] text-slate-500 hover:border-slate-600"
+                className="rounded-md border border-line px-1.5 py-0.5 font-mono text-[11px] text-ink-2 hover:bg-fill"
               >
                 {op}
               </button>
@@ -454,12 +456,17 @@ function ArcForm({ arc, edit }: { arc: Arc; edit: Edit }) {
       </Row>
       {isPlaceId(arc.from) && (
         <Row label={t('field.inhibitor')} help={t('field.inhibitorHelp')}>
-          <input
-            type="checkbox"
-            checked={Boolean(arc.inhibitor)}
-            onChange={(e) => set({ inhibitor: e.target.checked })}
-            className="h-4 w-4 accent-sky-500"
-          />
+          <button
+            type="button"
+            role="switch"
+            aria-checked={Boolean(arc.inhibitor)}
+            onClick={() => set({ inhibitor: !arc.inhibitor })}
+            className={`relative block h-6 w-10 rounded-full transition-colors ${arc.inhibitor ? 'bg-green' : 'bg-fill-strong'}`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left] ${arc.inhibitor ? 'left-[18px]' : 'left-0.5'}`}
+            />
+          </button>
         </Row>
       )}
     </div>
