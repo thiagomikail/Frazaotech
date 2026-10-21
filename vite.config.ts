@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
-// Three pages: the workbench home at /, the FMEA at /fmea/ and PetriPLC at /petri/.
+// One page per app: the workbench home at /, the FMEA at /fmea/, PetriPLC at /petri/ and Yield at /yield/.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
@@ -12,6 +12,7 @@ export default defineConfig({
         main: 'index.html',
         fmea: 'fmea/index.html',
         petri: 'petri/index.html',
+        yield: 'yield/index.html',
       },
     },
   },

@@ -1,0 +1,18 @@
+@import 'tailwindcss' source('.');
+@import '../theme.css';
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    overflow: hidden;
+  }
+}
+
+/* Range inputs in the system look: accent track fill, white knob. */
+input[type='range'] {
+  accent-color: var(--color-accent);
+}

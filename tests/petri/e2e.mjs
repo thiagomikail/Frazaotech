@@ -192,7 +192,7 @@ await check('files: save JSON, open it back, export SVG', async () => {
   await page.context().close();
 });
 
-await check('home page opens both apps', async () => {
+await check('home page opens every app', async () => {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -202,6 +202,9 @@ await check('home page opens both apps', async () => {
   await page.goto(ROOT);
   await page.click('[data-testid="home-fmea"]');
   await page.waitForSelector('text=Critical Risks Dashboard');
+  await page.goto(ROOT);
+  await page.click('[data-testid="home-yield"]');
+  await page.waitForSelector('[data-testid="yield-tab-combustion"]');
   await ctx.close();
 });
 

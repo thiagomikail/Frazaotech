@@ -4,8 +4,9 @@ Tools for operational-technology engineers, on one site. The home page at `/` li
 
 - **FMEA** at `/fmea/` — AI-assisted Failure Mode and Effects Analysis for reliability engineers, following **AIAG-VDA 2026**.
 - **PetriPLC** at `/petri/` — describe a machine, simulate its Petri net, generate IEC 61131-3 code ([below](#petriplc--petri)).
+- **Yield** at `/yield/` — furnace energy and regenerative-combustion diagnostics ([below](#yield--yield)).
 
-All three pages share one look (`src/theme.css`): Apple's system colors and type, light or dark following the
+All the pages share one look (`src/theme.css`): Apple's system colors and type, light or dark following the
 device. Components use the theme's names (`bg-surface`, `text-ink-2`, `bg-accent`…); the Tailwind palette is off.
 
 The FMEA was built to replace static spreadsheets with an interactive, real-time tool.
@@ -119,6 +120,63 @@ compares marking, outputs and firings after every scan.
 `tests/petri/dump-code.ts <dir>` writes every example in every dialect, for
 external checks (the ST parses with [blark](https://github.com/klauer/blark),
 the XML validates against the PLCopen TC6 2.01 schema).
+
+## Yield — `/yield/`
+
+Energy and production for melting and rolling furnaces: where the energy goes,
+how well the regenerative burners are firing, when to produce, and what the
+shift and the year cost. It runs on a demo melt shop (three sidewell furnaces
+and a rotary kiln); there is no backend and no key. Moved here from its own
+repository (`thiagomikail/Yield`) in October 2026.
+
+| Tab | The question it answers |
+|---|---|
+| **Monitor** | where the energy is going now, asset by asset |
+| **Combustion** | how well each regenerative burner pair fires, what to do, what can fail |
+| **Optimization** | when to produce, given the hourly energy price |
+| **Reports** | what happened in the shift and in the year |
+
+**Combustion score.** Each burner pair gets 0–100 from the US DOE Process
+Heating *available heat* method: natural-gas enthalpy, minus what leaves
+through the stack, plus the preheated-air credit. Calibration: a 1150 °C
+furnace on cold air gives 47.2 % available heat (DOE table ≈ 47 %), and the
+regenerative gain over cold air is 44 % (RCB literature: 40–50 %).
+
+| Axis | Weight | Reads |
+|---|---|---|
+| Thermal recovery | 30 | regenerator effectiveness (ε) |
+| Combustion control | 25 | O₂ in the exhaust / excess air |
+| Media bed integrity | 20 | bed ΔP and stack temperature |
+| Reversal cycle | 15 | reversal time and A/B imbalance |
+| Emissions | 10 | CO and NOx corrected to 3 % O₂ |
+
+The action plan is not fixed text: each item comes from an axis below target,
+and its dollar value from recomputing available heat with that parameter
+fixed. That is why the simulator works — moving a slider redoes the plan.
+
+**Live FMEA.** 14 failure modes of regenerative burners (reversal valve,
+ceramic bed, burner, air control, instrumentation, flame safety, emissions),
+AIAG/VDA scales. Occurrence is not frozen: each mode has an
+`evidence(reading, analysis)` function that looks for its signature in the
+readings, so RPNs rise and reorder as the plant degrades. S ≥ 9 is flagged
+regardless of RPN. The full matrix exports CSV (with BOM, opens in Excel).
+
+The engine is pure JavaScript, checkable without the interface:
+
+```bash
+node --input-type=module -e "
+import { REGEN_SYSTEMS } from './src/yield/data/regenerativeData.js';
+import { analyseSystem } from './src/yield/lib/combustion.js';
+console.log(analyseSystem(REGEN_SYSTEMS[1].reading).score.total); // 61.9
+"
+npm run test:yield:e2e   # every tab, the modals, the simulator and the FMEA in Chrome
+```
+
+Charts and SVG take their colors from `src/yield/lib/colors.js` (attributes
+need real values, so the appearance is picked in JS); everything else uses the
+theme classes and the building blocks in `src/yield/components/ui.jsx`.
+Recharts' `<Sankey>` calls `data.nodes.map()` without checking anything:
+`SankeyDiagram` validates the shape before rendering.
 
 ## Environment Variables
 

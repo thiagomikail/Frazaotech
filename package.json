@@ -9,14 +9,17 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:petri": "tsx tests/petri/model.test.ts && tsx tests/petri/equivalence.test.ts && tsx tests/petri/llm.test.ts",
-    "test:petri:e2e": "vite build && node tests/petri/e2e.mjs"
+    "test:petri:e2e": "vite build && node tests/petri/e2e.mjs",
+    "test:yield:e2e": "vite build && node tests/yield/smoke.mjs"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.8",
+    "framer-motion": "^10.18.0",
     "lucide-react": "^0.474.0",
     "mammoth": "^1.6.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0-alpha.25",

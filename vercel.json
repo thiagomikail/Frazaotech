@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/fmea", "destination": "/fmea/index.html" },
-    { "source": "/petri", "destination": "/petri/index.html" }
+    { "source": "/petri", "destination": "/petri/index.html" },
+    { "source": "/yield", "destination": "/yield/index.html" }
   ]
 }
