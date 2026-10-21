@@ -11,7 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useLang, useT } from '../i18n';
+import { t } from '../strings';
 import { addArc, addPlace, addTransition, moveNode, removeElement } from '../model/edit';
 import { examples } from '../model/examples';
 import { barSize, LABEL_MAX, layoutNet, PLACE_R, placeLabel, transitionLabel } from '../model/layout';
@@ -43,14 +43,12 @@ const STATUS_COLOR: Record<TransitionStatus, string> = {
 
 const clampK = (k: number) => Math.min(2.5, Math.max(0.25, k));
 const snap = (v: number) => Math.round(v / 10) * 10;
-const fmtDelay = (ms: number, lang: string) =>
-  ms >= 1000 ? `${(ms / 1000).toLocaleString(lang, { maximumFractionDigits: 2 })} s` : `${ms} ms`;
+const fmtDelay = (ms: number) =>
+  ms >= 1000 ? `${(ms / 1000).toLocaleString('en-US', { maximumFractionDigits: 2 })} s` : `${ms} ms`;
 
 export default function NetCanvas() {
   const { state, dispatch } = useStore();
   const { compiled } = useDerived();
-  const { lang } = useLang();
-  const t = useT();
   const toast = useToast();
   const actions = useActions();
   const { net, sim, mode, tool, selection, arcFrom } = state;
@@ -389,7 +387,7 @@ export default function NetCanvas() {
       dir === 'TB'
         ? { x: bar.w / 2 + 8, y: -1, anchor: 'start' as const }
         : { x: 0, y: bar.h / 2 + 15, anchor: 'middle' as const };
-    const label = transitionLabel(tr, tr.delayMs > 0 ? `⏱ ${fmtDelay(tr.delayMs, lang)}` : '');
+    const label = transitionLabel(tr, tr.delayMs > 0 ? `⏱ ${fmtDelay(tr.delayMs)}` : '');
     const sub = label.sub;
     return (
       <g
@@ -810,8 +808,6 @@ function IconButton({
 }
 
 function EmptyState() {
-  const t = useT();
-  const { lang } = useLang();
   const actions = useActions();
   return (
     <div className="absolute inset-0 flex items-center justify-center p-6">
@@ -819,7 +815,7 @@ function EmptyState() {
         <PetriMark className="mx-auto mb-4 h-12 w-12 opacity-80" />
         <p className="mb-4 text-sm text-slate-300">{t('canvas.empty')}</p>
         <div className="flex flex-wrap justify-center gap-2">
-          {examples(lang).map((ex) => (
+          {examples().map((ex) => (
             <button
               key={ex.id}
               onClick={() => actions.loadExample(ex)}

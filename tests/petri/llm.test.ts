@@ -114,33 +114,34 @@ store.delete('petriplc:apiKey');
 await assert.rejects(run([ok({})]), (e: unknown) => e instanceof LlmError && e.kind === 'no-key');
 store.set('petriplc:apiKey', 'test-key');
 
-// Answer normalization: sloppy ids, C-style guards, undeclared signals, a bad arc.
+// Answer normalization: sloppy ids, C-style guards, a tag typed with an accent and a space
+// (the chat takes any language), undeclared signals, a bad arc.
 const answer = readAnswer({
-  reply: 'Modelei a prensa.',
-  assumptions: ['O cilindro tem fim de curso nos dois lados.', ''],
+  reply: 'Modeled the press.',
+  assumptions: ['The cylinder has a limit switch at each end.', ''],
   net: {
-    name: 'Prensa',
-    inputs: [{ name: 'Botão Bimanual', description: 'bimanual', kind: 'button' }],
-    outputs: [{ name: 'desce', description: '' }],
+    name: 'Press',
+    inputs: [{ name: 'Botão Bimanual', description: 'two-hand control', kind: 'button' }],
+    outputs: [{ name: 'press_down', description: '' }],
     places: [
-      { id: 'p_idle', name: 'Repouso', tokens: 1, actions: [] },
-      { id: 'P2', name: 'Descendo', tokens: 0, actions: ['desce', 'Lamp ON'] },
+      { id: 'p_idle', name: 'Idle', tokens: 1, actions: [] },
+      { id: 'P2', name: 'Going down', tokens: 0, actions: ['press_down', 'Lamp ON'] },
     ],
     transitions: [
-      { id: 't1', name: 'Partida', guard: 'Botao_Bimanual && !emergencia', delayMs: 0, priority: 1 },
-      { id: 'T7', name: 'Volta', guard: 'fim_curso', delayMs: '500', priority: 2 },
+      { id: 't1', name: 'Start', guard: 'Botao_Bimanual && !estop', delayMs: 0, priority: 1 },
+      { id: 'T7', name: 'Return', guard: 'limit_down', delayMs: '500', priority: 2 },
     ],
     arcs: [
       { from: 'p_idle', to: 't1', weight: 1 },
       { from: 't1', to: 'P2' },
       { from: 'P2', to: 'T7' },
-      { from: 'T7', to: 'Repouso' },
+      { from: 'T7', to: 'Idle' },
       { from: 'p_idle', to: 'P2' },
     ],
   },
 });
-assert.equal(answer.reply, 'Modelei a prensa.');
-assert.deepEqual(answer.assumptions, ['O cilindro tem fim de curso nos dois lados.']);
+assert.equal(answer.reply, 'Modeled the press.');
+assert.deepEqual(answer.assumptions, ['The cylinder has a limit switch at each end.']);
 const net = answer.net!;
 assert.deepEqual(
   net.places.map((p) => p.id),
@@ -150,18 +151,18 @@ assert.deepEqual(
   net.transitions.map((t) => t.id),
   ['T1', 'T7'],
 );
-assert.equal(net.transitions[0].guard, 'Botao_Bimanual AND NOT emergencia');
+assert.equal(net.transitions[0].guard, 'Botao_Bimanual AND NOT estop');
 assert.equal(net.transitions[1].delayMs, 500);
 assert.deepEqual(
   net.inputs.map((i) => i.name),
-  ['Botao_Bimanual', 'emergencia', 'fim_curso'],
+  ['Botao_Bimanual', 'estop', 'limit_down'],
 );
 assert.deepEqual(
   net.outputs.map((o) => o.name),
-  ['desce', 'Lamp_ON'],
+  ['press_down', 'Lamp_ON'],
 );
 assert.deepEqual(answer.report, {
-  createdInputs: ['emergencia', 'fim_curso'],
+  createdInputs: ['estop', 'limit_down'],
   createdOutputs: ['Lamp_ON'],
   droppedArcs: 1,
 });
@@ -172,7 +173,7 @@ assert.deepEqual(
 assert.ok(!compile(net).issues.some((i) => i.level === 'error'));
 
 // A question-only answer leaves the net alone.
-assert.equal(readAnswer({ reply: 'Uma rede segura tem no máximo uma ficha por lugar.' }).net, null);
+assert.equal(readAnswer({ reply: 'A safe net holds at most one token per place.' }).net, null);
 
 // Turns alternate and start with the user, even after a failed request.
 const turns = buildTurns(
@@ -184,7 +185,6 @@ const turns = buildTurns(
   'make it faster',
   null,
   '',
-  'pt',
 );
 assert.deepEqual(
   turns.map((t) => t.role),

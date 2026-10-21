@@ -8,7 +8,7 @@ import Inspector from './components/Inspector';
 import KeyDialog from './components/KeyDialog';
 import NetCanvas from './components/NetCanvas';
 import { IoPanel, SimBar, useSimLoop } from './components/SimPanel';
-import { guessLang, LangContext, useT, type Lang, type TKey } from './i18n';
+import { t, type TKey } from './strings';
 import { StoreProvider, useDerived, useStore } from './state/store';
 
 type Tab = 'chat' | 'net' | 'edit' | 'check' | 'code';
@@ -81,7 +81,6 @@ function TabButton({
   attention?: boolean;
   compact?: boolean;
 }) {
-  const t = useT();
   const { icon: Icon, label } = TAB_META[tab];
   const on = tab === current;
   return (
@@ -112,7 +111,6 @@ function Shell() {
   useSimLoop();
   const { state } = useStore();
   const { compiled, analysis } = useDerived();
-  const t = useT();
   const wide = useMedia('(min-width: 1280px)');
   const medium = useMedia('(min-width: 860px)');
   const [side, setSide] = useState<Tab>(wide ? 'check' : 'chat');
@@ -175,7 +173,13 @@ function Shell() {
           <aside className="flex min-h-0 flex-col border-l border-slate-800 bg-slate-900/60">
             <nav className="flex border-b border-slate-800 px-1">
               {sideTabs.map((tab) => (
-                <TabButton key={tab} tab={tab} current={side} onPick={setSide} attention={tab === 'check' && attention} />
+                <TabButton
+                  key={tab}
+                  tab={tab}
+                  current={side}
+                  onPick={setSide}
+                  attention={tab === 'check' && attention}
+                />
               ))}
             </nav>
             <div className="min-h-0 flex-1">{panel(sideTabs.includes(side) ? side : sideTabs[0])}</div>
@@ -205,24 +209,10 @@ function Shell() {
 }
 
 export default function PetriApp() {
-  const [lang, setLangState] = useState<Lang>(guessLang);
-  useEffect(() => {
-    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
-  }, [lang]);
-  const setLang = (l: Lang) => {
-    setLangState(l);
-    try {
-      window.localStorage.setItem('petriplc:lang', l);
-    } catch {
-      // Private mode: the choice lasts for this visit.
-    }
-  };
   const [welcome] = useState(welcomeMessage);
   return (
-    <LangContext.Provider value={{ lang, setLang }}>
-      <StoreProvider welcome={welcome}>
-        <Shell />
-      </StoreProvider>
-    </LangContext.Provider>
+    <StoreProvider welcome={welcome}>
+      <Shell />
+    </StoreProvider>
   );
 }

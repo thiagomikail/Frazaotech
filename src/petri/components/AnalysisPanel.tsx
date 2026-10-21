@@ -1,13 +1,12 @@
 import { AlertTriangle, CheckCircle2, CircleHelp, Eye, Sparkles, XCircle } from 'lucide-react';
 import type React from 'react';
-import { useT, type TKey } from '../i18n';
+import { t, type TKey } from '../strings';
 import { placeIsBool } from '../model/analyze';
 import type { Issue } from '../model/net';
 import { useActions } from '../state/actions';
 import { useDerived, useStore } from '../state/store';
 
 function Verdict({ ok, label, help }: { ok: boolean | null; label: string; help: string }) {
-  const t = useT();
   const Icon = ok === null ? CircleHelp : ok ? CheckCircle2 : XCircle;
   const tone = ok === null ? 'text-slate-400' : ok ? 'text-emerald-400' : 'text-red-400';
   return (
@@ -22,7 +21,7 @@ function Verdict({ ok, label, help }: { ok: boolean | null; label: string; help:
   );
 }
 
-export function issueText(t: ReturnType<typeof useT>, i: Issue) {
+export function issueText(i: Issue) {
   return t(`issue.${i.code}` as TKey, i.params);
 }
 
@@ -30,7 +29,6 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
   const { state, dispatch } = useStore();
   const { compiled, analysis: a } = useDerived();
   const actions = useActions();
-  const t = useT();
   const errors = compiled.issues.filter((i) => i.level === 'error');
   const warnings = compiled.issues.filter((i) => i.level === 'warning');
   const empty = compiled.places.length + compiled.transitions.length === 0;
@@ -63,7 +61,7 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
     .filter(([, b]) => b === null)
     .map(([p]) => p);
   const problems = [
-    ...errors.map((i) => issueText(t, i)),
+    ...errors.map((i) => issueText(i)),
     ...(a.deadlockCount ? [t('an.fixDeadlock', { marking: markingText(a.deadlocks[0].marking) })] : []),
     ...(unbounded.length ? [t('an.fixUnbounded', { places: unbounded.join(', ') })] : []),
     ...a.deadTransitions.map((id) => t('an.fixDead', { id })),
@@ -116,7 +114,7 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
         <List title={t('an.errors')} tone="error">
           {errors.map((i, k) => (
             <Item key={k} onClick={() => select(i.target)}>
-              {issueText(t, i)}
+              {issueText(i)}
             </Item>
           ))}
         </List>
@@ -177,7 +175,7 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
         <List title={t('an.warnings')} tone="warn">
           {warnings.map((i, k) => (
             <Item key={k} onClick={() => select(i.target)}>
-              {issueText(t, i)}
+              {issueText(i)}
             </Item>
           ))}
         </List>

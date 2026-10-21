@@ -1,6 +1,6 @@
 import { FileDown, FilePlus2, FolderOpen, Image, KeyRound, Menu, Redo2, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useLang, useT } from '../i18n';
+import { t } from '../strings';
 import { netBounds, C } from './geometry';
 import { normalizeNet, toIdent } from '../model/net';
 import { emptyNet } from '../model/types';
@@ -22,8 +22,6 @@ function exportSvg(): string | null {
 
 export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
   const { state, dispatch } = useStore();
-  const { lang, setLang } = useLang();
-  const t = useT();
   const toast = useToast();
   const [menu, setMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -91,7 +89,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
       </a>
       <span className="hidden text-xs text-slate-500 md:inline">{t('app.tagline')}</span>
       <a href="/" className="hidden text-xs text-slate-500 hover:text-slate-300 lg:inline">
-        · FrazaoTech
+        · OT Workbench
       </a>
       {state.net.name && (
         <span
@@ -151,24 +149,6 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
               ))}
             </div>
           )}
-        </div>
-
-        <div
-          className="flex rounded-md border border-slate-700 p-0.5 text-[11px] font-semibold"
-          role="group"
-          aria-label={t('header.language')}
-        >
-          {(['pt', 'en'] as const).map((l) => (
-            <button
-              key={l}
-              onClick={() => setLang(l)}
-              aria-pressed={lang === l}
-              className={`rounded px-1.5 py-0.5 ${lang === l ? 'bg-slate-200 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}
-              data-testid={`lang-${l}`}
-            >
-              {l.toUpperCase()}
-            </button>
-          ))}
         </div>
 
         <button

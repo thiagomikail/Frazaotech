@@ -1,4 +1,3 @@
-import type { Lang } from '../i18n';
 import type { Analysis } from '../model/analyze';
 import { normalizeNet, structuralJson, type Issue, type NormalizeReport } from '../model/net';
 import type { PetriNet } from '../model/types';
@@ -25,8 +24,8 @@ MODEL CONVENTIONS — follow them strictly
 
 NAMES
 - Keep the ids of everything that did not change. New elements take the next free number.
-- Input and output names are short IEC identifiers in the user's language: letters, digits and underscore, starting with a letter, no accents or spaces (e.g. "start", "limit_up", "motor_fwd" / "partida", "fc_alto", "motor_avanco").
-- Place and transition "name": 1 to 3 readable words (accents allowed). "description": one short sentence, or empty.
+- Input and output names are short IEC identifiers in English, unless the user gives their own tag names: letters, digits and underscore, starting with a letter, no spaces (e.g. "start", "limit_up", "motor_fwd").
+- Place and transition "name": 1 to 3 readable words in English. "description": one short sentence in English, or empty.
 - Input "kind": "button" for a momentary push button, "sensor" for limit switches, photocells, level and pressure switches, "switch" for a maintained selector.
 
 CONVERSATION
@@ -104,8 +103,6 @@ export interface HistoryItem {
   text: string;
 }
 
-const LANG_NAME: Record<Lang, string> = { pt: 'Brazilian Portuguese', en: 'English' };
-
 /** One line per fact the model can act on. */
 export function analysisSummary(a: Analysis | null, issues: Issue[]): string {
   const lines: string[] = [];
@@ -135,7 +132,6 @@ export function buildTurns(
   request: string,
   current: PetriNet | null,
   analysis: string,
-  lang: Lang,
 ): Turn[] {
   const turns: Turn[] = history.slice(-10).map((h) => ({ role: h.role === 'user' ? 'user' : 'model', text: h.text }));
   const parts: string[] = [];
@@ -144,12 +140,7 @@ export function buildTurns(
     if (analysis) parts.push('', 'ANALYSIS OF THE CURRENT NET:', analysis);
     parts.push('');
   }
-  parts.push(
-    `(Interface language: ${LANG_NAME[lang]}. Reply in the language of the request.)`,
-    '',
-    'REQUEST:',
-    request,
-  );
+  parts.push('REQUEST:', request);
   turns.push({ role: 'user', text: parts.join('\n') });
   // Gemini wants turns that alternate and start with the user: a request that
   // failed leaves two user turns in a row, so they are merged.

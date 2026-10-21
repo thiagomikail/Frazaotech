@@ -196,7 +196,8 @@ function reducer(state: State, action: Action): State {
 
 // ─── Persistence ────────────────────────────────────────────────────────────
 
-const STORE_KEY = 'petriplc:v1';
+// v2: English-only release; work saved by the bilingual version starts over.
+const STORE_KEY = 'petriplc:v2';
 
 interface Saved {
   net: unknown;

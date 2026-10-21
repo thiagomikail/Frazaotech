@@ -1,7 +1,7 @@
 import { AlertTriangle, Check, ChevronDown, Copy, Download, FileCode2, RefreshCw } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { DIALECTS, generateCode, sanitizeFbName, type Dialect } from '../codegen';
-import { useLang, useT, type TKey } from '../i18n';
+import { t, type TKey } from '../strings';
 import { structuralJson, toIdent } from '../model/net';
 import { useDerived, useStore } from '../state/store';
 import { copyText, downloadText } from '../util/files';
@@ -47,8 +47,6 @@ function highlight(code: string, xml: boolean): React.ReactNode[] {
 export default function CodePanel() {
   const { state, dispatch } = useStore();
   const { compiled, analysis } = useDerived();
-  const { lang } = useLang();
-  const t = useT();
   const [active, setActive] = useState(0);
   const [copied, setCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(!state.generated);
@@ -76,7 +74,6 @@ export default function CodePanel() {
   const generate = () => {
     const files = generateCode(compiled, analysis, state.dialects, {
       fbName: sanitizeFbName(state.fbName || defaultName),
-      lang,
       date: new Date().toISOString().slice(0, 10),
     });
     dispatch({ type: 'code/generated', generated: { files, netKey } });

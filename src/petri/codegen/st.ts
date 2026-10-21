@@ -78,20 +78,11 @@ export function printStmts(stmts: IStmt[], st: StStyle, depth: number): string[]
 }
 
 const SECTIONS = {
-  pt: {
-    init: 'Marcação inicial',
-    timers: 'Temporizadores: olham a marcação do início do ciclo',
-    firing: 'Disparos, em ordem de prioridade',
-    produce: 'As fichas produzidas entram agora',
-    outputs: 'Saídas: ligadas enquanto um lugar que as aciona estiver marcado',
-  },
-  en: {
-    init: 'Initial marking',
-    timers: 'Timers: they see the marking as the scan started',
-    firing: 'Firing, in priority order',
-    produce: 'Produced tokens land now',
-    outputs: 'Outputs: ON while a place that drives them is marked',
-  },
+  init: 'Initial marking',
+  timers: 'Timers: they see the marking as the scan started',
+  firing: 'Firing, in priority order',
+  produce: 'Produced tokens land now',
+  outputs: 'Outputs: ON while a place that drives them is marked',
 } as const;
 
 export interface Section {
@@ -101,7 +92,7 @@ export interface Section {
 
 /** The four numbered steps of a scan, skipping the empty ones. */
 export function sections(prog: Program): { init: Section; scan: Section[]; outputs: Section } {
-  const t = SECTIONS[prog.lang];
+  const t = SECTIONS;
   const scan: Section[] = [
     { title: t.timers, stmts: prog.timers },
     { title: t.firing, stmts: prog.firing },
@@ -125,26 +116,14 @@ export const DIALECT_LABEL = {
 export type Dialect = keyof typeof DIALECT_LABEL;
 
 const STEPS = {
-  pt: {
-    timers: ['os temporizadores olham a marcação do início do ciclo;'],
-    firing: [
-      'as transições disparam em ordem de prioridade e só consomem fichas que',
-      '   já estavam lá no início do ciclo: uma ficha anda no máximo um passo por',
-      '   ciclo, e a ficha disputada vai para a transição de maior prioridade;',
-    ],
-    produce: ['as fichas produzidas entram no fim do ciclo;'],
-    outputs: ['cada saída liga enquanto algum lugar que a aciona estiver marcado.'],
-  },
-  en: {
-    timers: ['timers see the marking as the scan started;'],
-    firing: [
-      'transitions fire in priority order and only consume tokens that were',
-      '   there when the scan started: a token moves at most one step per scan,',
-      '   and a contested token goes to the higher-priority transition;',
-    ],
-    produce: ['produced tokens land at the end of the scan;'],
-    outputs: ['each output is ON while any place that drives it is marked.'],
-  },
+  timers: ['timers see the marking as the scan started;'],
+  firing: [
+    'transitions fire in priority order and only consume tokens that were',
+    '   there when the scan started: a token moves at most one step per scan,',
+    '   and a contested token goes to the higher-priority transition;',
+  ],
+  produce: ['produced tokens land at the end of the scan;'],
+  outputs: ['each output is ON while any place that drives it is marked.'],
 } as const;
 
 const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
@@ -152,56 +131,32 @@ const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : 
 /** Header text, without comment markers. Its numbered steps match the code sections. */
 export function headerLines(prog: Program, dialect: Dialect): string[] {
   const s = prog.stats;
-  const pt = prog.lang === 'pt';
   const title = [prog.netName, prog.description].filter(Boolean).map(safeComment).join(' - ');
-  const steps = STEPS[prog.lang];
   const present = [
-    ...(prog.timers.length ? [steps.timers] : []),
-    ...(prog.firing.length ? [steps.firing] : []),
-    ...(prog.produce.length ? [steps.produce] : []),
-    steps.outputs,
+    ...(prog.timers.length ? [STEPS.timers] : []),
+    ...(prog.firing.length ? [STEPS.firing] : []),
+    ...(prog.produce.length ? [STEPS.produce] : []),
+    STEPS.outputs,
   ];
   const numbered = present.flatMap((lines, i) => lines.map((l, j) => (j === 0 ? `  ${i + 1}. ${l}` : `  ${l}`)));
-  const resetLine =
-    dialect === 'rockwell'
-      ? pt
-        ? `${prog.reset} = 1, ou o primeiro scan (S:FS), volta à marcação inicial.`
-        : `${prog.reset} = 1, or the first scan (S:FS), brings back the initial marking.`
-      : pt
-        ? `${prog.reset} = TRUE volta à marcação inicial.`
-        : `${prog.reset} = TRUE brings back the initial marking.`;
   const unbounded = prog.unbounded.length
-    ? [
-        '',
-        pt
-          ? `ATENÇÃO: a rede não é limitada. ${prog.unbounded.join(', ')} pode crescer até estourar o INT.`
-          : `WARNING: the net is unbounded. ${prog.unbounded.join(', ')} can grow until the INT overflows.`,
-      ]
+    ? ['', `WARNING: the net is unbounded. ${prog.unbounded.join(', ')} can grow until the INT overflows.`]
     : [];
-  const sizes = pt
-    ? `${count(s.places, 'lugar', 'lugares')} (${s.boolPlaces} em BOOL, ${s.intPlaces} em INT), ${count(s.transitions, 'transição', 'transições')}, ${count(s.timers, 'temporizador', 'temporizadores')}.`
-    : `${count(s.places, 'place', 'places')} (${s.boolPlaces} as BOOL, ${s.intPlaces} as INT), ${count(s.transitions, 'transition', 'transitions')}, ${count(s.timers, 'timer', 'timers')}.`;
   return [
     title || prog.fbName,
-    pt
-      ? `Rede de Petri convertida em ${DIALECT_LABEL[dialect]} pelo FrazaoTech PetriPLC em ${prog.date}.`
-      : `Petri net converted to ${DIALECT_LABEL[dialect]} by FrazaoTech PetriPLC on ${prog.date}.`,
-    sizes,
+    `Petri net converted to ${DIALECT_LABEL[dialect]} by PetriPLC (OT Workbench) on ${prog.date}.`,
+    `${count(s.places, 'place', 'places')} (${s.boolPlaces} as BOOL, ${s.intPlaces} as INT), ` +
+      `${count(s.transitions, 'transition', 'transitions')}, ${count(s.timers, 'timer', 'timers')}.`,
     '',
-    pt ? 'A cada ciclo de varredura:' : 'Every scan:',
+    'Every scan:',
     ...numbered,
-    resetLine,
+    dialect === 'rockwell'
+      ? `${prog.reset} = 1, or the first scan (S:FS), brings back the initial marking.`
+      : `${prog.reset} = TRUE brings back the initial marking.`,
     ...unbounded,
     '',
-    ...(pt
-      ? [
-          'Lógica de processo, não de segurança: parada de emergência e proteções',
-          'continuam no circuito de segurança (ISO 13849 / IEC 62061 / NR-12).',
-        ]
-      : [
-          'Process logic, not safety logic: emergency stop and guarding stay in the',
-          'safety circuit (ISO 13849 / IEC 62061).',
-        ]),
+    'Process logic, not safety logic: emergency stop and guarding stay in the',
+    'safety circuit (ISO 13849 / IEC 62061).',
   ];
 }
 

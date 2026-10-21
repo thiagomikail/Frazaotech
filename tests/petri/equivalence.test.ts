@@ -131,7 +131,7 @@ export function runSideBySide(
   const c = compile(net);
   assert.ok(!c.issues.some((i) => i.level === 'error'), JSON.stringify(c.issues));
   const a = analyze(c);
-  const prog = buildProgram(c, a, { fbName: 'FB_Test', lang: 'en', date: '2026-10-18' });
+  const prog = buildProgram(c, a, { fbName: 'FB_Test', date: '2026-10-18' });
   const fb = new FunctionBlock(printIec(prog));
   const names = (g: string) => prog.decls.filter((d) => d.group === g).map((d) => d.name);
   const placeNames = names('place');
@@ -177,12 +177,11 @@ if (process.argv[1]?.endsWith('equivalence.test.ts')) {
   let bools = 0;
   let ints = 0;
   let fired = 0;
-  for (const lang of ['pt', 'en'] as const)
-    for (const ex of examples(lang))
-      for (let seed = 1; seed <= 20; seed++) {
-        fired += runSideBySide(ex.net, seed, 400).fired;
-        runs++;
-      }
+  for (const ex of examples())
+    for (let seed = 1; seed <= 20; seed++) {
+      fired += runSideBySide(ex.net, seed, 400).fired;
+      runs++;
+    }
 
   const gen = rng(2026);
   for (let n = 0; n < 400; n++) {

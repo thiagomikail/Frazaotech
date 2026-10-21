@@ -1,10 +1,9 @@
 import { KeyRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useT } from '../i18n';
+import { t } from '../strings';
 import { keyFingerprint, looksLikeGoogleKey, ownKey, setOwnKey, siteKey } from '../llm/gemini';
 
 export default function KeyDialog({ onClose }: { onClose: () => void }) {
-  const t = useT();
   const [draft, setDraft] = useState(ownKey());
   const hasSite = Boolean(siteKey());
   const hasOwn = Boolean(ownKey());

@@ -24,14 +24,24 @@ assert.equal(printExpr(parsed('a ^ b')), 'a XOR b');
 assert.equal(printExpr(simplify(parsed('a AND TRUE AND (b OR FALSE)'))), 'a AND b');
 assert.equal(printExpr(simplify(parsed('NOT NOT a'))), 'a');
 assert.deepEqual([...varsOf(parsed('Start AND NOT eStop'))], ['start', 'estop']);
-assert.equal(evalExpr(parsed('a AND NOT b'), (n) => n === 'a'), true);
-assert.equal(evalExpr(parsed(''), () => false), true, 'empty guard is always true');
+assert.equal(
+  evalExpr(parsed('a AND NOT b'), (n) => n === 'a'),
+  true,
+);
+assert.equal(
+  evalExpr(parsed(''), () => false),
+  true,
+  'empty guard is always true',
+);
 for (const bad of ['a AND', '(a OR b', 'a + b', 'a b', '10'])
   assert.equal(parseExpr(bad).ok, false, `"${bad}" should not parse`);
 // The solver flips as few inputs as possible.
 const sol = satisfy(parsed('a AND (b OR c)'), (n) => n === 'c');
 assert.deepEqual(Object.fromEntries(sol!), { a: true, b: false, c: true });
-assert.equal(satisfy(parsed('a AND NOT a'), () => false), null);
+assert.equal(
+  satisfy(parsed('a AND NOT a'), () => false),
+  null,
+);
 
 // ─── Analysis verdicts on the examples ──────────────────────────────────────
 
@@ -41,22 +51,21 @@ const expected: Record<string, { states: number; safe: boolean; conflicts: numbe
   robots: { states: 3, safe: true, conflicts: 1 },
   buffer: { states: 24, safe: false, conflicts: 0 },
 };
-for (const lang of ['pt', 'en'] as const)
-  for (const ex of examples(lang)) {
-    const c = compile(ex.net);
-    assert.deepEqual(c.issues, [], `${lang} ${ex.id} has issues`);
-    const a = analyze(c);
-    const want = expected[ex.id];
-    assert.equal(a.states, want.states, `${ex.id} states`);
-    assert.equal(a.bounded, true, `${ex.id} bounded`);
-    assert.equal(a.safe, want.safe, `${ex.id} safe`);
-    assert.equal(a.deadlockCount, 0, `${ex.id} deadlocks`);
-    assert.equal(a.reversible, true, `${ex.id} reversible`);
-    assert.deepEqual(a.deadTransitions, [], `${ex.id} dead transitions`);
-    assert.equal(a.conflicts.length, want.conflicts, `${ex.id} conflicts`);
-  }
-assert.equal(analyze(compile(examples('en')[3].net)).bounds.P3, 3, 'buffer capacity bounds P3');
-assert.deepEqual(analyze(compile(examples('en')[2].net)).conflicts[0], {
+for (const ex of examples()) {
+  const c = compile(ex.net);
+  assert.deepEqual(c.issues, [], `${ex.id} has issues`);
+  const a = analyze(c);
+  const want = expected[ex.id];
+  assert.equal(a.states, want.states, `${ex.id} states`);
+  assert.equal(a.bounded, true, `${ex.id} bounded`);
+  assert.equal(a.safe, want.safe, `${ex.id} safe`);
+  assert.equal(a.deadlockCount, 0, `${ex.id} deadlocks`);
+  assert.equal(a.reversible, true, `${ex.id} reversible`);
+  assert.deepEqual(a.deadTransitions, [], `${ex.id} dead transitions`);
+  assert.equal(a.conflicts.length, want.conflicts, `${ex.id} conflicts`);
+}
+assert.equal(analyze(compile(examples()[3].net)).bounds.P3, 3, 'buffer capacity bounds P3');
+assert.deepEqual(analyze(compile(examples()[2].net)).conflicts[0], {
   place: 'P3',
   transitions: ['T1', 'T3'],
   exclusive: false,
@@ -69,10 +78,25 @@ const tiny = (arcs: [string, string][], tokens = [1, 0]): PetriNet =>
     transitions: [{ id: 'T1', name: 't', guard: '' }],
     arcs: arcs.map(([from, to]) => ({ from, to })),
   }).net;
-const pump = analyze(compile(tiny([['P1', 'T1'], ['T1', 'P1'], ['T1', 'P2']])));
+const pump = analyze(
+  compile(
+    tiny([
+      ['P1', 'T1'],
+      ['T1', 'P1'],
+      ['T1', 'P2'],
+    ]),
+  ),
+);
 assert.equal(pump.bounded, false);
 assert.equal(pump.bounds.P2, null);
-const stuck = analyze(compile(tiny([['P1', 'T1'], ['T1', 'P2']])));
+const stuck = analyze(
+  compile(
+    tiny([
+      ['P1', 'T1'],
+      ['T1', 'P2'],
+    ]),
+  ),
+);
 assert.equal(stuck.deadlockCount, 1);
 assert.deepEqual(stuck.deadlocks[0], { marking: { P1: 0, P2: 1 }, path: ['T1'] });
 assert.equal(stuck.reversible, false);
@@ -80,7 +104,7 @@ assert.equal(analyze(compile(normalizeNet({}).net)).deadlockCount, 0, 'an empty 
 
 // ─── Simulation ──────────────────────────────────────────────────────────────
 
-const drill = examples('en')[0].net;
+const drill = examples()[0].net;
 const c = compile(drill);
 let s = initialSim(c);
 assert.equal(statusOf(c, s, 'T1').status, 'blocked');
@@ -107,7 +131,7 @@ assert.equal(statusOf(c, s, 'T4').status, 'blocked');
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
-for (const ex of examples('pt'))
+for (const ex of examples())
   for (const dir of ['TB', 'LR'] as const) {
     const laid = layoutNet(ex.net, dir);
     for (const n of [...laid.places, ...laid.transitions])

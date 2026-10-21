@@ -1,4 +1,3 @@
-import type { Lang } from '../i18n';
 import { placeIsBool, type Analysis } from '../model/analyze';
 import type { Expr } from '../model/expr';
 import { toIdent, type CompiledNet } from '../model/net';
@@ -47,7 +46,6 @@ export interface Program {
   netName: string;
   description: string;
   date: string;
-  lang: Lang;
   decls: Decl[];
   reset: string;
   init: IStmt[];
@@ -87,27 +85,15 @@ class Namer {
   }
 }
 
+/** Comments the generated code carries. */
 const TEXT = {
-  pt: {
-    reset: 'volta a rede à marcação inicial',
-    place: 'lugar',
-    initial: 'inicial',
-    pending: 'fichas a entrar em',
-    fired: 'disparou neste ciclo',
-    timer: 'atraso de',
-    delay: 'atraso',
-    noDriver: 'nenhum lugar aciona esta saída',
-  },
-  en: {
-    reset: 'brings the net back to its initial marking',
-    place: 'place',
-    initial: 'initial',
-    pending: 'tokens about to enter',
-    fired: 'fired this scan',
-    timer: 'on-delay of',
-    delay: 'delay',
-    noDriver: 'no place drives this output',
-  },
+  reset: 'brings the net back to its initial marking',
+  place: 'place',
+  pending: 'tokens about to enter',
+  fired: 'fired this scan',
+  timer: 'on-delay of',
+  delay: 'delay',
+  noDriver: 'no place drives this output',
 } as const;
 
 /** AND/OR with constants folded: no `x AND TRUE` in the output. */
@@ -151,14 +137,13 @@ export function describeTransition(c: CompiledNet, t: number, arrow = '->'): str
 
 export interface BuildOptions {
   fbName: string;
-  lang: Lang;
   date: string;
 }
 
 export function buildProgram(c: CompiledNet, a: Analysis, opts: BuildOptions): Program {
   if (c.issues.some((i) => i.level === 'error'))
     throw new Error('The net has errors; fix them before generating code.');
-  const tx = TEXT[opts.lang];
+  const tx = TEXT;
   const namer = new Namer();
   const decls: Decl[] = [];
   const reset = namer.take('Reset');
@@ -317,7 +302,6 @@ export function buildProgram(c: CompiledNet, a: Analysis, opts: BuildOptions): P
     netName: c.net.name,
     description: c.net.description,
     date: opts.date,
-    lang: opts.lang,
     decls,
     reset,
     init,

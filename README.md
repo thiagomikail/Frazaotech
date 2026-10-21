@@ -1,6 +1,11 @@
-# FrazaoTech — Reliability Engineering FMEA Platform
+# OT Workbench
 
-A dynamic, AI-assisted Failure Mode and Effects Analysis (FMEA) application for reliability engineers. Built to replace static spreadsheets with an interactive, real-time tool following **AIAG-VDA 2026** standards.
+Tools for operational-technology engineers, on one site:
+
+- **FMEA** at `/` — AI-assisted Failure Mode and Effects Analysis for reliability engineers, following **AIAG-VDA 2026**.
+- **PetriPLC** at `/petri/` — describe a machine, simulate its Petri net, generate IEC 61131-3 code ([below](#petriplc--petri)).
+
+The FMEA was built to replace static spreadsheets with an interactive, real-time tool.
 
 ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Vite](https://img.shields.io/badge/Vite-5-purple) ![Tailwind](https://img.shields.io/badge/TailwindCSS-4-cyan) ![Gemini](https://img.shields.io/badge/Gemini_AI-2.5-orange)
 
@@ -32,8 +37,8 @@ Ships with a comprehensive **Aluminum Hot Rolling Mill FMEA** containing 75 fail
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/FrazaoTech.git
-cd FrazaoTech
+git clone <repository-url> ot-workbench
+cd ot-workbench
 
 # Install dependencies
 npm install
@@ -76,7 +81,7 @@ src/
 
 A second tool on the same site: describe a machine in plain language, get an
 interpreted Petri net, play with it, check it, and generate IEC 61131-3 code.
-Interface in Portuguese and English.
+Interface in English; the assistant answers in the language you write in.
 
 1. **Describe** — the assistant (Gemini) turns the description into a net:
    places carry the machine state and switch outputs on, transitions fire on
@@ -124,4 +129,4 @@ MIT
 
 ---
 
-Built by **FrazaoTech** — Reliability Engineering, reimagined.
+**OT Workbench** — tools for the people who keep plants running.

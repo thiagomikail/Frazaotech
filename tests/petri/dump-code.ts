@@ -8,10 +8,9 @@ import { DIALECTS, generateCode } from '../../src/petri/codegen';
 
 const out = process.argv[2] ?? 'generated';
 mkdirSync(out, { recursive: true });
-for (const lang of ['pt', 'en'] as const)
-  for (const ex of examples(lang)) {
-    const c = compile(ex.net);
-    const files = generateCode(c, analyze(c), DIALECTS, { fbName: `FB_${ex.net.name}`, lang, date: '2026-10-18' });
-    for (const f of files) writeFileSync(join(out, `${lang}_${ex.id}_${f.filename}`), f.content);
-  }
+for (const ex of examples()) {
+  const c = compile(ex.net);
+  const files = generateCode(c, analyze(c), DIALECTS, { fbName: `FB_${ex.net.name}`, date: '2026-10-18' });
+  for (const f of files) writeFileSync(join(out, `${ex.id}_${f.filename}`), f.content);
+}
 console.log('ok');

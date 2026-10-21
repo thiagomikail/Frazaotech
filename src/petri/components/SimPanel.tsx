@@ -1,6 +1,6 @@
 import { Pause, Play, RotateCcw, StepForward } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
-import { useT } from '../i18n';
+import { t } from '../strings';
 import { outputsOf } from '../model/simulate';
 import { useDerived, useStore } from '../state/store';
 
@@ -33,7 +33,6 @@ const clock = (ms: number) => {
 export function SimBar() {
   const { state, dispatch } = useStore();
   const { compiled } = useDerived();
-  const t = useT();
   const { sim, running, speed } = state;
   const fired = sim.lastFired
     .map((id) => {
@@ -107,7 +106,6 @@ export function SimBar() {
 export function IoPanel() {
   const { state, dispatch } = useStore();
   const { compiled } = useDerived();
-  const t = useT();
   const outputs = useMemo(() => outputsOf(compiled, state.sim.marking), [compiled, state.sim.marking]);
   const net = state.net;
 

@@ -35,7 +35,7 @@ export function printPlcopen(prog: Program, now = new Date()): string {
   return [
     '<?xml version="1.0" encoding="utf-8"?>',
     '<project xmlns="http://www.plcopen.org/xml/tc6_0201">',
-    `  <fileHeader companyName="FrazaoTech" productName="PetriPLC" productVersion="1.0" creationDateTime="${stamp}"/>`,
+    `  <fileHeader companyName="OT Workbench" productName="PetriPLC" productVersion="1.0" creationDateTime="${stamp}"/>`,
     `  <contentHeader name="${esc(prog.netName || prog.fbName)}" modificationDateTime="${stamp}">`,
     '    <coordinateInfo>',
     '      <fbd><scaling x="1" y="1"/></fbd>',

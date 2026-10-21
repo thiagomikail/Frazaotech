@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useLang, useT } from '../i18n';
+import { t } from '../strings';
 import { generateJson, LlmError, reasons } from '../llm/gemini';
 import { analysisSummary, buildTurns, readAnswer, RESPONSE_SCHEMA, SYSTEM_PROMPT } from '../llm/prompt';
 import type { Example } from '../model/examples';
@@ -16,8 +16,6 @@ const summaryOf = (net: PetriNet) => ({ places: net.places.length, transitions: 
 export function useActions() {
   const { state, dispatch } = useStore();
   const { compiled, analysis } = useDerived();
-  const { lang } = useLang();
-  const t = useT();
   const toast = useToast();
   const latest = useRef({ state, compiled, analysis });
   latest.current = { state, compiled, analysis };
@@ -59,7 +57,7 @@ export function useActions() {
     try {
       const { data, model } = await generateJson({
         system: SYSTEM_PROMPT,
-        turns: buildTurns(history, request, now.net, analysisSummary(a, c.issues), lang),
+        turns: buildTurns(history, request, now.net, analysisSummary(a, c.issues)),
         schema: RESPONSE_SCHEMA,
         signal: inflight.signal,
         onAttempt: (m) =>

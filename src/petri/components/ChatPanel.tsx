@@ -1,6 +1,6 @@
 import { KeyRound, Loader2, RotateCcw, Send, Square, Trash2, Undo2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { useLang, useT } from '../i18n';
+import { t } from '../strings';
 import { apiKey } from '../llm/gemini';
 import { examples } from '../model/examples';
 import { useActions } from '../state/actions';
@@ -13,7 +13,6 @@ export function welcomeMessage(): ChatMessage {
 export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
   const { state, dispatch } = useStore();
   const actions = useActions();
-  const t = useT();
   const [draft, setDraft] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
   const hasNet = state.net.places.length + state.net.transitions.length > 0;
@@ -101,8 +100,6 @@ export default function ChatPanel({ onOpenKey }: { onOpenKey: () => void }) {
 }
 
 function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }) {
-  const t = useT();
-  const { lang } = useLang();
   const { state } = useStore();
   const actions = useActions();
 
@@ -112,7 +109,7 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
         <p className="leading-relaxed">{t('chat.welcome')}</p>
         <p className="mb-2 mt-3 text-xs text-slate-400">{t('chat.examples')}</p>
         <div className="flex flex-wrap gap-1.5">
-          {examples(lang).map((ex) => (
+          {examples().map((ex) => (
             <button
               key={ex.id}
               onClick={() => actions.loadExample(ex)}
@@ -216,7 +213,6 @@ function Message({ msg, onOpenKey }: { msg: ChatMessage; onOpenKey: () => void }
 }
 
 function Thinking({ model, since }: { model: string; since: number }) {
-  const t = useT();
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);

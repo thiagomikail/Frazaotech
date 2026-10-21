@@ -58,10 +58,7 @@ export function printSiemens(prog: Program): string {
   if (groups.length) {
     lines.push('   VAR ');
     groups.forEach(({ group, decls }) => {
-      lines.push(
-        `      ${lineComment(GROUP_TITLE[prog.lang][group as keyof (typeof GROUP_TITLE)['pt']])}`,
-        ...declLines(decls),
-      );
+      lines.push(`      ${lineComment(GROUP_TITLE[group])}`, ...declLines(decls));
     });
     lines.push('   END_VAR', '');
   }

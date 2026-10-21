@@ -51,10 +51,10 @@ const Toolbar: React.FC = () => {
   return (
     <header className="h-14 border-b border-slate-700 bg-slate-800/80 flex items-center px-4 justify-between shrink-0 shadow-sm z-10 relative">
       <div className="flex items-center space-x-3">
-        <div className="w-8 h-8 rounded bg-primary-500/20 text-primary-500 flex items-center justify-center font-bold border border-primary-500/30 shadow-inner shadow-primary-500/20">
-          F
+        <div className="w-8 h-8 rounded bg-primary-500/20 text-primary-500 flex items-center justify-center font-bold text-sm border border-primary-500/30 shadow-inner shadow-primary-500/20">
+          OT
         </div>
-        <h1 className="font-semibold text-lg tracking-tight text-slate-100">FrazaoTech</h1>
+        <h1 className="font-semibold text-lg tracking-tight text-slate-100">OT Workbench</h1>
         
         {error && (
           <div className="ml-4 flex items-center text-xs text-danger-400 bg-danger-500/10 px-2 py-1 rounded border border-danger-500/20">

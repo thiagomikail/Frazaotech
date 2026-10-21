@@ -15,18 +15,10 @@ export const IEC_ST: StStyle = {
 const TYPE = { BOOL: 'BOOL', INT: 'INT', TIMER: 'TON' } as const;
 
 export const GROUP_TITLE = {
-  pt: {
-    place: 'Marcação: um lugar por variável',
-    pending: 'Fichas a entrar no fim do ciclo',
-    fired: 'Transições que dispararam neste ciclo',
-    timer: 'Atrasos de habilitação',
-  },
-  en: {
-    place: 'Marking: one variable per place',
-    pending: 'Tokens landing at the end of the scan',
-    fired: 'Transitions fired this scan',
-    timer: 'Enabling delays',
-  },
+  place: 'Marking: one variable per place',
+  pending: 'Tokens landing at the end of the scan',
+  fired: 'Transitions fired this scan',
+  timer: 'Enabling delays',
 } as const;
 
 export function initText(d: Decl, trueLit = 'TRUE'): string {
@@ -82,10 +74,7 @@ export function printIec(prog: Program, dialect: Dialect = 'iec'): string {
     lines.push('VAR');
     groups.forEach(({ group, decls }, i) => {
       if (i) lines.push('');
-      lines.push(
-        `    (* ${GROUP_TITLE[prog.lang][group as keyof (typeof GROUP_TITLE)['pt']]} *)`,
-        ...declLines(decls, '    '),
-      );
+      lines.push(`    (* ${GROUP_TITLE[group]} *)`, ...declLines(decls, '    '));
     });
     lines.push('END_VAR');
   }

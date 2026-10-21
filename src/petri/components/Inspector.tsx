@@ -1,6 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { useT } from '../i18n';
+import { t } from '../strings';
 import {
   addInput,
   addOutput,
@@ -137,7 +137,6 @@ function Section({ title, children, action }: { title: string; children: React.R
 
 export default function Inspector() {
   const { state, dispatch } = useStore();
-  const t = useT();
   const toast = useToast();
   const { net, selection } = state;
   const edit = (fn: (n: PetriNet) => PetriNet) => dispatch({ type: 'net/update', fn });
@@ -304,7 +303,6 @@ export default function Inspector() {
 type Edit = (fn: (n: PetriNet) => PetriNet) => void;
 
 function PlaceForm({ place, net, edit }: { place: Place; net: PetriNet; edit: Edit }) {
-  const t = useT();
   const set = (patch: Partial<Place>) => edit((n) => updatePlace(n, place.id, patch));
   return (
     <>
@@ -359,7 +357,6 @@ function PlaceForm({ place, net, edit }: { place: Place; net: PetriNet; edit: Ed
 }
 
 function TransitionForm({ tr, net, edit }: { tr: Transition; net: PetriNet; edit: Edit }) {
-  const t = useT();
   const set = (patch: Partial<Transition>) => edit((n) => updateTransition(n, tr.id, patch));
   const [guardDraft, setGuardDraft] = useState(tr.guard);
   useEffect(() => setGuardDraft(tr.guard), [tr.guard]);
@@ -449,7 +446,6 @@ function TransitionForm({ tr, net, edit }: { tr: Transition; net: PetriNet; edit
 }
 
 function ArcForm({ arc, edit }: { arc: Arc; edit: Edit }) {
-  const t = useT();
   const set = (patch: Partial<Arc>) => edit((n) => updateArc(n, arc.id, patch));
   return (
     <div className="grid grid-cols-2 gap-3">

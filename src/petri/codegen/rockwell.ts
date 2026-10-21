@@ -20,41 +20,24 @@ export const ROCKWELL_ST: StStyle = {
 const TYPE = { BOOL: 'BOOL', INT: 'DINT', TIMER: 'FBD_TIMER' } as const;
 
 const USAGE = {
-  pt: {
-    title: 'Tags a criar no escopo do programa (de preferência um programa só para esta rede).',
-    io: 'Entradas e saídas: crie como alias dos pontos de E/S (ex.: Local:1:I.Data.0).',
-    head: ['Tag', 'Tipo', 'Uso'],
-    initial: 'inicial',
-    group: {
-      reset: 'reset',
-      input: 'entrada',
-      output: 'saída',
-      place: 'lugar',
-      pending: 'interno',
-      fired: 'interno',
-      timer: 'temporizador',
-    },
-  },
-  en: {
-    title: 'Tags to create in the program scope (ideally a program of its own for this net).',
-    io: 'Inputs and outputs: create them as aliases of the I/O points (e.g. Local:1:I.Data.0).',
-    head: ['Tag', 'Type', 'Use'],
-    initial: 'initial',
-    group: {
-      reset: 'reset',
-      input: 'input',
-      output: 'output',
-      place: 'place',
-      pending: 'internal',
-      fired: 'internal',
-      timer: 'timer',
-    },
+  title: 'Tags to create in the program scope (ideally a program of its own for this net).',
+  io: 'Inputs and outputs: create them as aliases of the I/O points (e.g. Local:1:I.Data.0).',
+  head: ['Tag', 'Type', 'Use'],
+  initial: 'initial',
+  group: {
+    reset: 'reset',
+    input: 'input',
+    output: 'output',
+    place: 'place',
+    pending: 'internal',
+    fired: 'internal',
+    timer: 'timer',
   },
 } as const;
 
 export function printRockwell(prog: Program): string {
   const st = ROCKWELL_ST;
-  const u = USAGE[prog.lang];
+  const u = USAGE;
   const sec = sections(prog);
   const wName = Math.max(u.head[0].length, ...prog.decls.map((d) => d.name.length));
   const wType = Math.max(u.head[1].length, ...prog.decls.map((d) => TYPE[d.type].length));
