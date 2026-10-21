@@ -4,7 +4,15 @@
  * LLMs actually send back.
  */
 import assert from 'node:assert/strict';
-import { generateJson, LlmError, MODEL_CHAIN, reasons } from '../../src/petri/llm/gemini';
+import {
+  generateJson,
+  keyFingerprint,
+  LlmError,
+  looksLikeGoogleKey,
+  MODEL_CHAIN,
+  ownKey,
+  reasons,
+} from '../../src/petri/llm/gemini';
 import { buildTurns, readAnswer } from '../../src/petri/llm/prompt';
 import { compile } from '../../src/petri/model/net';
 
@@ -183,5 +191,12 @@ assert.deepEqual(
   ['user'],
 );
 assert.match(turns[0].text, /first try[\s\S]*second try[\s\S]*make it faster/);
+
+// Keys pasted with quotes or a line break still work; the fingerprint never shows the middle.
+store.set('petriplc:apiKey', ' "AIzaSyD-example_key_0123456789abcdefghi"\n');
+assert.equal(ownKey(), 'AIzaSyD-example_key_0123456789abcdefghi');
+assert.equal(looksLikeGoogleKey(ownKey()), true);
+assert.equal(looksLikeGoogleKey('your_google_api_key_here'), false);
+assert.equal(keyFingerprint(ownKey()), 'AIza…fghi (39)');
 
 console.log('llm: ok');

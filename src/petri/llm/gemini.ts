@@ -39,9 +39,16 @@ function storage(): Storage | null {
   }
 }
 
+/** Env vars and pastes arrive with quotes, spaces and line breaks; Google rejects all of them. */
+const cleanKey = (raw: string) =>
+  raw
+    .trim()
+    .replace(/^["']+|["']+$/g, '')
+    .trim();
+
 export function ownKey(): string {
   try {
-    return storage()?.getItem(OWN_KEY) ?? '';
+    return cleanKey(storage()?.getItem(OWN_KEY) ?? '');
   } catch {
     return '';
   }
@@ -49,7 +56,7 @@ export function ownKey(): string {
 
 export function setOwnKey(key: string) {
   try {
-    if (key.trim()) storage()?.setItem(OWN_KEY, key.trim());
+    if (cleanKey(key)) storage()?.setItem(OWN_KEY, cleanKey(key));
     else storage()?.removeItem(OWN_KEY);
   } catch {
     // Private mode: the key lives only for this page.
@@ -57,9 +64,15 @@ export function setOwnKey(key: string) {
 }
 
 export function siteKey(): string {
-  const key = import.meta.env?.VITE_GOOGLE_API_KEY as string | undefined;
+  const key = cleanKey((import.meta.env?.VITE_GOOGLE_API_KEY as string | undefined) ?? '');
   return key && key !== 'your_google_api_key_here' ? key : '';
 }
+
+/** Enough of a key to tell which one is in use, never enough to use it. */
+export const keyFingerprint = (key: string) => `${key.slice(0, 4)}…${key.slice(-4)} (${key.length})`;
+
+/** Google API keys look like AIza + 35 characters. */
+export const looksLikeGoogleKey = (key: string) => /^AIza[\w-]{35}$/.test(key);
 
 export const apiKey = () => ownKey() || siteKey();
 

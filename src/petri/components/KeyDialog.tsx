@@ -1,7 +1,7 @@
 import { KeyRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useT } from '../i18n';
-import { ownKey, setOwnKey, siteKey } from '../llm/gemini';
+import { keyFingerprint, looksLikeGoogleKey, ownKey, setOwnKey, siteKey } from '../llm/gemini';
 
 export default function KeyDialog({ onClose }: { onClose: () => void }) {
   const t = useT();
@@ -36,6 +36,14 @@ export default function KeyDialog({ onClose }: { onClose: () => void }) {
         <p className={`mb-3 text-sm ${hasSite ? 'text-emerald-300' : 'text-amber-300'}`}>
           {t(hasSite ? 'key.site' : 'key.noSite')}
         </p>
+        {hasSite && (
+          <p className="-mt-2 mb-3 font-mono text-xs text-slate-400" data-testid="key-site-fingerprint">
+            {t('key.fingerprint', { fp: keyFingerprint(siteKey()) })}
+            {!looksLikeGoogleKey(siteKey()) && (
+              <span className="block font-sans text-amber-300">{t('key.badShape')}</span>
+            )}
+          </p>
+        )}
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-slate-400">{t('key.own')}</span>
           <input
@@ -48,7 +56,11 @@ export default function KeyDialog({ onClose }: { onClose: () => void }) {
             data-testid="key-input"
           />
         </label>
-        {hasOwn && <p className="mt-1 text-xs text-sky-300">{t('key.ownSet')}</p>}
+        {hasOwn && (
+          <p className="mt-1 text-xs text-sky-300">
+            {t('key.ownSet')} <span className="font-mono text-slate-400">{keyFingerprint(ownKey())}</span>
+          </p>
+        )}
         <p className="mt-2 text-[11px] text-slate-500">{t('key.note')}</p>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <a

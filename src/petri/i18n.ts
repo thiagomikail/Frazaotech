@@ -227,6 +227,8 @@ const pt = {
   'key.get': 'Criar uma chave no Google AI Studio',
   'key.close': 'Fechar',
   'key.note': 'A chave vai do navegador direto ao Google.',
+  'key.fingerprint': 'Chave em uso: {fp}',
+  'key.badShape': 'Isso não parece uma chave do Google: elas começam com "AIza" e têm 39 caracteres.',
 
   'common.close': 'Fechar',
   'common.cancel': 'Cancelar',
@@ -458,6 +460,8 @@ const en: Record<TKey, string> = {
   'key.get': 'Create a key in Google AI Studio',
   'key.close': 'Close',
   'key.note': 'The key goes from the browser straight to Google.',
+  'key.fingerprint': 'Key in use: {fp}',
+  'key.badShape': 'This does not look like a Google key: they start with "AIza" and are 39 characters long.',
 
   'common.close': 'Close',
   'common.cancel': 'Cancel',
