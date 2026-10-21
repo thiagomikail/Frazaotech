@@ -1,49 +1,53 @@
 import { useSyncExternalStore } from 'react';
 
 /**
- * Diagram colors, one set per appearance. SVG attributes, not classes, so an
- * exported SVG keeps them — which is why the appearance is picked here, in JS.
+ * Diagram colors in the HMI look, one set per appearance: grays for structure,
+ * color only for state. SVG attributes, not classes, so an exported SVG keeps
+ * them — which is why the appearance is picked here, in JS.
  */
 const light = {
-  bg: '#ffffff',
-  grid: '#d8d8de',
+  bg: '#f4f4f4',
+  grid: '#d9d9d9',
   placeFill: '#ffffff',
-  placeStroke: '#8e8e93',
-  marked: '#0071e3',
-  token: '#1d1d1f',
-  text: '#1d1d1f',
-  muted: '#6e6e73',
-  arc: '#a1a1a6',
-  ready: '#34c759',
-  blocked: '#ff9500',
-  timing: '#5856d6',
-  disabled: '#d1d1d6',
-  invalid: '#ff3b30',
-  selected: '#af52de',
-  outOn: '#248a3d',
-  outOff: '#86868b',
+  placeStroke: '#555555',
+  marked: '#1d4f91',
+  token: '#1a1a1a',
+  text: '#1a1a1a',
+  muted: '#4a4a4a',
+  arc: '#6b6b6b',
+  ready: '#1e7b34',
+  blocked: '#e0a000',
+  timing: '#4a4fa8',
+  disabled: '#a6a6a6',
+  invalid: '#c8102e',
+  selected: '#6c4a9e',
+  outOn: '#186b2b',
+  outOff: '#6b6b6b',
+  /** The thin dark edge around an amber (blocked) bar, as on an HMI alarm tile. */
+  outline: '#1a1a1a',
 };
 
 export type Palette = typeof light;
 
 const dark: Palette = {
-  bg: '#1c1c1e',
-  grid: '#3a3a3c',
-  placeFill: '#2c2c2e',
-  placeStroke: '#8e8e93',
-  marked: '#0a84ff',
-  token: '#f5f5f7',
-  text: '#f5f5f7',
-  muted: '#a1a1a6',
-  arc: '#636366',
-  ready: '#30d158',
-  blocked: '#ff9f0a',
-  timing: '#7d7aff',
-  disabled: '#48484a',
-  invalid: '#ff453a',
-  selected: '#bf5af2',
-  outOn: '#30d158',
-  outOff: '#8e8e93',
+  bg: '#262626',
+  grid: '#333333',
+  placeFill: '#2a2a2a',
+  placeStroke: '#9a9a9a',
+  marked: '#6a9fe0',
+  token: '#e8e8e8',
+  text: '#e8e8e8',
+  muted: '#b3b3b3',
+  arc: '#7a7a7a',
+  ready: '#3ea65a',
+  blocked: '#f0b400',
+  timing: '#8a8ef0',
+  disabled: '#555555',
+  invalid: '#e5484d',
+  selected: '#b08ce0',
+  outOn: '#6fd08a',
+  outOff: '#8f8f8f',
+  outline: '#000000',
 };
 
 const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)');

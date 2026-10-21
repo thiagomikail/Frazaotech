@@ -35,11 +35,11 @@ const ActionPanel = ({ asset }) => {
                 action={<Badge tone={open ? 'orange' : 'gray'}>{open} open</Badge>}
             />
 
-            <PanelBody className="space-y-3 pt-2">
+            <PanelBody className="space-y-3">
                 {open === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center py-10 text-ink-3">
                         <CheckCircle size={32} className="mb-2 text-green" />
-                        <p className="text-[13px]">System optimal</p>
+                        <p className="text-[12px] font-bold uppercase tracking-[0.08em]">System optimal</p>
                     </div>
                 ) : (
                     asset.recommendations.map((rec) => {
@@ -47,24 +47,30 @@ const ActionPanel = ({ asset }) => {
                         const urgent = rec.priority === 'Urgent';
                         const Icon = supply ? Network : urgent ? AlertTriangle : Clock;
                         return (
-                            <article key={rec.id} className="rounded-xl bg-fill/50 p-3.5" data-testid="action-card">
+                            <article
+                                key={rec.id}
+                                className={`rounded-sm border border-line border-l-4 bg-field p-3 ${urgent ? 'border-l-orange' : 'border-l-ink-3'}`}
+                                data-testid="action-card"
+                            >
                                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                                    <Badge tone={supply ? 'purple' : urgent ? 'orange' : 'blue'}>
+                                    <Badge tone={urgent ? 'orange' : 'gray'}>
                                         <Icon size={12} />
                                         {supply ? 'Supply chain' : rec.priority}
                                     </Badge>
-                                    <Badge tone="green" className="tabular-nums">Save {rec.potentialSaving}</Badge>
+                                    <span className="font-mono text-[11px] font-medium tabular-nums text-ink-2">
+                                        SAVE {rec.potentialSaving}
+                                    </span>
                                 </div>
 
-                                <p className="mb-3 text-[14px] leading-snug text-ink">{rec.description}</p>
+                                <p className="mb-3 text-[14px] font-medium leading-snug text-ink">{rec.description}</p>
 
                                 {/* Visual sub-steps for supply-chain items */}
                                 {rec.actions && (
                                     <div className="mb-3 grid grid-cols-2 gap-2">
                                         {rec.actions.map((act, i) => (
-                                            <div key={i} className="rounded-lg bg-surface px-2.5 py-2 shadow-card">
-                                                <div className="text-[11px] text-ink-2">{act.asset}</div>
-                                                <div className="text-[13px] font-semibold text-ink">{act.value}</div>
+                                            <div key={i} className="rounded-sm border border-line bg-surface px-2.5 py-2">
+                                                <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">{act.asset}</div>
+                                                <div className="font-mono text-[13px] font-medium text-ink">{act.value}</div>
                                             </div>
                                         ))}
                                     </div>

@@ -1,7 +1,7 @@
 import { barSize, nodeExtent, PLACE_R } from '../model/layout';
 import type { Arc, Direction, PetriNet, Point } from '../model/types';
 
-export const MONO = "'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+export const MONO = "'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
 export interface NodeInfo {
   kind: 'place' | 'transition';

@@ -11,7 +11,7 @@ import { useColors } from '../../lib/colors';
  *
  * Aqui o array vira o fluxo da planta inteira: entrada total -> cada ativo ->
  * util / perdido. E' o mesmo desenho do painel de ativo, um nivel acima.
- * `colors` pinta as ligacoes: util na cor de destaque, perda em vermelho.
+ * `colors` pinta as ligacoes: util na cor de destaque, perda em cinza.
  */
 const buildPlantFlow = (assets, colors) => {
     if (!Array.isArray(assets) || assets.length === 0) {
@@ -48,7 +48,7 @@ const buildPlantFlow = (assets, colors) => {
             links.push({ source: assetIdx, target: usefulIdx, value: useful, fill: colors.accent });
         }
         if (loss > 0) {
-            links.push({ source: assetIdx, target: lossIdx, value: loss, fill: colors.red });
+            links.push({ source: assetIdx, target: lossIdx, value: loss, fill: colors.ink3 });
         }
     });
 
@@ -75,20 +75,20 @@ const PlantSankeyModal = ({ data, onClose }) => {
             onClose={onClose}
             size="lg"
         >
-            <div className="flex flex-col gap-5 p-6">
+            <div className="flex flex-col gap-4 p-4">
                 <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-xl bg-fill/60 px-4 py-3">
+                    <div className="rounded-sm border border-line bg-field px-3 py-2.5">
                         <Stat label="Plant input" value={totalLoad.toFixed(1)} unit="MMBtu/hr" />
                     </div>
-                    <div className="rounded-xl bg-fill/60 px-4 py-3">
-                        <Stat label="Total losses" value={`-${totalLoss.toFixed(1)}`} unit="MMBtu/hr" tone="red" />
+                    <div className="rounded-sm border border-line bg-field px-3 py-2.5">
+                        <Stat label="Total losses" value={`-${totalLoss.toFixed(1)}`} unit="MMBtu/hr" />
                     </div>
-                    <div className="rounded-xl bg-fill/60 px-4 py-3">
-                        <Stat label="Plant efficiency" value={`${efficiency.toFixed(1)}%`} tone="blue" />
+                    <div className="rounded-sm border border-line bg-field px-3 py-2.5">
+                        <Stat label="Plant efficiency" value={`${efficiency.toFixed(1)}%`} />
                     </div>
                 </div>
 
-                <div className="h-[min(55vh,520px)] min-h-[280px]">
+                <div className="h-[min(55vh,520px)] min-h-[280px] rounded-sm border border-line bg-field p-2">
                     <SankeyDiagram data={flow} />
                 </div>
             </div>

@@ -36,7 +36,7 @@ const LossPanel = ({ asset }) => {
                 source: 0,
                 target: idx + 2,
                 value: typeof loss.value === 'string' ? parseFloat(loss.value) : loss.value,
-                fill: c.red // Red for losses
+                fill: c.ink3 // gray: what leaves without doing work
             }))
         ];
         return { nodes, links };
@@ -50,37 +50,36 @@ const LossPanel = ({ asset }) => {
         <>
             <PanelHeader icon={Activity} title="Energy loss breakdown" subtitle={asset.name} />
 
-            <PanelBody className="flex flex-col gap-5 pt-2">
+            <PanelBody className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl bg-fill/60 px-3.5 py-3">
-                        <Stat label="Total loss" value={`-${asset.energy.totalLoss}`} unit="MMBtu/hr" tone="red" />
+                    <div className="rounded-sm border border-line bg-field px-3 py-2.5">
+                        <Stat label="Total loss" value={`-${asset.energy.totalLoss}`} unit="MMBtu/hr" />
                     </div>
-                    <div className="rounded-xl bg-fill/60 px-3.5 py-3">
+                    <div className="rounded-sm border border-line bg-field px-3 py-2.5">
                         <Stat label="Efficiency" value={`${efficiency.toFixed(1)}%`} tone={efficiencyTone} hint="Target: 48%" />
                     </div>
                 </div>
 
-                <div>
-                    <div className="flex items-baseline justify-between border-b border-line pb-1.5 text-[12px] text-ink-2">
-                        <span className="font-semibold">Loss factor</span>
-                        <span>Value (MMBtu/hr)</span>
+                <div className="overflow-hidden rounded-sm border border-line bg-field">
+                    <div className="flex items-baseline justify-between border-b border-line bg-strip px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.06em] text-ink-2">
+                        <span>Loss factor</span>
+                        <span>MMBtu/hr</span>
                     </div>
                     <ul className="divide-y divide-line">
                         {asset.losses.map((loss) => (
-                            <li key={loss.id} className="py-2.5">
+                            <li key={loss.id} className="px-3 py-2">
                                 <div className="flex items-baseline justify-between gap-3">
-                                    <span className="text-[14px] font-medium text-ink">{loss.name}</span>
-                                    <span className="shrink-0 text-[14px] font-semibold tabular-nums text-red-ink">
+                                    <span className="text-[14px] font-semibold text-ink">{loss.name}</span>
+                                    <span className="shrink-0 font-mono text-[13px] font-medium tabular-nums text-ink">
                                         -{loss.value.toFixed(2)}
                                     </span>
                                 </div>
-                                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-fill">
-                                    <div
-                                        className="h-full rounded-full bg-red"
-                                        style={{ width: `${(loss.value / 6) * 100}%` }}
-                                    />
+                                <div className="mt-1.5 h-2 overflow-hidden rounded-sm border border-line bg-surface">
+                                    <div className="h-full bg-ink-3" style={{ width: `${(loss.value / 6) * 100}%` }} />
                                 </div>
-                                <div className="mt-1 text-[11px] text-ink-3">{loss.category}</div>
+                                <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.04em] text-ink-3">
+                                    {loss.category}
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -88,7 +87,7 @@ const LossPanel = ({ asset }) => {
 
                 <div>
                     <SectionTitle>Energy flow diagram</SectionTitle>
-                    <div className="relative h-[260px] w-full">
+                    <div className="relative h-[260px] w-full rounded-sm border border-line bg-field">
                         <SankeyDiagram data={getSankeyData()} />
                     </div>
                 </div>

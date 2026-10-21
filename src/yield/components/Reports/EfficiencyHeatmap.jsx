@@ -19,7 +19,7 @@ const EfficiencyHeatmap = () => {
 
     // HTML cells, so the theme's classes carry the color in both appearances.
     const getColor = (status) => {
-        if (status === 'good') return 'bg-green';
+        if (status === 'good') return 'bg-green/70';
         if (status === 'avg') return 'bg-orange';
         return 'bg-red';
     };
@@ -28,23 +28,32 @@ const EfficiencyHeatmap = () => {
         <Panel className="h-full">
             <PanelHeader icon={Calendar} title="Yearly efficiency heatmap" />
 
-            <div className="flex min-h-0 flex-1 flex-col px-5 pb-5">
+            <div className="flex min-h-0 flex-1 flex-col p-3">
                 {/* Legend */}
-                <div className="mb-3 flex flex-wrap justify-end gap-x-4 gap-y-1 text-[11px] text-ink-2">
-                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-[3px] bg-green" /> &gt; 95% eff.</span>
-                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-[3px] bg-orange" /> 85–95% eff.</span>
-                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-[3px] bg-red" /> &lt; 85% eff.</span>
+                <div className="mb-2 flex flex-wrap justify-end gap-x-4 gap-y-1 text-[11px] text-ink-2">
+                    <span className="flex items-center gap-1.5">
+                        <span className="h-2.5 w-2.5 bg-green/70" />
+                        <span><span className="font-mono">&gt; 95%</span> eff.</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <span className="h-2.5 w-2.5 bg-orange" />
+                        <span><span className="font-mono">85–95%</span> eff.</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <span className="h-2.5 w-2.5 bg-red" />
+                        <span><span className="font-mono">&lt; 85%</span> eff.</span>
+                    </span>
                 </div>
 
                 {/* Grid: one column per month, one cell per week */}
-                <div className="grid min-h-[150px] flex-1 grid-cols-12 gap-1 sm:gap-1.5">
+                <div className="grid min-h-[150px] flex-1 grid-cols-12 gap-1">
                     {heatmapData.map((month, mIdx) => (
-                        <div key={mIdx} className="flex min-w-0 flex-col gap-1 sm:gap-1.5">
-                            <div className="text-center text-[10px] text-ink-3 sm:text-[11px]">{month.name}</div>
+                        <div key={mIdx} className="flex min-w-0 flex-col gap-1">
+                            <div className="truncate text-center text-[9px] font-bold uppercase tracking-[0.04em] text-ink-2 sm:text-[10px]">{month.name}</div>
                             {month.weeks.map((status, wIdx) => (
                                 <div
                                     key={wIdx}
-                                    className={`min-h-[14px] flex-1 cursor-pointer rounded-[5px] opacity-85 transition-opacity hover:opacity-100 ${getColor(status)}`}
+                                    className={`min-h-[14px] flex-1 cursor-pointer border border-black/15 opacity-90 transition-opacity hover:opacity-100 ${getColor(status)}`}
                                     title={`Week ${wIdx + 1}: ${status}`}
                                 ></div>
                             ))}

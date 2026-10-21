@@ -57,7 +57,7 @@ const SmartSuggestPanel: React.FC = () => {
 
   if (!selectedComponentId) {
     return (
-      <div className="rounded-2xl bg-surface shadow-card p-4 text-[13px] text-ink-2">
+      <div className="rounded-sm border border-line bg-field p-3 text-[13px] text-ink-2">
         Select a component and row to use SmartSuggest.
       </div>
     );
@@ -65,42 +65,44 @@ const SmartSuggestPanel: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="rounded-2xl bg-surface shadow-card p-4 mb-4">
-        <h3 className="text-[15px] font-semibold flex items-center text-ink mb-2">
-          <Sparkles size={16} className="mr-2 text-purple" />
+      <div className="rounded-sm border border-line bg-field mb-3 overflow-hidden">
+        <h3 className="flex h-7 items-center gap-2 border-b border-line bg-strip px-3 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">
+          <Sparkles size={14} />
           Risk Brainstorming
         </h3>
-        <p className="text-[13px] leading-relaxed text-ink-2 mb-4">
-          Generate likely failure modes for <strong className="font-semibold text-ink">{componentName}</strong>.
-          {rowFunction && <span> Function: <em className="text-ink">{rowFunction}</em></span>}
-        </p>
+        <div className="p-3">
+          <p className="text-[13px] leading-relaxed text-ink-2 mb-3">
+            Generate likely failure modes for <strong className="font-semibold text-ink">{componentName}</strong>.
+            {rowFunction && <span> Function: <em className="text-ink">{rowFunction}</em></span>}
+          </p>
         
-        <button 
-          onClick={handleSuggest}
-          disabled={loading || !selectedRowId}
-          className="w-full h-9 rounded-full bg-accent enabled:hover:bg-accent-hover text-on-accent disabled:bg-fill disabled:text-ink-3 disabled:cursor-not-allowed text-[14px] font-medium transition-colors flex items-center justify-center"
-        >
-          {loading ? <Loader2 size={16} className="animate-spin mr-2" /> : <Sparkles size={16} className="mr-2" />}
-          {loading ? 'Generating...' : 'Suggest Failure Modes'}
-        </button>
-        {!selectedRowId && <p className="text-[11px] text-center mt-2 text-orange-ink">Select a row in the worksheet first.</p>}
+          <button 
+            onClick={handleSuggest}
+            disabled={loading || !selectedRowId}
+            className="w-full h-8 rounded-sm border border-accent-hover bg-accent enabled:hover:bg-accent-hover text-on-accent disabled:border-line disabled:bg-raised disabled:text-ink-3 disabled:cursor-not-allowed text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors flex items-center justify-center"
+          >
+            {loading ? <Loader2 size={15} className="animate-spin mr-2" /> : <Sparkles size={15} className="mr-2" />}
+            {loading ? 'Generating...' : 'Suggest Failure Modes'}
+          </button>
+          {!selectedRowId && <p className="text-[11px] font-semibold text-center mt-2 text-orange-ink">Select a row in the worksheet first.</p>}
+        </div>
       </div>
 
       {error && (
-        <div className="text-[12px] text-red-ink bg-red/10 p-3 rounded-xl mb-4">
+        <div className="text-[12px] text-red-ink bg-red/10 p-2.5 rounded-sm border border-red/50 border-l-4 border-l-red mb-3">
           {error}
         </div>
       )}
 
       {suggestions.length > 0 && (
         <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-          <h4 className="text-[11px] font-semibold text-ink-3 px-2 mb-2">Suggestions</h4>
+          <h4 className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2 mb-2">Suggestions</h4>
           {suggestions.map((s, i) => (
-            <div key={i} className="rounded-xl bg-surface shadow-card p-3">
+            <div key={i} className="rounded-sm border border-line bg-field p-2.5">
               <p className="text-[13px] text-ink mb-2">{s}</p>
               <button 
                 onClick={() => handleApply(s)}
-                className="text-[12px] flex items-center text-accent hover:text-accent-hover font-medium transition-colors"
+                className="text-[12px] flex items-center text-accent hover:underline font-semibold"
               >
                 <PlusCircle size={14} className="mr-1" />
                 Apply to Selected Row

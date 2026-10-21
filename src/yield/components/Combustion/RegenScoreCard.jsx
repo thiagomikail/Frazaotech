@@ -15,12 +15,17 @@ import { PanelBody, PanelHeader, SectionTitle } from '../ui';
  * "82 em recuperacao termica" nao valem a mesma coisa no total.
  */
 
-/** Grade from the engine (A-D) to a system color, so the score reads the same everywhere. */
-export const GRADE_TONE = { A: 'green', B: 'blue', C: 'orange', D: 'red' };
+/**
+ * Grade from the engine (A-D) to a state color, so the score reads the same
+ * everywhere. HMI rule: color only for state — acceptable (B) is normal, so it
+ * stays gray; blue is kept for selection.
+ */
+export const GRADE_TONE = { A: 'green', B: 'gray', C: 'orange', D: 'red' };
 
 /** Classes per tone: `text` for numbers and labels, `bg` for bars and dots; `key` picks the SVG color. */
 export const TONE = {
     green: { text: 'text-green-ink', bg: 'bg-green', key: 'green' },
+    gray: { text: 'text-ink', bg: 'bg-ink-3', key: 'ink2' },
     blue: { text: 'text-accent', bg: 'bg-accent', key: 'accent' },
     orange: { text: 'text-orange-ink', bg: 'bg-orange', key: 'orange' },
     red: { text: 'text-red-ink', bg: 'bg-red', key: 'red' },
@@ -47,8 +52,8 @@ const sentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
 /** A compact figure for the 2×2 grid under the gauge. */
 const Figure = ({ label, value, className = 'text-ink' }) => (
     <div className="min-w-0">
-        <div className="truncate text-[11px] text-ink-2">{label}</div>
-        <div className={`text-[17px] font-semibold leading-tight tabular-nums ${className}`}>{value}</div>
+        <div className="truncate text-[10px] font-bold uppercase tracking-[0.04em] text-ink-2">{label}</div>
+        <div className={`mt-0.5 font-mono text-[16px] font-medium leading-tight tabular-nums ${className}`}>{value}</div>
     </div>
 );
 
@@ -71,7 +76,7 @@ const RegenScoreCard = ({ system, analysis }) => {
             <PanelBody className="@container">
                 <div className="flex flex-col gap-5 @xl:flex-row @xl:items-start">
                     {/* --- gauge --- */}
-                    <div className="flex shrink-0 flex-col items-center gap-3 @xl:w-[200px]">
+                    <div className="flex shrink-0 flex-col items-center gap-3 @xl:w-[228px]">
                         <div className="relative h-[148px] w-[180px]">
                             <svg viewBox="0 0 180 148" className="absolute inset-0 h-full w-full" aria-hidden="true">
                                 <path
@@ -79,33 +84,33 @@ const RegenScoreCard = ({ system, analysis }) => {
                                     fill="none"
                                     stroke={c.grid}
                                     strokeWidth="12"
-                                    strokeLinecap="round"
+                                    strokeLinecap="butt"
                                 />
                                 <path
                                     d={arcPath(cx, cy, ARC_RADIUS, ARC_START, Math.max(sweep, 0.1))}
                                     fill="none"
                                     stroke={c[tone.key]}
                                     strokeWidth="12"
-                                    strokeLinecap="round"
+                                    strokeLinecap="butt"
                                     style={{ transition: 'stroke 0.3s, d 0.3s' }}
                                 />
                             </svg>
                             <div className="absolute inset-x-0 top-[50px] text-center">
                                 <div
-                                    className={`text-[44px] font-semibold leading-none tracking-tight tabular-nums ${tone.text}`}
+                                    className={`font-mono text-[44px] font-medium leading-none tabular-nums ${tone.text}`}
                                     data-testid="score-number"
                                 >
                                     {score.total.toFixed(0)}
                                 </div>
-                                <div className="mt-1.5 text-[12px] font-medium text-ink-2">Grade {score.grade}</div>
+                                <div className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">Grade {score.grade}</div>
                             </div>
-                            <div className={`absolute inset-x-0 bottom-1 text-center text-[13px] font-semibold ${tone.text}`}>
+                            <div className={`absolute inset-x-0 bottom-1 text-center text-[12px] font-bold uppercase tracking-[0.06em] ${tone.text}`}>
                                 {sentence(score.label)}
                             </div>
                         </div>
 
                         {/* --- indicadores termodinamicos --- */}
-                        <div className="grid w-full max-w-[360px] grid-cols-2 gap-x-4 gap-y-3 rounded-xl bg-fill px-3 py-2.5">
+                        <div className="grid w-full max-w-[360px] grid-cols-2 gap-x-3 gap-y-3 rounded-sm border border-line bg-field px-2.5 py-2.5">
                             <Figure label="Available heat" value={`${(analysis.availableHeat * 100).toFixed(1)}%`} />
                             <Figure label="Effectiveness" value={`${(analysis.effectiveness * 100).toFixed(1)}%`} />
                             <Figure label="Excess air" value={`${analysis.excessAir.toFixed(0)}%`} />
@@ -126,15 +131,17 @@ const RegenScoreCard = ({ system, analysis }) => {
                                 return (
                                     <div key={b.key}>
                                         <div className="flex items-baseline gap-2">
-                                            <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-ink">{b.label}</span>
-                                            <span className="text-[11px] tabular-nums text-ink-3">weight {b.weight}</span>
-                                            <span className={`w-8 text-right text-[15px] font-semibold tabular-nums ${bt.text}`}>
+                                            <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-ink">{b.label}</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-3">
+                                                weight <span className="font-mono tabular-nums">{b.weight}</span>
+                                            </span>
+                                            <span className={`w-8 text-right font-mono text-[15px] font-medium tabular-nums ${bt.text}`}>
                                                 {b.score.toFixed(0)}
                                             </span>
                                         </div>
-                                        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-fill">
+                                        <div className="mt-1.5 h-2 overflow-hidden rounded-sm border border-line bg-field">
                                             <div
-                                                className={`h-full rounded-full transition-[width] duration-300 ${bt.bg}`}
+                                                className={`h-full transition-[width] duration-300 ${bt.bg}`}
                                                 style={{ width: `${b.score}%` }}
                                             />
                                         </div>

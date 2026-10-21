@@ -2,57 +2,68 @@ import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
 /**
- * Yield's building blocks, in the workbench's Apple look (src/theme.css).
- * Every module uses these, so a card, a button or a sheet looks the same in
- * Monitor, Combustion, Optimization and Reports.
+ * Yield's building blocks, in the workbench's industrial HMI look
+ * (src/theme.css): gray panels with a title strip, square corners, uppercase
+ * labels, color only for state. Every module uses these, so a panel, a button
+ * or a sheet looks the same in Monitor, Combustion, Optimization and Reports.
  */
 
-/** A white card on the gray page: the unit every screen is made of. */
+/** An outlined gray panel on the page: the unit every screen is made of. */
 export const Panel = ({ className = '', children, ...rest }) => (
-    <section className={`flex min-h-0 flex-col overflow-hidden rounded-2xl bg-surface shadow-card ${className}`} {...rest}>
+    <section
+        className={`flex min-h-0 flex-col overflow-hidden rounded-sm border border-line bg-surface ${className}`}
+        {...rest}
+    >
         {children}
     </section>
 );
 
+/** The panel's title strip: uppercase title, optional subtitle, actions on the right. */
 export const PanelHeader = ({ icon: Icon, title, subtitle, action, className = '' }) => (
-    <header className={`flex items-center gap-2.5 px-5 pb-2 pt-4 ${className}`}>
-        {Icon && <Icon size={17} className="shrink-0 text-accent" />}
-        <div className="min-w-0 flex-1">
-            <h2 className="truncate text-[15px] font-semibold tracking-tight text-ink">{title}</h2>
-            {subtitle && <p className="truncate text-[12px] text-ink-2">{subtitle}</p>}
-        </div>
-        {action}
+    <header
+        className={`flex min-h-8 shrink-0 items-center gap-2 border-b border-line bg-strip px-3 py-1 ${className}`}
+    >
+        {Icon && <Icon size={14} className="shrink-0 text-ink-2" />}
+        <h2 className="shrink-0 truncate text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">{title}</h2>
+        {subtitle && (
+            <>
+                <span className="h-3 w-px shrink-0 bg-line" aria-hidden="true" />
+                <p className="min-w-0 truncate text-[12px] font-medium text-ink-3">{subtitle}</p>
+            </>
+        )}
+        {action && <div className="ml-auto flex shrink-0 items-center gap-2">{action}</div>}
     </header>
 );
 
 export const PanelBody = ({ className = '', children }) => (
-    <div className={`min-h-0 flex-1 overflow-y-auto px-5 pb-5 ${className}`}>{children}</div>
+    <div className={`min-h-0 flex-1 overflow-y-auto p-3 ${className}`}>{children}</div>
 );
 
-/** Small gray heading inside a card. Sentence case, never uppercase. */
+/** Small uppercase heading inside a panel. */
 export const SectionTitle = ({ className = '', children }) => (
-    <h3 className={`mb-2 text-[13px] font-semibold text-ink-2 ${className}`}>{children}</h3>
+    <h3 className={`mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2 ${className}`}>{children}</h3>
 );
 
 const BUTTON = {
-    primary: 'bg-accent text-on-accent hover:bg-accent-hover',
-    secondary: 'bg-fill text-ink hover:bg-fill-strong',
-    tinted: 'bg-accent/10 text-accent hover:bg-accent/15',
-    plain: 'text-accent hover:bg-fill',
-    danger: 'bg-red/10 text-red-ink hover:bg-red/15',
+    primary: 'border-accent-hover bg-accent text-on-accent hover:bg-accent-hover',
+    secondary: 'border-line bg-raised text-ink hover:bg-fill-strong',
+    tinted: 'border-line bg-raised text-accent hover:bg-fill-strong',
+    plain: 'border-transparent text-accent hover:bg-fill',
+    run: 'border-green bg-green text-white hover:opacity-90 dark:text-black',
+    danger: 'border-red bg-red text-white hover:opacity-90',
 };
 
 const SIZE = {
-    sm: 'h-7 px-3 text-[12px]',
-    md: 'h-8 px-3.5 text-[13px]',
-    lg: 'h-10 px-5 text-[15px]',
+    sm: 'h-7 px-2.5 text-[11px]',
+    md: 'h-8 px-3 text-[12px]',
+    lg: 'h-10 px-4 text-[13px]',
 };
 
-/** Pill button. `primary` for the one main action of a view, `secondary`/`tinted` for the rest. */
+/** Square push button. `primary` for the one main action of a view, `run` to start something, `secondary`/`tinted` for the rest. */
 export const Button = ({ variant = 'secondary', size = 'md', className = '', children, ...rest }) => (
     <button
         type="button"
-        className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full font-medium transition-colors disabled:pointer-events-none disabled:opacity-40 ${BUTTON[variant]} ${SIZE[size]} ${className}`}
+        className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm border font-semibold uppercase tracking-[0.04em] transition-colors disabled:pointer-events-none disabled:opacity-40 ${BUTTON[variant]} ${SIZE[size]} ${className}`}
         {...rest}
     >
         {children}
@@ -60,19 +71,19 @@ export const Button = ({ variant = 'secondary', size = 'md', className = '', chi
 );
 
 const TONE = {
-    gray: 'bg-fill text-ink-2',
-    blue: 'bg-accent/12 text-accent',
+    gray: 'bg-fill-strong text-ink-2',
+    blue: 'bg-accent/15 text-accent',
     green: 'bg-green/15 text-green-ink',
-    orange: 'bg-orange/15 text-orange-ink',
+    orange: 'bg-orange/20 text-orange-ink',
     red: 'bg-red/15 text-red-ink',
     indigo: 'bg-indigo/15 text-indigo-ink',
     purple: 'bg-purple/15 text-purple-ink',
 };
 
-/** Status pill: short text on a tint of its color. */
+/** Status chip: short uppercase text on a tint of its state color. */
 export const Badge = ({ tone = 'gray', className = '', children, ...rest }) => (
     <span
-        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap ${TONE[tone]} ${className}`}
+        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] ${TONE[tone]} ${className}`}
         {...rest}
     >
         {children}
@@ -89,43 +100,61 @@ const VALUE_TONE = {
     purple: 'text-purple-ink',
 };
 
-/** A number with its label: label small and gray above, value large. */
+/** A reading with its tag: uppercase label above, value in mono. */
 export const Stat = ({ label, value, unit, tone = 'ink', hint, className = '' }) => (
     <div className={`min-w-0 ${className}`}>
-        <div className="truncate text-[12px] text-ink-2">{label}</div>
-        <div className={`mt-0.5 text-[22px] font-semibold leading-tight tracking-tight tabular-nums ${VALUE_TONE[tone]}`}>
+        <div className="truncate text-[11px] font-bold uppercase tracking-[0.06em] text-ink-2">{label}</div>
+        <div className={`mt-0.5 font-mono text-[20px] font-medium leading-tight tabular-nums ${VALUE_TONE[tone]}`}>
             {value}
-            {unit && <span className="ml-1 text-[13px] font-normal text-ink-2">{unit}</span>}
+            {unit && <span className="ml-1 font-sans text-[12px] font-medium text-ink-2">{unit}</span>}
         </div>
         {hint && <div className="mt-0.5 text-[11px] text-ink-3">{hint}</div>}
     </div>
 );
 
-/** iOS segmented control. `options` = [{ value, label, icon? }]. */
-export const Segmented = ({ options, value, onChange, testId, className = '' }) => (
-    <div className={`flex gap-0.5 rounded-[10px] bg-fill p-0.5 ${className}`} role="tablist">
-        {options.map((o) => {
-            const on = o.value === value;
-            const Icon = o.icon;
-            return (
-                <button
-                    key={o.value}
-                    type="button"
-                    role="tab"
-                    aria-selected={on}
-                    onClick={() => onChange(o.value)}
-                    data-testid={testId ? `${testId}-${o.value}` : undefined}
-                    className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1 text-[13px] font-medium transition-colors ${
-                        on ? 'bg-thumb text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-ink-2 hover:text-ink'
-                    }`}
-                >
-                    {Icon && <Icon size={14} />}
-                    {o.label}
-                </button>
-            );
-        })}
-    </div>
-);
+const STRIP = {
+    surface: {
+        box: 'border-line bg-raised',
+        on: 'bg-thumb text-on-thumb',
+        off: 'text-ink-2 hover:bg-fill',
+        divider: 'not-first:border-line',
+    },
+    bar: {
+        box: 'border-bar-line bg-bar-raised',
+        on: 'bg-thumb text-on-thumb',
+        off: 'text-on-bar-2 hover:bg-bar-line hover:text-on-bar',
+        divider: 'not-first:border-bar-line',
+    },
+};
+
+/** HMI tab strip: one bordered row, the selected tab filled. `options` = [{ value, label, icon? }]; `tone="bar"` on the dark title bar. */
+export const Segmented = ({ options, value, onChange, testId, tone = 'surface', className = '' }) => {
+    const s = STRIP[tone];
+    return (
+        <div className={`flex overflow-hidden rounded-sm border ${s.box} ${className}`} role="tablist">
+            {options.map((o) => {
+                const on = o.value === value;
+                const Icon = o.icon;
+                return (
+                    <button
+                        key={o.value}
+                        type="button"
+                        role="tab"
+                        aria-selected={on}
+                        onClick={() => onChange(o.value)}
+                        data-testid={testId ? `${testId}-${o.value}` : undefined}
+                        className={`flex h-7 flex-1 items-center justify-center gap-1.5 whitespace-nowrap px-3 text-[11px] font-bold uppercase tracking-[0.06em] transition-colors not-first:border-l ${s.divider} ${
+                            on ? s.on : s.off
+                        }`}
+                    >
+                        {Icon && <Icon size={13} />}
+                        {o.label}
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
 
 /** A sheet over the page. Closes with the X, Escape or a click outside. */
 export function Modal({ title, subtitle, icon, onClose, size = 'md', footer, children }) {
@@ -138,7 +167,7 @@ export function Modal({ title, subtitle, icon, onClose, size = 'md', footer, chi
     const width = size === 'lg' ? 'max-w-6xl' : size === 'sm' ? 'max-w-lg' : 'max-w-3xl';
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
             onPointerDown={onClose}
             data-testid="modal"
         >
@@ -147,12 +176,12 @@ export function Modal({ title, subtitle, icon, onClose, size = 'md', footer, chi
                 aria-modal="true"
                 aria-label={title}
                 onPointerDown={(e) => e.stopPropagation()}
-                className={`flex max-h-[90vh] w-full flex-col overflow-hidden rounded-2xl bg-surface shadow-pop ${width}`}
+                className={`flex max-h-[90vh] w-full flex-col overflow-hidden rounded-sm border border-line bg-raised shadow-pop ${width}`}
             >
-                <header className="flex items-center gap-3 border-b border-line px-5 py-3.5">
+                <header className="flex min-h-10 shrink-0 items-center gap-2.5 border-b border-line bg-strip px-3 py-1.5">
                     {icon}
                     <div className="min-w-0 flex-1">
-                        <h2 className="truncate text-[17px] font-semibold tracking-tight text-ink">{title}</h2>
+                        <h2 className="truncate text-[12px] font-bold uppercase tracking-[0.08em] text-ink">{title}</h2>
                         {subtitle && <p className="truncate text-[12px] text-ink-2">{subtitle}</p>}
                     </div>
                     <button
@@ -160,14 +189,14 @@ export function Modal({ title, subtitle, icon, onClose, size = 'md', footer, chi
                         onClick={onClose}
                         aria-label="Close"
                         data-testid="modal-close"
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fill text-ink-2 transition-colors hover:bg-fill-strong"
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-line bg-raised text-ink-2 transition-colors hover:bg-fill-strong"
                     >
-                        <X size={16} strokeWidth={2.5} />
+                        <X size={15} strokeWidth={2.5} />
                     </button>
                 </header>
                 <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
                 {footer && (
-                    <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-line px-5 py-3">
+                    <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-line bg-surface px-3 py-2">
                         {footer}
                     </footer>
                 )}
@@ -176,19 +205,22 @@ export function Modal({ title, subtitle, icon, onClose, size = 'md', footer, chi
     );
 }
 
-/** Icon in a tinted circle, for KPI tiles and list rows. */
+/** Icon on a square tile. Colored only when the tone is a state; decorative tones stay gray. */
 export const IconBadge = ({ icon: Icon, tone = 'blue', size = 36 }) => {
     const tint = {
-        blue: 'bg-accent/12 text-accent',
+        blue: 'bg-accent/15 text-accent',
         green: 'bg-green/15 text-green',
-        orange: 'bg-orange/15 text-orange',
-        red: 'bg-red/12 text-red',
-        indigo: 'bg-indigo/15 text-indigo',
-        purple: 'bg-purple/15 text-purple',
-        gray: 'bg-fill text-ink-2',
+        orange: 'bg-orange/20 text-orange-ink',
+        red: 'bg-red/15 text-red',
+        indigo: 'bg-fill-strong text-ink-2',
+        purple: 'bg-fill-strong text-ink-2',
+        gray: 'bg-fill-strong text-ink-2',
     }[tone];
     return (
-        <span className={`flex shrink-0 items-center justify-center rounded-full ${tint}`} style={{ width: size, height: size }}>
+        <span
+            className={`flex shrink-0 items-center justify-center rounded-sm border border-line ${tint}`}
+            style={{ width: size, height: size }}
+        >
             <Icon size={Math.round(size * 0.5)} />
         </span>
     );

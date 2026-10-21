@@ -18,7 +18,7 @@ const Toast = ({ message, onClose, duration = 4000 }) => {
 
     return (
         <div
-            className="fixed bottom-20 left-1/2 z-50 flex max-w-[90vw] -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-raised/95 py-2 pl-3.5 pr-2 text-[13px] text-ink shadow-pop backdrop-blur-xl"
+            className="fixed bottom-16 left-1/2 z-50 flex max-w-[90vw] -translate-x-1/2 items-center gap-2 rounded-sm border border-line border-l-4 border-l-green bg-raised py-2 pl-3 pr-2 text-[13px] font-medium text-ink shadow-pop"
             role="status"
             aria-live="polite"
             data-testid="toast"
@@ -29,7 +29,7 @@ const Toast = ({ message, onClose, duration = 4000 }) => {
                 type="button"
                 onClick={onClose}
                 aria-label="Dismiss"
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-fill hover:text-ink"
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-line text-ink-3 transition-colors hover:bg-fill hover:text-ink"
             >
                 <X size={13} />
             </button>

@@ -37,10 +37,10 @@ const CombustionSimulator = ({ reading, baseline, onChange, onReset, dirty }) =>
 
             <PanelBody>
                 {dirty && (
-                    <div className="sticky top-0 z-10 -mx-5 mb-3 bg-surface px-5 pb-1" data-testid="sim-banner">
-                        <div className="flex items-center gap-2 rounded-xl bg-orange/15 py-1.5 pl-3 pr-1.5">
+                    <div className="sticky top-0 z-10 -mx-3 mb-3 bg-surface px-3 pb-1" data-testid="sim-banner">
+                        <div className="flex items-center gap-2 rounded-sm border border-l-4 border-orange bg-orange/15 py-1.5 pl-3 pr-1.5">
                             <span className="min-w-0 flex-1 text-[12px] font-medium leading-snug text-orange-ink">
-                                Simulated — values differ from the field reading
+                                <span className="font-bold uppercase tracking-[0.06em]">Simulated</span> — values differ from the field reading
                             </span>
                             <Button size="sm" variant="secondary" onClick={onReset} data-testid="reset-to-field">
                                 <RotateCcw size={12} /> Reset to field
@@ -59,13 +59,15 @@ const CombustionSimulator = ({ reading, baseline, onChange, onReset, dirty }) =>
                         return (
                             <div key={p.key}>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-[13px] font-medium text-ink">{p.label}</span>
+                                    <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-ink">{p.label}</span>
                                     {TARGET_HINT[p.key] && (
-                                        <span className="text-[11px] tabular-nums text-ink-3">target {TARGET_HINT[p.key]}</span>
+                                        <span className="text-[10px] font-semibold uppercase tracking-[0.04em] text-ink-3">
+                                            target <span className="font-mono normal-case tracking-normal tabular-nums">{TARGET_HINT[p.key]}</span>
+                                        </span>
                                     )}
-                                    <span className="ml-auto text-[15px] font-semibold tabular-nums text-ink">
+                                    <span className="ml-auto font-mono text-[15px] font-medium tabular-nums text-ink">
                                         {value.toFixed(p.step < 1 ? 1 : 0)}
-                                        <span className="text-[12px] font-normal text-ink-2"> {unitLabel(p.unit)}</span>
+                                        <span className="font-sans text-[12px] font-normal text-ink-2"> {unitLabel(p.unit)}</span>
                                     </span>
                                 </div>
 
@@ -82,15 +84,16 @@ const CombustionSimulator = ({ reading, baseline, onChange, onReset, dirty }) =>
                                 />
 
                                 <div className="mt-0.5 flex items-center justify-between text-[11px] tabular-nums">
-                                    <span className="text-ink-3">{p.min}</span>
+                                    <span className="font-mono text-ink-3">{p.min}</span>
                                     {changed ? (
-                                        <span className={`font-semibold ${delta > 0 ? 'text-orange-ink' : 'text-accent'}`}>
-                                            {delta > 0 ? '+' : ''}{delta.toFixed(p.step < 1 ? 1 : 0)} vs field
+                                        <span className="font-semibold text-orange-ink">
+                                            <span className="font-mono">{delta > 0 ? '+' : ''}{delta.toFixed(p.step < 1 ? 1 : 0)}</span>{' '}
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.06em]">vs field</span>
                                         </span>
                                     ) : (
-                                        <span className="text-ink-3">field value</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-3">field value</span>
                                     )}
-                                    <span className="text-ink-3">{p.max}</span>
+                                    <span className="font-mono text-ink-3">{p.max}</span>
                                 </div>
                             </div>
                         );

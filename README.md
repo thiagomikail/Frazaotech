@@ -6,8 +6,15 @@ Tools for operational-technology engineers, on one site. The home page at `/` li
 - **PetriPLC** at `/petri/` — describe a machine, simulate its Petri net, generate IEC 61131-3 code ([below](#petriplc--petri)).
 - **Yield** at `/yield/` — furnace energy and regenerative-combustion diagnostics ([below](#yield--yield)).
 
-All the pages share one look (`src/theme.css`): Apple's system colors and type, light or dark following the
-device. Components use the theme's names (`bg-surface`, `text-ink-2`, `bg-accent`…); the Tailwind palette is off.
+All the pages share one look (`src/theme.css`), in the spirit of an industrial HMI (ISA-101): gray surfaces,
+square corners, a dark title bar, and color only where it means something (blue for selected, green, amber
+and red for state). Light or dark follows the device. Text is Barlow, numbers Roboto Mono, both bundled from
+Fontsource so the pages look the same on every machine. Components use the theme's names (`bg-surface`,
+`text-ink-2`, `bg-accent`…); the Tailwind palette is off.
+
+The home page's hero is a 3D "energy terrain" drawn with three.js (`src/home/terrain.ts`): hot spots rise
+and fade while points of data drift across. It loads after the page, pauses when off screen, and shows a
+single still frame to visitors who asked their system to reduce motion.
 
 The FMEA was built to replace static spreadsheets with an interactive, real-time tool.
 

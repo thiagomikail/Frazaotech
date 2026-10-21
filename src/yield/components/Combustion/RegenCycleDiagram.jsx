@@ -41,22 +41,30 @@ const RegenCycleDiagram = ({ system, analysis }) => {
 
         return (
             <div
-                className={`flex min-w-0 flex-col gap-1.5 rounded-xl p-2.5 transition-colors duration-500 ${
-                    isFiring ? 'bg-orange/10 ring-1 ring-orange/30' : 'bg-fill'
+                className={`flex min-w-0 flex-col gap-1.5 rounded-sm border bg-field p-2.5 transition-colors duration-500 ${
+                    isFiring ? 'border-green' : 'border-line'
                 }`}
             >
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-[13px] font-semibold text-ink">Side {id}</span>
-                    <Badge tone={isFiring ? 'orange' : 'blue'}>{isFiring ? 'Firing' : 'Exhausting'}</Badge>
+                    <span className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.06em] text-ink">
+                        <span
+                            className={`h-2.5 w-2.5 shrink-0 rounded-full border border-black/25 transition-colors duration-500 ${
+                                isFiring ? 'bg-green' : 'bg-fill-strong'
+                            }`}
+                            aria-hidden="true"
+                        />
+                        Side {id}
+                    </span>
+                    <Badge tone={isFiring ? 'green' : 'gray'}>{isFiring ? 'Firing' : 'Exhausting'}</Badge>
                 </div>
 
                 {/* leito ceramico: os blocos aquecem quando exaurem e
                     descarregam quando o ar passa para queimar */}
-                <div className="flex flex-col gap-0.5 rounded-lg bg-surface p-1">
+                <div className="flex flex-col gap-0.5 rounded-sm border border-line bg-surface p-1">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <div
                             key={i}
-                            className="h-1.5 rounded-[3px] bg-red transition-opacity duration-700"
+                            className="h-1.5 bg-ink-2 transition-opacity duration-700"
                             style={{
                                 opacity: isFiring ? 0.75 - i * 0.11 : 0.18 + i * 0.11,
                                 transitionDelay: `${i * 40}ms`
@@ -64,18 +72,22 @@ const RegenCycleDiagram = ({ system, analysis }) => {
                         />
                     ))}
                 </div>
-                <div className="text-center text-[10px] text-ink-3">Ceramic media bed</div>
+                <div className="text-center text-[10px] font-bold uppercase tracking-[0.06em] text-ink-3">Ceramic media bed</div>
 
                 <div className="space-y-1 text-[12px]">
                     <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-ink-2">{isFiring ? 'Air preheat out' : 'Flue gas in'}</span>
-                        <span className={`font-semibold tabular-nums ${isWeak ? 'text-orange-ink' : 'text-accent'}`}>
+                        <span className="truncate text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">
+                            {isFiring ? 'Air preheat out' : 'Flue gas in'}
+                        </span>
+                        <span className={`font-mono font-medium tabular-nums ${isWeak ? 'text-orange-ink' : 'text-ink'}`}>
                             {isFiring ? `${preheat.toFixed(0)} °C` : `${furnaceTempC.toFixed(0)} °C`}
                         </span>
                     </div>
                     <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-ink-2">{isFiring ? 'Fuel firing' : 'Stack out'}</span>
-                        <span className="font-semibold tabular-nums text-ink">
+                        <span className="truncate text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">
+                            {isFiring ? 'Fuel firing' : 'Stack out'}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums text-ink">
                             {isFiring
                                 ? `${system.reading.fuelFlowMMBtu.toFixed(1)} MMBtu/hr`
                                 : `${stackTempC.toFixed(0)} °C`}
@@ -84,8 +96,8 @@ const RegenCycleDiagram = ({ system, analysis }) => {
                 </div>
 
                 {isWeak && (
-                    <div className="rounded-lg bg-orange/15 px-2 py-1 text-center text-[11px] font-semibold text-orange-ink">
-                        Valve suspect · {Math.abs(cycleImbalancePct).toFixed(1)}% low
+                    <div className="rounded-sm border border-orange bg-orange/20 px-2 py-1 text-center text-[11px] font-bold uppercase tracking-[0.04em] text-orange-ink">
+                        Valve suspect · <span className="font-mono">{Math.abs(cycleImbalancePct).toFixed(1)}%</span> low
                     </div>
                 )}
             </div>
@@ -99,7 +111,7 @@ const RegenCycleDiagram = ({ system, analysis }) => {
                 title="Regenerative cycle"
                 action={
                     <Badge tone={isDegraded ? 'orange' : 'gray'}>
-                        {cycleTimeS.toFixed(0)} s reversal
+                        <span className="font-mono normal-case">{cycleTimeS.toFixed(0)} s</span> reversal
                     </Badge>
                 }
             />
@@ -109,14 +121,14 @@ const RegenCycleDiagram = ({ system, analysis }) => {
                     <Side id="A" preheat={preheatA} />
 
                     <div className="flex items-center justify-center gap-4 @md:flex-col @md:gap-3">
-                        <div className="rounded-xl bg-red/10 px-5 py-3 text-center @md:w-full @md:px-2">
-                            <div className="text-[11px] font-medium text-ink-2">Furnace</div>
-                            <div className="text-[22px] font-semibold leading-tight tracking-tight tabular-nums text-ink">
+                        <div className="rounded-sm border border-line bg-field px-5 py-3 text-center @md:w-full @md:px-2">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Furnace</div>
+                            <div className="font-mono text-[22px] font-medium leading-tight tabular-nums text-ink">
                                 {furnaceTempC.toFixed(0)}
                             </div>
                             <div className="text-[11px] text-ink-2">°C</div>
                         </div>
-                        <div className="text-[24px] leading-none text-accent" aria-hidden="true">
+                        <div className="text-[24px] leading-none text-ink-2" aria-hidden="true">
                             <span className="@md:hidden">{firing === 'A' ? '↓' : '↑'}</span>
                             <span className="hidden @md:inline">{firing === 'A' ? '→' : '←'}</span>
                         </div>
@@ -126,20 +138,20 @@ const RegenCycleDiagram = ({ system, analysis }) => {
                 </div>
 
                 <div className="mt-2.5 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl bg-fill px-3 py-2">
-                        <div className="text-[11px] text-ink-2">Recovered</div>
-                        <div className="text-[13px] font-semibold tabular-nums text-green-ink">
-                            {(analysis.savingVsColdAir * 100).toFixed(0)}% fuel vs cold air
+                    <div className="rounded-sm border border-line bg-field px-3 py-2">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Recovered</div>
+                        <div className="mt-0.5 text-[13px] font-medium text-green-ink">
+                            <span className="font-mono tabular-nums">{(analysis.savingVsColdAir * 100).toFixed(0)}%</span> fuel vs cold air
                         </div>
                     </div>
-                    <div className="rounded-xl bg-fill px-3 py-2">
-                        <div className="text-[11px] text-ink-2">Still on the table</div>
+                    <div className="rounded-sm border border-line bg-field px-3 py-2">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Still on the table</div>
                         <div
-                            className={`text-[13px] font-semibold tabular-nums ${
+                            className={`mt-0.5 text-[13px] font-medium ${
                                 analysis.gapToIdeal > 0.02 ? 'text-orange-ink' : 'text-green-ink'
                             }`}
                         >
-                            {(analysis.gapToIdeal * 100).toFixed(1)}% to target
+                            <span className="font-mono tabular-nums">{(analysis.gapToIdeal * 100).toFixed(1)}%</span> to target
                         </div>
                     </div>
                 </div>

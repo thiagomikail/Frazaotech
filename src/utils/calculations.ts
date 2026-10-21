@@ -40,13 +40,14 @@ export function calculateActionPriority(severity: number, occurrence: number, de
 
 export function getAPColor(ap: 'High' | 'Medium' | 'Low' | 'None'): string {
   switch (ap) {
+    // HMI: an alarm is solid so it jumps out, a low priority stays a quiet tint.
     case 'High':
-      return 'bg-red/15 text-red-ink';
+      return 'bg-red text-white';
     case 'Medium':
-      return 'bg-orange/15 text-orange-ink';
+      return 'bg-orange text-black';
     case 'Low':
       return 'bg-green/15 text-green-ink';
     default:
-      return 'bg-fill text-ink-2';
+      return 'bg-fill-strong text-ink-2';
   }
 }

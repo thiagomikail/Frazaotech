@@ -31,21 +31,22 @@ const FleetBenchmarking = () => {
                             stroke={c.accent}
                             strokeWidth={2}
                             fill={c.accent}
-                            fillOpacity={0.18}
+                            fillOpacity={0.14}
                             isAnimationActive={false}
                         />
                         <Radar
                             name="Furnace 2"
                             dataKey="B"
-                            stroke={c.purple}
+                            stroke={c.ink3}
                             strokeWidth={2}
-                            fill={c.purple}
-                            fillOpacity={0.18}
+                            strokeDasharray="5 3"
+                            fill={c.ink3}
+                            fillOpacity={0.1}
                             isAnimationActive={false}
                         />
 
                         <Legend
-                            iconType="circle"
+                            iconType="square"
                             iconSize={8}
                             wrapperStyle={{ fontSize: 11 }}
                             formatter={(value) => <span className="text-ink-2">{value}</span>}
@@ -54,9 +55,10 @@ const FleetBenchmarking = () => {
                 </ResponsiveContainer>
             </div>
 
-            <div className="px-5 pb-4 pt-2">
-                <div className="rounded-xl bg-fill px-3 py-2 text-center text-[12px] text-ink-2">
-                    Top performer: <span className="font-semibold text-accent">Furnace 1</span> (+12% vs fleet avg)
+            <div className="px-3 pb-3 pt-1">
+                <div className="rounded-sm border border-line bg-field px-3 py-2 text-center text-[12px] text-ink-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.06em]">Top performer:</span>{' '}
+                    <span className="font-semibold text-ink">Furnace 1</span> (<span className="font-mono">+12%</span> vs fleet avg)
                 </div>
             </div>
         </Panel>

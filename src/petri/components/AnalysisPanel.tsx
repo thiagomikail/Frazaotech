@@ -11,15 +11,15 @@ function Verdict({ ok, label, help }: { ok: boolean | null; label: string; help:
   const icon = ok === null ? 'text-ink-3' : ok ? 'text-green' : 'text-red';
   const tone = ok === null ? 'text-ink-3' : ok ? 'text-green-ink' : 'text-red-ink';
   return (
-    <div className="rounded-xl bg-surface p-3 shadow-card">
-      <div className="flex items-center gap-1.5">
-        <Icon size={16} className={icon} />
-        <span className="text-[14px] font-semibold text-ink">{label}</span>
-        <span className={`ml-auto text-[12px] font-medium ${tone}`}>
-          {t(ok === null ? 'an.unknown' : ok ? 'an.yes' : 'an.no')}
-        </span>
+    <div className="flex items-start gap-2.5 px-3 py-2">
+      <Icon size={15} className={`mt-0.5 shrink-0 ${icon}`} />
+      <div className="min-w-0 flex-1">
+        <div className="text-[13px] font-semibold text-ink">{label}</div>
+        <p className="text-[11px] leading-snug text-ink-2">{help}</p>
       </div>
-      <p className="mt-1 text-[11px] leading-snug text-ink-2">{help}</p>
+      <span className={`mt-0.5 text-[11px] font-bold uppercase tracking-[0.06em] ${tone}`}>
+        {t(ok === null ? 'an.unknown' : ok ? 'an.yes' : 'an.no')}
+      </span>
     </div>
   );
 }
@@ -74,10 +74,10 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
   if (empty) return <p className="p-4 text-[13px] text-ink-2">{t('canvas.empty')}</p>;
 
   return (
-    <div className="h-full space-y-4 overflow-y-auto p-3" data-testid="analysis">
-      <p className="px-1 text-[12px] leading-snug text-ink-2">{t('an.subtitle')}</p>
+    <div className="h-full space-y-3 overflow-y-auto p-3" data-testid="analysis">
+      <p className="text-[12px] leading-snug text-ink-2">{t('an.subtitle')}</p>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-field">
         <Verdict ok={a.bounded} label={t('an.bounded')} help={t('an.boundedHelp')} />
         <Verdict ok={a.safe} label={t('an.safe')} help={t('an.safeHelp')} />
         <Verdict
@@ -87,14 +87,14 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
         />
         <Verdict ok={a.reversible} label={t('an.reversible')} help={t('an.reversibleHelp')} />
       </div>
-      <p className="px-1 font-mono text-[11px] text-ink-3">
+      <p className="font-mono text-[11px] text-ink-3">
         {t('an.states', { n: a.states })}
         {a.truncated && <span className="text-orange-ink"> · {t('an.truncated', { n: a.states })}</span>}
       </p>
 
       {clean && (
         <div
-          className="flex items-start gap-2 rounded-xl bg-green/12 p-3 text-[13px] leading-snug text-ink"
+          className="flex items-start gap-2 rounded-sm border border-line border-l-4 border-l-green bg-field p-2.5 text-[13px] leading-snug text-ink"
           data-testid="analysis-clean"
         >
           <CheckCircle2 size={17} className="mt-px shrink-0 text-green" />
@@ -106,7 +106,7 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
         <button
           onClick={() => void actions.send(t('an.fixPrompt', { problems: problems.join('; ') }))}
           disabled={Boolean(state.busy)}
-          className="flex h-9 w-full items-center justify-center gap-1.5 rounded-full bg-accent px-4 text-[14px] font-medium text-on-accent transition-colors hover:bg-accent-hover disabled:opacity-40"
+          className="flex h-8 w-full items-center justify-center gap-1.5 rounded-sm border border-accent-hover bg-accent px-3 text-[12px] font-semibold uppercase tracking-[0.04em] text-on-accent transition-colors hover:bg-accent-hover disabled:opacity-40"
         >
           <Sparkles size={14} />
           {t('an.askFix')}
@@ -185,8 +185,8 @@ export default function AnalysisPanel({ onShowNet }: { onShowNet?: () => void })
       )}
 
       <div>
-        <h3 className="mb-1.5 px-1 text-[13px] font-semibold text-ink-2">{t('an.bounds')}</h3>
-        <table className="w-full overflow-hidden rounded-xl bg-surface text-[12px] shadow-card">
+        <h3 className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">{t('an.bounds')}</h3>
+        <table className="w-full overflow-hidden rounded-sm border border-line bg-field text-[12px]">
           <tbody className="divide-y divide-line">
             {compiled.places.map((p, i) => {
               const b = a.bounds[p.id];
@@ -224,11 +224,11 @@ function List({
   const color = tone === 'error' ? 'text-red-ink' : tone === 'warn' ? 'text-orange-ink' : 'text-accent';
   return (
     <div>
-      <h3 className={`mb-1.5 flex items-center gap-1.5 px-1 text-[13px] font-semibold ${color}`}>
+      <h3 className={`mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em] ${color}`}>
         <Icon size={14} />
         {title}
       </h3>
-      <ul className="divide-y divide-line overflow-hidden rounded-xl bg-surface shadow-card">{children}</ul>
+      <ul className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-field">{children}</ul>
     </div>
   );
 }

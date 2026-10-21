@@ -65,7 +65,7 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
         <Modal
             title={`FMEA — ${system.name}`}
             subtitle={`${system.asset} · ${system.mediaType} · commissioned ${system.commissioned}`}
-            icon={<IconBadge icon={Table2} tone="blue" size={34} />}
+            icon={<IconBadge icon={Table2} tone="gray" size={28} />}
             onClose={onClose}
             size="lg"
             footer={
@@ -75,8 +75,9 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
                         its baseline by the current reading — the failure is signalling now.
                     </span>
                     <span className="text-[12px] text-ink-2">
-                        Total RPN <strong className="font-semibold tabular-nums text-ink">{fmea.totalRpn}</strong> →{' '}
-                        <strong className="font-semibold tabular-nums text-green-ink">{fmea.totalRpnAfter}</strong> if all
+                        <span className="text-[10px] font-bold uppercase tracking-[0.06em]">Total RPN</span>{' '}
+                        <strong className="font-mono font-medium tabular-nums text-ink">{fmea.totalRpn}</strong> →{' '}
+                        <strong className="font-mono font-medium tabular-nums text-green-ink">{fmea.totalRpnAfter}</strong> if all
                         actions close
                     </span>
                     <Button size="sm" onClick={exportCsv}>
@@ -85,8 +86,8 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
                 </>
             }
         >
-            <div className="sticky left-0 top-0 z-20 flex h-12 items-center overflow-x-auto border-b border-line bg-surface px-5">
-                <div className="flex gap-0.5 rounded-[10px] bg-fill p-0.5" role="tablist">
+            <div className="sticky left-0 top-0 z-20 flex h-12 items-center overflow-x-auto border-b border-line bg-surface px-3">
+                <div className="flex shrink-0 overflow-hidden rounded-sm border border-line bg-raised" role="tablist">
                     {filters.map(f => {
                         const on = filter === f.k;
                         return (
@@ -97,8 +98,8 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
                                 aria-selected={on}
                                 onClick={() => setFilter(f.k)}
                                 data-testid={f.testId}
-                                className={`whitespace-nowrap rounded-lg px-3 py-1 text-[13px] font-medium tabular-nums transition-colors ${
-                                    on ? 'bg-thumb text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-ink-2 hover:text-ink'
+                                className={`h-7 whitespace-nowrap px-3 text-[11px] font-bold uppercase tracking-[0.06em] tabular-nums transition-colors not-first:border-l not-first:border-line ${
+                                    on ? 'bg-thumb text-on-thumb' : 'text-ink-2 hover:bg-fill'
                                 }`}
                             >
                                 {f.label}
@@ -110,8 +111,8 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
 
             <table className="w-full min-w-[1040px] table-fixed border-collapse text-left text-[12px] leading-snug" data-testid="fmea-matrix">
                 <thead>
-                    <tr className="[&>th]:sticky [&>th]:top-12 [&>th]:z-10 [&>th]:border-b [&>th]:border-line [&>th]:bg-surface [&>th]:px-2 [&>th]:py-2 [&>th]:text-[11px] [&>th]:font-semibold [&>th]:text-ink-2">
-                        <th className="w-[9%] pl-5!">Component</th>
+                    <tr className="[&>th]:sticky [&>th]:top-12 [&>th]:z-10 [&>th]:border-b [&>th]:border-line [&>th]:bg-strip [&>th]:px-2 [&>th]:py-2 [&>th]:text-[10px] [&>th]:font-bold [&>th]:uppercase [&>th]:tracking-[0.06em] [&>th]:text-ink-2">
+                        <th className="w-[9%] pl-3!">Component</th>
                         <th className="w-[10%]">Function</th>
                         <th className="w-[12%]">Failure mode</th>
                         <th className="w-[14%]">Effect</th>
@@ -122,18 +123,18 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
                         <th className="w-[4%] text-center">Det</th>
                         <th className="w-[4%] text-center">RPN</th>
                         <th className="w-[13%]">Recommended action</th>
-                        <th className="w-[4%] pr-5! text-center">RPN after</th>
+                        <th className="w-[4%] pr-3! text-center">RPN after</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
                     {rows.map(r => {
-                        const tone = BAND_TONE[r.band.label] || 'blue';
+                        const tone = BAND_TONE[r.band.label] || 'gray';
                         return (
                             <tr
                                 key={r.id}
-                                className={`align-top text-ink-2 [&>td]:px-2 [&>td]:py-2 ${r.active ? 'bg-orange/6' : ''}`}
+                                className={`align-top text-ink-2 [&>td]:px-2 [&>td]:py-2 ${r.active ? 'bg-orange/10' : ''}`}
                             >
-                                <td className="pl-5! font-semibold text-ink">
+                                <td className="pl-3! font-semibold text-ink">
                                     {r.component}
                                     {r.severityFlag && (
                                         <span
@@ -152,9 +153,9 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
                                     )}
                                 </td>
                                 <td>{r.effect}</td>
-                                <td className="text-center tabular-nums text-ink">{r.severity}</td>
+                                <td className="text-center font-mono tabular-nums text-ink">{r.severity}</td>
                                 <td>{r.cause}</td>
-                                <td className="text-center tabular-nums text-ink">
+                                <td className="text-center font-mono tabular-nums text-ink">
                                     {r.occurrence}
                                     {r.occurrence > r.baseOccurrence && (
                                         <span
@@ -166,12 +167,12 @@ const FmeaMatrixModal = ({ system, fmea, onClose }) => {
                                     )}
                                 </td>
                                 <td>{r.currentControls}</td>
-                                <td className="text-center tabular-nums text-ink">{r.detection}</td>
+                                <td className="text-center font-mono tabular-nums text-ink">{r.detection}</td>
                                 <td className="text-center">
-                                    <span className={`text-[13px] font-semibold tabular-nums ${TONE[tone].text}`}>{r.rpn}</span>
+                                    <span className={`font-mono text-[13px] font-medium tabular-nums ${TONE[tone].text}`}>{r.rpn}</span>
                                 </td>
                                 <td>{r.recommendedAction}</td>
-                                <td className="pr-5! text-center font-semibold tabular-nums text-green-ink">{r.rpnAfter}</td>
+                                <td className="pr-3! text-center font-mono font-medium tabular-nums text-green-ink">{r.rpnAfter}</td>
                             </tr>
                         );
                     })}

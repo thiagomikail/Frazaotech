@@ -83,23 +83,25 @@ const CombustionLayout = () => {
     const liveSystem = { ...system, reading: activeReading };
 
     return (
-        <div className="grid gap-4 lg:h-full lg:min-h-0 lg:grid-cols-[240px_minmax(0,1fr)_320px] xl:grid-cols-[270px_minmax(0,1fr)_360px] 2xl:grid-cols-[300px_minmax(0,1fr)_400px]">
+        <div className="grid gap-3 lg:h-full lg:min-h-0 lg:grid-cols-[240px_minmax(0,1fr)_320px] xl:grid-cols-[270px_minmax(0,1fr)_360px] 2xl:grid-cols-[300px_minmax(0,1fr)_400px]">
             {/* --- coluna 1: frota de sistemas regenerativos --- */}
             <Panel className="lg:min-h-0">
                 <PanelHeader icon={Flame} title="Regenerative systems" />
-                <PanelBody className="space-y-2 px-3!">
-                    <div className="mb-3 rounded-xl bg-fill px-3 py-2.5">
-                        <div className="text-[12px] text-ink-2">Fleet score</div>
-                        <div className="mt-0.5 flex items-baseline gap-2">
-                            <span className={`text-[28px] font-semibold leading-none tracking-tight tabular-nums ${TONE[GRADE_TONE[fleetGrade.grade]].text}`}>
+                <PanelBody className="space-y-3">
+                    <div className="rounded-sm border border-line bg-field px-3 py-2.5">
+                        <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">Fleet score</div>
+                        <div className="mt-1 flex items-baseline gap-2">
+                            <span className={`font-mono text-[28px] font-medium leading-none tabular-nums ${TONE[GRADE_TONE[fleetGrade.grade]].text}`}>
                                 {fleetScore.toFixed(0)}
                             </span>
                             <Badge tone={GRADE_TONE[fleetGrade.grade]}>Grade {fleetGrade.grade}</Badge>
                         </div>
                         <div className="mt-1 text-[12px] text-ink-2">
-                            <span className="font-semibold tabular-nums text-green-ink">${(fleetRecoverable / 1000).toFixed(0)}k/yr</span> recoverable
+                            <span className="font-mono font-medium tabular-nums text-ink">${(fleetRecoverable / 1000).toFixed(0)}k/yr</span> recoverable
                         </div>
                     </div>
+
+                    <div className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-field">
 
                     {fleet.map(s => {
                         const isActive = s.id === selectedId;
@@ -113,33 +115,33 @@ const CombustionLayout = () => {
                                 onClick={() => setSelectedId(s.id)}
                                 aria-pressed={isActive}
                                 data-testid="combustion-system"
-                                className={`block w-full rounded-xl px-3 py-2.5 text-left transition-colors ${
-                                    isActive ? 'bg-accent/10 ring-1 ring-accent/40' : 'hover:bg-fill'
+                                className={`block w-full border-l-4 px-3 py-2.5 text-left transition-colors ${
+                                    isActive ? 'border-l-accent bg-accent/10' : 'border-l-transparent hover:bg-fill'
                                 }`}
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[s.status] || 'bg-ink-3'}`} />
-                                    <span className={`min-w-0 flex-1 truncate text-[14px] font-medium ${isActive ? 'text-accent' : 'text-ink'}`}>
+                                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full border border-black/25 ${STATUS_DOT[s.status] || 'bg-ink-3'}`} />
+                                    <span className={`min-w-0 flex-1 truncate text-[14px] font-semibold ${isActive ? 'text-accent' : 'text-ink'}`}>
                                         {s.name}
                                     </span>
-                                    <span className={`text-[17px] font-semibold tabular-nums ${tone.text}`}>
+                                    <span className={`font-mono text-[16px] font-medium tabular-nums ${tone.text}`}>
                                         {sc.total.toFixed(0)}
                                     </span>
                                 </div>
 
-                                <div className="mt-0.5 pl-4 text-[12px] text-ink-2">{s.asset}</div>
+                                <div className="mt-0.5 pl-[18px] text-[12px] text-ink-2">{s.asset}</div>
 
-                                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill">
+                                <div className="mt-2 h-2 overflow-hidden rounded-sm border border-line bg-surface">
                                     <div
-                                        className={`h-full rounded-full transition-[width] duration-300 ${tone.bg}`}
+                                        className={`h-full transition-[width] duration-300 ${tone.bg}`}
                                         style={{ width: `${sc.total}%` }}
                                     />
                                 </div>
 
                                 <div className="mt-1.5 flex items-center justify-between text-[11px]">
-                                    <span className={`font-semibold ${tone.text}`}>{sentence(sc.label)}</span>
+                                    <span className={`font-bold uppercase tracking-[0.06em] ${tone.text}`}>{sentence(sc.label)}</span>
                                     {s.analysis.recoverableUsdPerYear > 0 && (
-                                        <span className="tabular-nums text-ink-2">
+                                        <span className="font-mono tabular-nums text-ink-2">
                                             ${(s.analysis.recoverableUsdPerYear / 1000).toFixed(0)}k/yr
                                         </span>
                                     )}
@@ -147,11 +149,12 @@ const CombustionLayout = () => {
                             </button>
                         );
                     })}
+                    </div>
                 </PanelBody>
             </Panel>
 
             {/* --- coluna 2: score e ciclo --- */}
-            <div className="grid gap-4 lg:min-h-0 lg:grid-rows-[minmax(0,1.25fr)_minmax(0,1fr)]">
+            <div className="grid gap-3 lg:min-h-0 lg:grid-rows-[minmax(0,1.25fr)_minmax(0,1fr)]">
                 <Panel className="lg:min-h-0">
                     <RegenScoreCard system={liveSystem} analysis={analysis} />
                 </Panel>
@@ -200,9 +203,9 @@ const CombustionLayout = () => {
     );
 };
 
-/** Segmented control for the right column, with a dot when a view needs a look. */
+/** Tab strip for the right column, with a lamp when a view needs a look. */
 const ViewSwitch = ({ options, value, onChange }) => (
-    <div className="flex shrink-0 gap-0.5 rounded-[10px] bg-fill p-0.5" role="tablist">
+    <div className="flex shrink-0 overflow-hidden rounded-sm border border-line bg-raised" role="tablist">
         {options.map(o => {
             const on = o.value === value;
             return (
@@ -213,12 +216,12 @@ const ViewSwitch = ({ options, value, onChange }) => (
                     aria-selected={on}
                     onClick={() => onChange(o.value)}
                     data-testid={o.testId}
-                    className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1 text-[13px] font-medium transition-colors ${
-                        on ? 'bg-thumb text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-ink-2 hover:text-ink'
+                    className={`relative flex h-8 flex-1 items-center justify-center gap-1.5 px-3 text-[11px] font-bold uppercase tracking-[0.06em] transition-colors not-first:border-l not-first:border-line ${
+                        on ? 'bg-thumb text-on-thumb' : 'text-ink-2 hover:bg-fill'
                     }`}
                 >
                     {o.label}
-                    {o.dot && <span className={`h-1.5 w-1.5 rounded-full ${o.dot}`} aria-hidden="true" />}
+                    {o.dot && <span className={`h-2 w-2 rounded-full border border-black/25 ${o.dot}`} aria-hidden="true" />}
                 </button>
             );
         })}

@@ -15,24 +15,27 @@ import { TONE } from './RegenScoreCard';
  * esta' sinalizando agora.
  */
 
-/** Risk band from the engine to a system color; the band list mirrors RISK_BANDS. */
-export const BAND_TONE = { CRITICAL: 'red', HIGH: 'orange', MEDIUM: 'blue', LOW: 'green' };
+/**
+ * Risk band from the engine to a state color; the band list mirrors RISK_BANDS.
+ * Medium is not an alarm, so it stays gray (HMI: color only for state).
+ */
+export const BAND_TONE = { CRITICAL: 'red', HIGH: 'orange', MEDIUM: 'gray', LOW: 'green' };
 
-const BAND_EDGE = { red: 'border-l-red', orange: 'border-l-orange', blue: 'border-l-accent', green: 'border-l-green' };
+const BAND_EDGE = { red: 'border-l-red', orange: 'border-l-orange', gray: 'border-l-ink-3', green: 'border-l-green' };
 
 /** Tinted tile behind the RPN of an expanded card. */
-const TINT = { red: 'bg-red/12', orange: 'bg-orange/15', blue: 'bg-accent/12', green: 'bg-green/15' };
+const TINT = { red: 'bg-red/15', orange: 'bg-orange/20', gray: 'bg-fill-strong', green: 'bg-green/15' };
 
-const SOD = ({ label, value, title, className = 'bg-fill', valueClass = 'text-ink' }) => (
-    <div className={`rounded-lg px-2 py-1.5 text-center ${className}`} title={title} data-testid="sod-cell">
-        <div className="text-[10px] font-medium text-ink-2">{label}</div>
-        <div className={`text-[17px] font-semibold leading-tight tabular-nums ${valueClass}`}>{value}</div>
+const SOD = ({ label, value, title, className = 'bg-surface', valueClass = 'text-ink' }) => (
+    <div className={`rounded-sm border border-line px-2 py-1.5 text-center ${className}`} title={title} data-testid="sod-cell">
+        <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">{label}</div>
+        <div className={`font-mono text-[17px] font-medium leading-tight tabular-nums ${valueClass}`}>{value}</div>
     </div>
 );
 
 const Field = ({ label, children }) => (
     <div>
-        <div className="text-[11px] font-semibold text-ink-2">{label}</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">{label}</div>
         <div className="mt-0.5 text-[13px] leading-snug text-ink">{children}</div>
     </div>
 );
@@ -64,28 +67,40 @@ const FmeaPanel = ({ fmea, onOpenMatrix }) => {
                     {[
                         { k: 'critical', label: 'Critical', tone: 'red' },
                         { k: 'high', label: 'High', tone: 'orange' },
-                        { k: 'medium', label: 'Medium', tone: 'blue' },
+                        { k: 'medium', label: 'Medium', tone: 'gray' },
                         { k: 'low', label: 'Low', tone: 'green' }
                     ].map(b => (
-                        <div key={b.k} className="rounded-xl bg-fill px-2 py-2 text-center">
-                            <div className={`text-[20px] font-semibold leading-tight tabular-nums ${TONE[b.tone].text}`}>
+                        <div key={b.k} className="min-w-0 rounded-sm border border-line bg-field px-2 py-1.5 text-center">
+                            <div
+                                className={`font-mono text-[20px] font-medium leading-tight tabular-nums ${
+                                    counts[b.k] > 0 ? TONE[b.tone].text : 'text-ink-3'
+                                }`}
+                            >
                                 {counts[b.k]}
                             </div>
-                            <div className="text-[11px] text-ink-2">{b.label}</div>
+                            <div className="flex items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">
+                                <span
+                                    className={`h-2 w-2 shrink-0 rounded-full ${counts[b.k] > 0 ? TONE[b.tone].bg : 'bg-fill-strong'}`}
+                                    aria-hidden="true"
+                                />
+                                <span className="truncate">{b.label}</span>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-fill px-3 py-2 text-[13px]">
-                    <span className="text-ink-2">Total RPN</span>
-                    <span className="font-semibold tabular-nums text-ink">{totalRpn}</span>
+                <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-sm border border-line bg-field px-3 py-2 text-[13px]">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Total RPN</span>
+                    <span className="font-mono font-medium tabular-nums text-ink">{totalRpn}</span>
                     <span className="text-ink-3" aria-hidden="true">→</span>
-                    <span className="font-semibold tabular-nums text-green-ink">{totalRpnAfter}</span>
-                    <Badge tone="green" className="ml-auto">−{reduction}% if actioned</Badge>
+                    <span className="font-mono font-medium tabular-nums text-green-ink">{totalRpnAfter}</span>
+                    <Badge tone="green" className="ml-auto">
+                        <span className="font-mono">−{reduction}%</span> if actioned
+                    </Badge>
                 </div>
 
                 {counts.severityFlagged > 0 && (
-                    <div className="mt-2 flex items-start gap-2 rounded-xl bg-red/10 px-3 py-2 text-[12px] leading-snug text-red-ink">
+                    <div className="mt-2 flex items-start gap-2 rounded-sm border border-l-4 border-red bg-red/10 px-3 py-2 text-[12px] font-medium leading-snug text-red-ink">
                         <AlertTriangle size={14} className="mt-px shrink-0" />
                         <span>
                             {counts.severityFlagged} modes at severity ≥ 9 — these require control
@@ -98,11 +113,11 @@ const FmeaPanel = ({ fmea, onOpenMatrix }) => {
                 <div className="mt-3 space-y-2">
                     {rows.map((r, i) => {
                         const isOpen = open === r.id;
-                        const tone = BAND_TONE[r.band.label] || 'blue';
+                        const tone = BAND_TONE[r.band.label] || 'gray';
                         return (
                             <div
                                 key={r.id}
-                                className={`overflow-hidden rounded-xl border border-l-[3px] border-line ${BAND_EDGE[tone]} ${r.active ? 'bg-orange/6' : ''}`}
+                                className={`overflow-hidden rounded-sm border border-l-4 border-line bg-field ${BAND_EDGE[tone]}`}
                                 data-testid="fmea-card"
                                 data-active={r.active ? 'true' : 'false'}
                             >
@@ -113,13 +128,13 @@ const FmeaPanel = ({ fmea, onOpenMatrix }) => {
                                     aria-expanded={isOpen}
                                     data-testid="fmea-card-head"
                                 >
-                                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fill text-[12px] font-semibold tabular-nums text-ink-2">
+                                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-line bg-surface font-mono text-[12px] font-medium tabular-nums text-ink-2">
                                         {i + 1}
                                     </span>
 
                                     <div className="min-w-0 flex-1">
-                                        <div className="text-[14px] font-medium leading-snug text-ink">{r.failureMode}</div>
-                                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px] text-ink-2">
+                                        <div className="text-[14px] font-semibold leading-snug text-ink">{r.failureMode}</div>
+                                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
                                             <span>{r.component}</span>
                                             {r.active && <Badge tone="orange">Active</Badge>}
                                             {r.severityFlag && <Badge tone="red">S ≥ 9</Badge>}
@@ -127,10 +142,10 @@ const FmeaPanel = ({ fmea, onOpenMatrix }) => {
                                     </div>
 
                                     <div className="shrink-0 text-right">
-                                        <div className={`text-[17px] font-semibold leading-tight tabular-nums ${TONE[tone].text}`}>
+                                        <div className={`font-mono text-[17px] font-medium leading-tight tabular-nums ${TONE[tone].text}`}>
                                             {r.rpn}
                                         </div>
-                                        <div className="text-[10px] text-ink-3">RPN</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-3">RPN</div>
                                     </div>
 
                                     {isOpen ? (
@@ -156,16 +171,16 @@ const FmeaPanel = ({ fmea, onOpenMatrix }) => {
                                         </div>
 
                                         {r.active && (
-                                            <div className="rounded-xl bg-fill px-3 py-2">
-                                                <div className="flex items-baseline justify-between text-[12px]">
-                                                    <span className="font-semibold text-ink-2">Evidence in current reading</span>
-                                                    <span className={`font-semibold tabular-nums ${TONE[tone].text}`}>
+                                            <div className="rounded-sm border border-line bg-surface px-3 py-2">
+                                                <div className="flex items-baseline justify-between gap-2 text-[12px]">
+                                                    <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Evidence in current reading</span>
+                                                    <span className={`font-mono font-medium tabular-nums ${TONE[tone].text}`}>
                                                         {(r.evidenceLevel * 100).toFixed(0)}%
                                                     </span>
                                                 </div>
-                                                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-fill-strong">
+                                                <div className="mt-1.5 h-2 overflow-hidden rounded-sm border border-line bg-field">
                                                     <div
-                                                        className={`h-full rounded-full ${TONE[tone].bg}`}
+                                                        className={`h-full ${TONE[tone].bg}`}
                                                         style={{ width: `${r.evidenceLevel * 100}%` }}
                                                     />
                                                 </div>
@@ -180,10 +195,10 @@ const FmeaPanel = ({ fmea, onOpenMatrix }) => {
                                         <Field label="Recommended action">{r.recommendedAction}</Field>
 
                                         <div className="text-[12px] text-ink-2">
-                                            RPN after action:{' '}
-                                            <strong className="font-semibold tabular-nums text-green-ink">{r.rpnAfter}</strong>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.06em]">RPN after action:</span>{' '}
+                                            <strong className="font-mono font-medium tabular-nums text-green-ink">{r.rpnAfter}</strong>
                                             <span className="text-ink-3">
-                                                {' '}(occurrence {r.occurrence} → {r.targetOccurrence})
+                                                {' '}(occurrence <span className="font-mono">{r.occurrence} → {r.targetOccurrence}</span>)
                                             </span>
                                         </div>
                                     </div>

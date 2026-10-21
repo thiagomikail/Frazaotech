@@ -20,8 +20,8 @@ const CustomLink = (props) => {
             stroke={color}
             strokeWidth={Math.max(1, linkWidth)}
             fill="none"
-            opacity={0.5}
-            className="transition-opacity duration-200 hover:opacity-85"
+            opacity={0.45}
+            className="transition-opacity duration-200 hover:opacity-80"
         />
     );
 };
@@ -29,22 +29,22 @@ const CustomLink = (props) => {
 /**
  * Node bar with its name beside it, so the flow reads without hovering (an
  * iPad has no hover). The source column is labelled to the right, the rest to
- * the left; a halo in the card color keeps the text legible over the links.
+ * the left; a halo in the well's color keeps the text legible over the links.
  */
 const SankeyNode = ({ x, y, width, height, payload, c }) => {
     const first = payload.depth === 0;
     return (
         <g>
-            <rect x={x} y={y} width={width} height={height} rx={2} fill={c.ink3} />
+            <rect x={x} y={y} width={width} height={height} fill={c.ink2} />
             <text
                 x={first ? x + width + 6 : x - 6}
                 y={y + height / 2}
                 dy="0.35em"
                 textAnchor={first ? 'start' : 'end'}
                 fontSize={11}
-                fontWeight={500}
+                fontWeight={600}
                 fill={c.ink}
-                stroke={c.surface}
+                stroke={c.field}
                 strokeWidth={3}
                 strokeLinejoin="round"
                 paintOrder="stroke"
@@ -73,7 +73,7 @@ const SankeyDiagram = ({ data, width = "100%", height = "100%" }) => {
         return (
             <div
                 style={{ width, height }}
-                className="flex min-h-0 items-center justify-center rounded-xl bg-fill/50 text-[12px] text-ink-3"
+                className="flex min-h-0 items-center justify-center rounded-sm bg-fill text-[12px] font-medium uppercase tracking-[0.06em] text-ink-3"
             >
                 No flow data
             </div>
@@ -86,7 +86,7 @@ const SankeyDiagram = ({ data, width = "100%", height = "100%" }) => {
                 <Sankey
                     data={chartData}
                     node={<SankeyNode c={c} />}
-                    link={<CustomLink fallback={c.red} />}
+                    link={<CustomLink fallback={c.ink3} />}
                     nodePadding={50}
                     margin={{ left: 0, right: 0, top: 10, bottom: 10 }}
                     nodeWidth={10}

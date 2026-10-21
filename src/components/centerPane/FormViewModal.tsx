@@ -3,10 +3,12 @@ import { X } from 'lucide-react';
 import { useFMEA } from '../../context/FMEAContext';
 import { getAPColor } from '../../utils/calculations';
 
-const field = 'w-full rounded-lg border bg-surface px-3 py-2 text-[14px] text-ink outline-none transition-shadow focus:ring-4';
-const plainField = `${field} border-line focus:border-accent focus:ring-accent/15`;
-const failureField = `${field} border-red/40 focus:border-red focus:ring-red/15`;
-const label = 'flex items-center h-5 text-[12px] text-ink-2 mb-1';
+// HMI form parts (src/theme.css): square white fields, uppercase labels.
+const field = 'w-full rounded-sm border bg-field px-2.5 py-1.5 text-[13px] text-ink outline-none transition-colors';
+const plainField = `${field} border-line focus:border-accent`;
+const failureField = `${field} border-red/60 focus:border-red`;
+const label = 'flex items-center h-5 text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-2 mb-1';
+const section = 'border-b border-line pb-1 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2';
 
 const FormViewModal: React.FC = () => {
   const { systems, selectedComponentId, editingRowId, setEditingRowId, updateFMEARow } = useFMEA();
@@ -42,23 +44,23 @@ const FormViewModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-      <div className="bg-surface rounded-2xl shadow-pop w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-        <div className="flex justify-between items-center px-5 py-4 border-b border-line">
-          <h2 className="text-[17px] font-semibold text-ink">Edit FMEA Record</h2>
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
+      <div className="bg-raised rounded-sm border border-line shadow-pop w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="flex h-10 shrink-0 justify-between items-center gap-3 border-b border-line bg-strip pl-4 pr-1.5">
+          <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-ink">Edit FMEA Record</h2>
           <button 
             onClick={() => setEditingRowId(null)}
-            className="h-8 w-8 flex items-center justify-center rounded-full bg-fill hover:bg-fill-strong text-ink-2 transition-colors"
+            className="h-7 w-7 flex items-center justify-center rounded-sm border border-line bg-raised hover:bg-fill-strong text-ink-2 transition-colors"
             aria-label="Close"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Functional Analysis */}
-          <div className="space-y-4">
-            <h3 className="text-[13px] font-semibold text-accent">Functional Analysis</h3>
+          <div className="space-y-3">
+            <h3 className={section}>Functional Analysis</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={label}>Function</label>
@@ -72,7 +74,7 @@ const FormViewModal: React.FC = () => {
               <div>
                 <label className={`${label} justify-between`}>
                   <span>Failure Mode</span>
-                  <span className="text-[11px] leading-4 font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full cursor-pointer hover:bg-accent/15">Use SmartSuggest ➔</span>
+                  <span className="text-[10px] leading-4 font-bold tracking-[0.04em] text-accent border border-accent/50 px-1.5 py-0.5 rounded-sm cursor-pointer hover:bg-accent/10">Use SmartSuggest ➔</span>
                 </label>
                 <textarea 
                   value={formData.failureMode} 
@@ -94,11 +96,9 @@ const FormViewModal: React.FC = () => {
             </div>
           </div>
 
-          <div className="border-t border-line my-4"></div>
-
           {/* Risk Assessment */}
-          <div className="space-y-4">
-            <h3 className="text-[13px] font-semibold text-orange-ink">Risk Assessment & Controls</h3>
+          <div className="space-y-3">
+            <h3 className={section}>Risk Assessment & Controls</h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
               <div className="sm:col-span-8">
@@ -117,7 +117,7 @@ const FormViewModal: React.FC = () => {
                     type="number" min="1" max="10" 
                     value={formData.severity} 
                     onChange={(e) => handleChange('severity', parseInt(e.target.value) || 1)}
-                    className={`${plainField} text-center tabular-nums`}
+                    className={`${plainField} text-center font-mono tabular-nums`}
                   />
                 </div>
                 <div>
@@ -126,7 +126,7 @@ const FormViewModal: React.FC = () => {
                     type="number" min="1" max="10" 
                     value={formData.occurrence} 
                     onChange={(e) => handleChange('occurrence', parseInt(e.target.value) || 1)}
-                    className={`${plainField} text-center tabular-nums`}
+                    className={`${plainField} text-center font-mono tabular-nums`}
                   />
                 </div>
               </div>
@@ -149,7 +149,7 @@ const FormViewModal: React.FC = () => {
                     type="number" min="1" max="10" 
                     value={formData.detection} 
                     onChange={(e) => handleChange('detection', parseInt(e.target.value) || 1)}
-                    className={`${plainField} text-center tabular-nums`}
+                    className={`${plainField} text-center font-mono tabular-nums`}
                   />
                 </div>
               </div>
@@ -158,20 +158,20 @@ const FormViewModal: React.FC = () => {
           
         </div>
         
-        <div className="px-5 py-4 border-t border-line flex justify-between items-center gap-3">
+        <div className="px-4 py-3 border-t border-line bg-surface flex justify-between items-center gap-3">
           <div className="flex flex-wrap gap-2">
-             <div className="rounded-full bg-fill px-3 py-1 flex items-center gap-2">
-                <span className="text-[12px] text-ink-2">RPN</span>
-                <span className="font-semibold text-[15px] tabular-nums text-ink">{formData.rpn}</span>
+             <div className="rounded-sm border border-line bg-field px-2.5 py-1 flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">RPN</span>
+                <span className="font-mono font-medium text-[15px] tabular-nums text-ink">{formData.rpn}</span>
              </div>
-             <div className="rounded-full bg-fill pl-3 pr-1 py-1 flex items-center gap-2">
-                <span className="text-[12px] text-ink-2">Action Priority</span>
-                <span className={`rounded-full px-2.5 text-[13px] font-semibold leading-6 ${getAPColor(formData.actionPriority)}`}>{formData.actionPriority}</span>
+             <div className="rounded-sm border border-line bg-field pl-2.5 pr-1 py-1 flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Action Priority</span>
+                <span className={`rounded-sm px-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-6 ${getAPColor(formData.actionPriority)}`}>{formData.actionPriority}</span>
              </div>
           </div>
           <button 
             onClick={() => setEditingRowId(null)}
-            className="shrink-0 h-9 px-5 bg-accent hover:bg-accent-hover text-on-accent rounded-full text-[14px] font-medium transition-colors"
+            className="shrink-0 h-8 px-4 rounded-sm border border-accent-hover bg-accent hover:bg-accent-hover text-on-accent text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors"
           >
             Done
           </button>

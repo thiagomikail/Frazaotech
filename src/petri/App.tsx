@@ -54,9 +54,10 @@ function Toasts() {
       {state.toasts.map((toast) => (
         <div
           key={toast.id}
-          className="flex max-w-md items-center gap-2 rounded-full border border-line bg-raised/95 px-4 py-2 text-[13px] text-ink shadow-pop backdrop-blur-xl"
+          className={`flex max-w-md items-center rounded-sm border border-line border-l-4 bg-raised px-3 py-1.5 text-[13px] text-ink shadow-pop ${
+            toast.tone === 'warn' ? 'border-l-orange' : 'border-l-accent'
+          }`}
         >
-          {toast.tone === 'warn' && <span className="h-2 w-2 shrink-0 rounded-full bg-orange" aria-hidden="true" />}
           {toast.text}
         </div>
       ))}
@@ -85,19 +86,21 @@ function TabButton({
       onClick={() => onPick(tab)}
       className={
         compact
-          ? `relative flex flex-1 flex-col items-center gap-0.5 pb-1 pt-1.5 text-[10px] font-medium ${on ? 'text-accent' : 'text-ink-3'}`
-          : `relative flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[13px] font-medium transition-colors ${
-              on ? 'bg-thumb text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-ink-2 hover:text-ink'
+          ? `relative flex flex-1 flex-col items-center gap-0.5 border-t-2 pb-1 pt-1.5 text-[10px] font-bold uppercase tracking-[0.06em] ${
+              on ? 'border-t-on-bar bg-bar-raised text-on-bar' : 'border-t-transparent text-on-bar-2'
+            }`
+          : `relative flex flex-1 items-center justify-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.06em] transition-colors ${
+              on ? 'bg-thumb text-on-thumb' : 'text-ink-2 hover:bg-fill'
             }`
       }
       aria-current={on ? 'page' : undefined}
       data-testid={`tab-${tab}`}
     >
-      <Icon size={compact ? 22 : 14} strokeWidth={compact ? 1.8 : 2} />
+      <Icon size={compact ? 20 : 13} strokeWidth={compact ? 1.8 : 2.2} />
       {t(label)}
       {attention && (
         <span
-          className={`absolute ${compact ? 'right-[calc(50%-18px)] top-1' : 'right-1.5 top-1.5'} h-2 w-2 rounded-full bg-red`}
+          className={`absolute ${compact ? 'right-[calc(50%-18px)] top-1' : 'right-1.5 top-1.5'} h-2 w-2 rounded-full border border-black/30 bg-red`}
         />
       )}
     </button>
@@ -155,20 +158,20 @@ function Shell() {
       <Header onOpenKey={() => setKeyOpen(true)} />
       {medium ? (
         <main
-          className={`grid min-h-0 flex-1 ${wide ? 'grid-cols-[minmax(300px,360px)_1fr_minmax(340px,420px)]' : 'grid-cols-[1fr_minmax(320px,380px)]'}`}
+          className={`grid min-h-0 flex-1 gap-1.5 p-1.5 ${wide ? 'grid-cols-[minmax(300px,360px)_1fr_minmax(340px,420px)]' : 'grid-cols-[1fr_minmax(320px,380px)]'}`}
         >
           {wide && (
-            <aside className="flex min-h-0 flex-col border-r border-line bg-surface">
-              <div className="flex h-11 shrink-0 items-center gap-1.5 border-b border-line px-3 text-[13px] font-semibold text-ink">
-                <Bot size={15} className="text-accent" />
+            <aside className="flex min-h-0 flex-col overflow-hidden rounded-sm border border-line bg-surface">
+              <div className="flex h-8 shrink-0 items-center gap-2 border-b border-line bg-strip px-3 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">
+                <Bot size={14} />
                 {t('tab.chat')}
               </div>
               <div className="min-h-0 flex-1">{panel('chat')}</div>
             </aside>
           )}
-          <section className="min-h-0 min-w-0">{panel('net')}</section>
-          <aside className="flex min-h-0 flex-col border-l border-line bg-canvas">
-            <nav className="m-2 mb-0 flex shrink-0 gap-0.5 rounded-[10px] bg-fill p-0.5">
+          <section className="min-h-0 min-w-0 overflow-hidden rounded-sm border border-line bg-surface">{panel('net')}</section>
+          <aside className="flex min-h-0 flex-col overflow-hidden rounded-sm border border-line bg-surface">
+            <nav className="flex h-8 shrink-0 divide-x divide-line border-b border-line bg-strip">
               {sideTabs.map((tab) => (
                 <TabButton
                   key={tab}
@@ -184,8 +187,8 @@ function Shell() {
         </main>
       ) : (
         <>
-          <main className={`min-h-0 flex-1 ${mobile === 'chat' ? 'bg-surface' : ''}`}>{panel(mobile)}</main>
-          <nav className="flex border-t border-line bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl backdrop-saturate-150">
+          <main className="min-h-0 flex-1 bg-surface">{panel(mobile)}</main>
+          <nav className="flex border-t border-black/40 bg-bar pb-[env(safe-area-inset-bottom)]">
             {(['chat', 'net', 'edit', 'check', 'code'] as Tab[]).map((tab) => (
               <TabButton
                 key={tab}

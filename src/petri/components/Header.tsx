@@ -82,33 +82,39 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
   ];
 
   return (
-    <header className="relative z-20 flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 px-3 backdrop-blur-xl backdrop-saturate-150">
-      <a href="/petri/" className="flex items-center gap-2">
-        <img src="/petri-icon.svg" alt="" className="h-7 w-7" />
-        <span className="text-[15px] font-semibold tracking-tight text-ink">PetriPLC</span>
+    <header className="relative z-20 flex h-11 shrink-0 items-center gap-2.5 border-b border-black/40 bg-bar px-3 text-on-bar">
+      <a
+        href="/"
+        title="OT Workbench home"
+        className="hidden items-center gap-2 text-on-bar-2 transition-colors hover:text-on-bar lg:flex"
+      >
+        <img src="/workbench-icon.svg" alt="" className="h-6 w-6" />
+        <span className="text-[12px] font-semibold uppercase tracking-[0.08em]">OT Workbench</span>
       </a>
-      <span className="hidden text-[13px] text-ink-2 md:inline">{t('app.tagline')}</span>
-      <a href="/" className="hidden items-center gap-1.5 text-[13px] text-ink-3 hover:text-accent lg:flex">
-        <span aria-hidden="true">·</span>
-        <img src="/workbench-icon.svg" alt="" className="h-4 w-4" />
-        OT Workbench
+      <div className="hidden h-5 w-px shrink-0 bg-bar-line lg:block" />
+      <a href="/petri/" className="flex shrink-0 items-center gap-2">
+        <img src="/petri-icon.svg" alt="" className="h-6 w-6" />
+        <span className="text-[14px] font-bold uppercase tracking-[0.08em] text-on-bar">PetriPLC</span>
       </a>
+      <span className="hidden text-[12px] font-medium uppercase tracking-[0.06em] text-on-bar-2 xl:inline">
+        {t('app.tagline')}
+      </span>
       {state.net.name && (
         <span
-          className="ml-2 hidden max-w-[16rem] truncate rounded-full bg-fill px-2.5 py-0.5 text-[12px] font-medium text-ink-2 sm:inline"
+          className="ml-1 hidden max-w-[16rem] truncate rounded-sm border border-bar-line bg-bar-raised px-2 py-0.5 text-[12px] font-medium text-on-bar sm:inline"
           data-testid="net-title"
         >
           {state.net.name}
         </span>
       )}
 
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex items-center gap-1.5">
         <button
           onClick={() => dispatch({ type: 'net/undo' })}
           disabled={state.past.length === 0}
           title={t('header.undo')}
           aria-label={t('header.undo')}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-accent transition-colors hover:bg-fill disabled:text-ink-3 disabled:opacity-50"
+          className="flex h-8 items-center justify-center gap-1.5 rounded-sm border border-bar-line bg-bar-raised text-[12px] font-semibold uppercase tracking-[0.04em] text-on-bar transition-colors hover:bg-bar-line disabled:opacity-40 w-8"
           data-testid="undo"
         >
           <Undo2 size={16} />
@@ -118,7 +124,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
           disabled={state.future.length === 0}
           title={t('header.redo')}
           aria-label={t('header.redo')}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-accent transition-colors hover:bg-fill disabled:text-ink-3 disabled:opacity-50"
+          className="flex h-8 items-center justify-center gap-1.5 rounded-sm border border-bar-line bg-bar-raised text-[12px] font-semibold uppercase tracking-[0.04em] text-on-bar transition-colors hover:bg-bar-line disabled:opacity-40 w-8"
         >
           <Redo2 size={16} />
         </button>
@@ -129,13 +135,13 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
             title={t('header.file')}
             aria-label={t('header.file')}
             aria-expanded={menu}
-            className="flex h-8 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium text-accent transition-colors hover:bg-fill"
+            className="flex h-8 items-center justify-center gap-1.5 rounded-sm border border-bar-line bg-bar-raised text-[12px] font-semibold uppercase tracking-[0.04em] text-on-bar transition-colors hover:bg-bar-line disabled:opacity-40 px-2.5"
           >
             <Menu size={16} />
             <span className="hidden sm:inline">{t('header.file')}</span>
           </button>
           {menu && (
-            <div className="absolute right-0 top-10 z-30 w-60 overflow-hidden rounded-xl border border-line bg-raised/95 p-1 shadow-pop backdrop-blur-xl">
+            <div className="absolute right-0 top-10 z-30 w-60 overflow-hidden rounded-sm border border-line bg-raised py-1 shadow-pop">
               {items.map(({ icon: Icon, label, run }) => (
                 <button
                   key={label}
@@ -143,7 +149,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
                     setMenu(false);
                     void run();
                   }}
-                  className="group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[13px] text-ink hover:bg-accent hover:text-on-accent"
+                  className="group flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-[13px] text-ink hover:bg-accent hover:text-on-accent"
                 >
                   <Icon size={15} className="text-ink-2 group-hover:text-on-accent" />
                   {label}
@@ -157,7 +163,7 @@ export default function Header({ onOpenKey }: { onOpenKey: () => void }) {
           onClick={onOpenKey}
           title={t('header.key')}
           aria-label={t('header.key')}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-accent transition-colors hover:bg-fill"
+          className="flex h-8 items-center justify-center gap-1.5 rounded-sm border border-bar-line bg-bar-raised text-[12px] font-semibold uppercase tracking-[0.04em] text-on-bar transition-colors hover:bg-bar-line disabled:opacity-40 w-8"
         >
           <KeyRound size={16} />
         </button>

@@ -39,6 +39,7 @@ const STRINGS = {
   'chat.noKey': 'Without a Google key only the examples work. The assistant needs a key.',
   'chat.setKey': 'Set up key',
   'chat.model': 'via {model}',
+  'chat.you': 'You',
 
   'err.no-key': 'No Google key configured.',
   'err.auth': 'Google rejected the key. Check "Google key".',
@@ -61,7 +62,7 @@ const STRINGS = {
   'canvas.layout': 'Re-layout',
   'canvas.direction': 'Switch direction (vertical/horizontal)',
   'canvas.empty': 'No net yet. Describe the machine to the assistant or load an example.',
-  'canvas.hintSim': 'Click a transition to fire it. Orange: switches on the inputs it needs.',
+  'canvas.hintSim': 'Click a transition to fire it. Amber: switches on the inputs it needs.',
   'canvas.hintArc': 'Click the source, then the target (place → transition or transition → place).',
   'canvas.hintArcFrom': 'Source {id}. Now click the target.',
   'canvas.hintPlace': 'Click an empty spot to add a place.',

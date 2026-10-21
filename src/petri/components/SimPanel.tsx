@@ -42,42 +42,42 @@ export function SimBar() {
     .join(', ');
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-line bg-surface px-3 py-2 text-[13px]">
-      <div className="flex items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-line bg-strip px-2 py-1.5 text-[12px]">
+      <div className="flex items-center gap-1">
         <button
           onClick={() => dispatch({ type: 'sim/run', running: !running })}
-          className={`flex h-8 items-center gap-1.5 rounded-full px-3.5 font-semibold transition-colors ${
-            running ? 'bg-orange/15 text-orange-ink hover:bg-orange/25' : 'bg-green/15 text-green-ink hover:bg-green/25'
+          className={`flex h-8 items-center gap-1.5 rounded-sm border px-3 text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors ${
+            running ? 'border-orange bg-orange text-black' : 'border-green bg-green text-white hover:opacity-90'
           }`}
           data-testid="sim-run"
         >
-          {running ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
+          {running ? <Pause size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />}
           {t(running ? 'sim.pause' : 'sim.run')}
         </button>
         <button
           onClick={() => dispatch({ type: 'sim/scan', compiled, dt: SCAN_MS * speed })}
           disabled={running}
-          className="flex h-8 items-center gap-1.5 rounded-full bg-fill px-3.5 font-medium text-ink transition-colors hover:bg-fill-strong disabled:opacity-40"
+          className="flex h-8 items-center gap-1.5 rounded-sm border px-3 text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors border-line bg-raised text-ink hover:bg-fill-strong disabled:opacity-40"
           data-testid="sim-step"
         >
-          <StepForward size={14} />
+          <StepForward size={13} />
           {t('sim.step')}
         </button>
         <button
           onClick={() => dispatch({ type: 'sim/reset', compiled })}
-          className="flex h-8 items-center gap-1.5 rounded-full bg-fill px-3.5 font-medium text-ink transition-colors hover:bg-fill-strong"
+          className="flex h-8 items-center gap-1.5 rounded-sm border px-3 text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors border-line bg-raised text-ink hover:bg-fill-strong"
           data-testid="sim-reset"
         >
-          <RotateCcw size={14} />
+          <RotateCcw size={13} />
           {t('sim.reset')}
         </button>
       </div>
-      <label className="flex items-center gap-1.5 text-ink-2">
+      <label className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.06em] text-ink-2">
         {t('sim.speed')}
         <select
           value={speed}
           onChange={(e) => dispatch({ type: 'sim/speed', speed: Number(e.target.value) })}
-          className="h-8 rounded-lg bg-fill px-2 text-ink focus:outline-none"
+          className="h-8 rounded-sm border border-line bg-field px-1.5 font-mono text-[12px] font-normal normal-case tracking-normal text-ink focus:border-accent focus:outline-none"
         >
           {SPEEDS.map((s) => (
             <option key={s} value={s}>
@@ -86,7 +86,10 @@ export function SimBar() {
           ))}
         </select>
       </label>
-      <span className="font-mono tabular-nums text-ink" data-testid="sim-clock">
+      <span
+        className="rounded-sm border border-line bg-field px-2 py-1 font-mono text-[12px] tabular-nums text-ink"
+        data-testid="sim-clock"
+      >
         {clock(sim.time)}{' '}
         <span className="text-ink-3">
           · {sim.scans} {t('sim.scans')}
@@ -94,7 +97,8 @@ export function SimBar() {
       </span>
       {fired && (
         <span className="min-w-0 truncate text-ink-2">
-          {t('sim.fired')}: <span className="font-mono text-green-ink">{fired}</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.06em]">{t('sim.fired')}</span>{' '}
+          <span className="font-mono text-green-ink">{fired}</span>
         </span>
       )}
     </div>
@@ -108,9 +112,9 @@ export function IoPanel() {
   const net = state.net;
 
   return (
-    <div className="flex flex-col gap-2.5 border-t border-line bg-surface px-3 pb-3 pt-2 text-[12px] sm:flex-row sm:gap-6">
+    <div className="flex flex-col gap-2 border-t border-line bg-surface px-3 pb-2.5 pt-2 text-[12px] sm:flex-row sm:gap-6">
       <div className="min-w-0 flex-1">
-        <div className="mb-1.5 text-[11px] font-semibold text-ink-3">{t('io.inputs')}</div>
+        <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-2">{t('io.inputs')}</div>
         <div className="flex flex-wrap gap-1.5">
           {net.inputs.length === 0 && <span className="text-ink-3">{t('io.none')}</span>}
           {net.inputs.map((s) => {
@@ -125,27 +129,17 @@ export function IoPanel() {
                     ? dispatch({ type: 'sim/input', name: s.name, value: true, pulse: true })
                     : dispatch({ type: 'sim/input', name: s.name, value: !on })
                 }
-                className={`flex h-8 items-center gap-2 rounded-full font-mono transition-colors ${
-                  pulse
-                    ? `border px-3 ${on ? 'border-accent bg-accent text-on-accent' : 'border-line bg-surface text-ink shadow-sm hover:bg-fill'}`
-                    : 'bg-fill pl-1 pr-3 text-ink hover:bg-fill-strong'
+                className={`flex h-7 items-center gap-1.5 rounded-sm border bg-raised px-2 font-mono text-[11px] text-ink transition-colors hover:bg-fill-strong ${
+                  pulse ? 'border-dashed border-ink-3' : 'border-line'
                 }`}
                 data-testid={`input-${s.name}`}
                 {...(pulse ? { 'aria-pressed': on } : { role: 'switch', 'aria-checked': on })}
               >
-                {pulse ? (
-                  <span
-                    className={`inline-block h-2.5 w-2.5 rounded-full border-2 ${on ? 'border-on-accent' : 'border-ink-3'}`}
-                  />
-                ) : (
-                  <span
-                    className={`relative inline-block h-6 w-10 shrink-0 rounded-full transition-colors ${on ? 'bg-green' : 'bg-fill-strong'}`}
-                  >
-                    <span
-                      className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left] ${on ? 'left-[18px]' : 'left-0.5'}`}
-                    />
-                  </span>
-                )}
+                <span
+                  className={`inline-block h-2.5 w-2.5 shrink-0 rounded-[1px] border ${
+                    on ? 'border-green bg-green' : 'border-ink-3 bg-field'
+                  }`}
+                />
                 {s.name}
               </button>
             );
@@ -153,7 +147,7 @@ export function IoPanel() {
         </div>
       </div>
       <div className="min-w-0 sm:max-w-[45%]">
-        <div className="mb-1.5 text-[11px] font-semibold text-ink-3">{t('io.outputs')}</div>
+        <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-2">{t('io.outputs')}</div>
         <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1">
           {net.outputs.length === 0 && <span className="text-ink-3">{t('io.none')}</span>}
           {net.outputs.map((s) => {
@@ -162,13 +156,13 @@ export function IoPanel() {
               <span
                 key={s.name}
                 title={s.description}
-                className="flex items-center gap-1.5 font-mono"
+                className="flex items-center gap-1.5 font-mono text-[11px]"
                 data-testid={`output-${s.name}`}
                 data-on={on}
               >
                 <span
-                  className={`inline-block h-2.5 w-2.5 rounded-full transition-colors ${
-                    on ? 'bg-green ring-3 ring-green/25' : 'bg-fill-strong'
+                  className={`inline-block h-3 w-3 rounded-full border transition-colors ${
+                    on ? 'border-black/30 bg-green' : 'border-line bg-fill-strong'
                   }`}
                 />
                 <span className={on ? 'text-ink' : 'text-ink-2'}>{s.name}</span>

@@ -26,21 +26,25 @@ const EnergyScheduler = () => {
         <Panel className="h-full">
             <PanelHeader icon={Calendar} title="Production energy scheduler" />
 
-            <div className="flex min-h-0 flex-1 flex-col px-5 pb-4">
+            <div className="flex min-h-0 flex-1 flex-col p-3">
                 {/* Legend */}
-                <div className="mb-3 flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-[11px] text-ink-2">
+                <div className="mb-2 flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-[11px] text-ink-2">
                     <span className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-[3px] border border-red/50 bg-red/15" />
-                        High cost ($0.18/kWh)
+                        <span className="h-2.5 w-2.5 border border-orange bg-orange/20" />
+                        <span>
+                            High cost (<span className="font-mono">$0.18</span>/kWh)
+                        </span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-[3px] border border-green/50 bg-green/15" />
-                        Low cost ($0.08/kWh)
+                        <span className="h-2.5 w-2.5 border border-green bg-green/15" />
+                        <span>
+                            Low cost (<span className="font-mono">$0.08</span>/kWh)
+                        </span>
                     </span>
                 </div>
 
                 {/* Timeline header, aligned with the grid lines below */}
-                <div className="mb-1.5 flex text-[11px] tabular-nums text-ink-3">
+                <div className="mb-1 flex font-mono text-[10px] tabular-nums text-ink-3">
                     <div className="w-12 shrink-0" />
                     <div className="relative h-4 flex-1">
                         {hours.filter(h => h % 3 === 0).map(h => (
@@ -56,17 +60,17 @@ const EnergyScheduler = () => {
                 </div>
 
                 {/* Main Gantt Area */}
-                <div className="flex min-h-[180px] flex-1 overflow-hidden rounded-xl border border-line">
+                <div className="flex min-h-[180px] flex-1 overflow-hidden rounded-sm border border-line">
 
                     {/* Left Axis Labels */}
-                    <div className="z-10 grid w-12 shrink-0 grid-rows-3 items-center border-r border-line bg-fill/50 pb-2 pt-6 text-center text-[12px] font-semibold text-ink-2">
+                    <div className="z-10 grid w-12 shrink-0 grid-rows-3 items-center border-r border-line bg-strip pb-2 pt-6 text-center font-mono text-[11px] font-medium text-ink-2">
                         <div>F-1</div>
                         <div>F-2</div>
                         <div>K-1</div>
                     </div>
 
                     {/* Timeline Grid */}
-                    <div className="relative flex-1 bg-surface">
+                    <div className="relative flex-1 bg-field">
                         {/* Hour Grid Lines */}
                         {hours.map(h => (
                             <div
@@ -80,10 +84,10 @@ const EnergyScheduler = () => {
                         {priceZones.map((zone, idx) => (
                             <div
                                 key={idx}
-                                className={`absolute inset-y-0 flex justify-center border-x border-dashed pt-2 text-[10px] font-semibold ${
+                                className={`absolute inset-y-0 flex justify-center border-x border-dashed pt-1.5 text-[10px] font-bold uppercase tracking-[0.06em] ${
                                     zone.type === 'peak'
-                                        ? 'border-red/40 bg-red/8 text-red-ink'
-                                        : 'border-green/40 bg-green/8 text-green-ink'
+                                        ? 'border-orange bg-orange/10 text-orange-ink'
+                                        : 'border-green bg-green/10 text-green-ink'
                                 }`}
                                 style={{ left: getLeft(zone.start), width: getWidth(zone.end - zone.start) }}
                             >
@@ -96,9 +100,9 @@ const EnergyScheduler = () => {
                         {productionBlocks.map(block => (
                             <div
                                 key={block.id}
-                                className={`absolute z-20 flex h-8 -translate-y-1/2 cursor-grab items-center justify-between gap-1 rounded-lg px-2 text-[12px] font-semibold text-white shadow-sm ${
-                                    block.color === 'cyan' ? 'bg-accent' : 'bg-purple'
-                                } ${block.warning ? 'ring-2 ring-red ring-offset-2 ring-offset-surface' : ''}`}
+                                className={`absolute z-20 flex h-8 -translate-y-1/2 cursor-grab items-center justify-between gap-1 rounded-sm px-2 font-mono text-[11px] font-medium text-surface ${
+                                    block.color === 'cyan' ? 'bg-ink-2' : 'bg-ink-3'
+                                } ${block.warning ? 'ring-2 ring-red ring-offset-1 ring-offset-field' : ''}`}
                                 style={{
                                     left: getLeft(block.start),
                                     top: `calc(24px + (100% - 32px) * ${((block.id === 2 ? 1 : 0) + 0.5) / 3})`,
@@ -111,20 +115,20 @@ const EnergyScheduler = () => {
                         ))}
 
                         {/* Current Time */}
-                        <div className="absolute inset-y-0 z-30 w-0.5 bg-orange" style={{ left: '45%' }}>
-                            <div className="absolute -left-[3px] -top-0.5 h-2 w-2 rounded-full bg-orange" />
+                        <div className="absolute inset-y-0 z-30 w-0.5 bg-ink" style={{ left: '45%' }}>
+                            <div className="absolute -left-[3px] -top-0.5 h-2 w-2 rounded-full bg-ink" />
                         </div>
 
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[12px] text-ink-3">
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[12px] text-ink-3">
                     <div className="flex items-center gap-1.5">
                         <Move size={14} />
                         <span>Drag blocks to optimize</span>
                     </div>
-                    <Badge tone="red" className="py-1 text-[12px]">
+                    <Badge tone="red" className="py-1 text-[11px]">
                         <DollarSign size={13} />
                         Batch A-102 exceeding cost budget
                     </Badge>

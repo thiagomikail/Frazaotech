@@ -3,290 +3,329 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#3a3a3a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
     <meta
       name="description"
-      content="Engineering tools for automation and reliability: PetriPLC turns a machine description into a Petri net and IEC 61131-3 code, FMEA ranks failure risks."
+      content="Engineering tools for automation and reliability: PetriPLC turns a machine description into a Petri net and IEC 61131-3 code, FMEA ranks failure risks, Yield scores furnace combustion."
     />
     <link rel="icon" type="image/svg+xml" href="/workbench-icon.svg" />
     <link rel="stylesheet" href="/src/home/home.css" />
     <title>OT Workbench</title>
   </head>
   <body class="min-h-screen">
-    <header class="sticky top-0 z-50 border-b border-line bg-canvas/80 backdrop-blur-xl backdrop-saturate-150">
-      <nav class="mx-auto flex h-12 max-w-[1024px] items-center justify-between px-4 sm:px-6" aria-label="Main">
-        <a href="/" class="flex items-center gap-2 text-[15px] font-semibold tracking-tight">
+    <header class="sticky top-0 z-50 border-b border-black/40 bg-bar text-on-bar">
+      <nav class="mx-auto flex h-11 max-w-[1120px] items-center justify-between px-4 sm:px-6" aria-label="Main">
+        <a href="/" class="flex items-center gap-2.5">
           <img src="/workbench-icon.svg" alt="" class="h-6 w-6" />
-          OT Workbench
+          <span class="text-[13px] font-bold uppercase tracking-[0.1em]">OT Workbench</span>
         </a>
-        <div class="flex items-center gap-6 text-[13px] text-ink-2">
-          <a href="/petri/" class="transition-colors hover:text-ink">PetriPLC</a>
-          <a href="/fmea/" class="transition-colors hover:text-ink">FMEA</a>
-          <a href="/yield/" class="transition-colors hover:text-ink">Yield</a>
+        <div class="flex items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.06em]">
+          <a href="/petri/" class="rounded-sm px-2.5 py-1.5 text-on-bar-2 transition-colors hover:bg-bar-raised hover:text-on-bar"
+            >PetriPLC</a
+          >
+          <a href="/fmea/" class="rounded-sm px-2.5 py-1.5 text-on-bar-2 transition-colors hover:bg-bar-raised hover:text-on-bar"
+            >FMEA</a
+          >
+          <a href="/yield/" class="rounded-sm px-2.5 py-1.5 text-on-bar-2 transition-colors hover:bg-bar-raised hover:text-on-bar"
+            >Yield</a
+          >
         </div>
       </nav>
     </header>
 
     <main>
-      <section class="px-4 pb-14 pt-16 text-center sm:px-6 sm:pb-20 sm:pt-24">
-        <p class="text-[17px] font-semibold text-ink-2">OT Workbench</p>
-        <h1 class="mx-auto mt-3 max-w-[820px] text-[40px] font-semibold leading-[1.08] tracking-tight sm:text-[64px]">
-          Tools for the people who keep plants running.
-        </h1>
-        <p class="mx-auto mt-5 max-w-[640px] text-[19px] leading-snug text-ink-2 sm:text-[21px]">
-          Model a machine and generate its PLC code. Rank failure risks before they stop the line. Score how well
-          your furnaces burn. Right in your browser.
+      <section class="relative isolate h-[min(78vh,640px)] min-h-[480px] overflow-hidden bg-[#161616] text-white">
+        <canvas id="terrain" class="absolute inset-0 block h-full w-full" aria-hidden="true"></canvas>
+        <div
+          class="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,#161616_0%,rgba(22,22,22,0.9)_42%,rgba(22,22,22,0)_72%)] sm:bg-[linear-gradient(90deg,#161616_0%,rgba(22,22,22,0.88)_32%,rgba(22,22,22,0.2)_68%,rgba(22,22,22,0)_100%)]"
+        ></div>
+        <div
+          class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(0deg,#161616,rgba(22,22,22,0))]"
+        ></div>
+        <div class="relative mx-auto flex h-full max-w-[1120px] flex-col justify-end px-4 pb-14 sm:justify-center sm:px-6 sm:pb-0">
+          <p class="font-mono text-[12px] uppercase tracking-[0.24em] text-[#e0a000]">OT Workbench</p>
+          <h1 class="mt-4 max-w-[640px] text-[40px] font-bold uppercase leading-[0.98] tracking-[0.01em] sm:text-[60px]">
+            Tools for the people who keep plants running.
+          </h1>
+          <p class="mt-5 max-w-[520px] text-[17px] leading-snug text-white/70 sm:text-[19px]">
+            Model a machine and generate its PLC code. Rank failure risks before they stop the line. Score how well your
+            furnaces burn. Right in your browser.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#apps"
+              class="inline-flex h-11 items-center gap-2 rounded-sm border border-[#3d7ad0] bg-[#2f6bbf] px-5 text-[13px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-[#3d7ad0]"
+              >Explore the tools
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg
+            ></a>
+          </div>
+        </div>
+        <p class="absolute bottom-3 right-4 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35 sm:right-6">
+          Energy terrain · illustrative
         </p>
-        <div class="mt-9 flex flex-wrap justify-center gap-3">
-          <a
-            href="#apps"
-            class="inline-flex h-11 items-center rounded-full bg-accent px-6 text-[17px] text-on-accent transition-colors hover:bg-accent-hover"
-            >Explore the tools</a
-          >
+      </section>
+
+      <section id="apps" class="mx-auto max-w-[1120px] scroll-mt-12 px-4 pb-4 pt-12 sm:px-6" aria-labelledby="apps-title">
+        <div class="mb-4 flex items-end justify-between border-b border-line pb-2">
+          <h2 id="apps-title" class="text-[13px] font-bold uppercase tracking-[0.1em] text-ink-2">Tools</h2>
+          <span class="font-mono text-[12px] text-ink-3">3 apps</span>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <article class="flex flex-col rounded-sm border border-line bg-surface">
+            <div class="flex h-9 items-center gap-2 border-b border-line bg-strip px-3">
+              <img src="/petri-icon.svg" alt="" class="h-5 w-5" />
+              <h3 class="text-[12px] font-bold uppercase tracking-[0.08em]">PetriPLC</h3>
+              <span class="ml-auto font-mono text-[11px] text-ink-3">/petri</span>
+            </div>
+            <div class="flex flex-1 flex-col p-5">
+              <p class="text-[22px] font-semibold leading-tight">From a description to PLC code.</p>
+              <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
+                Describe a machine in plain words. Get a Petri net you can simulate and check, then generate IEC 61131-3
+                code.
+              </p>
+              <ul class="mt-4 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Structured Text</li>
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Siemens SCL</li>
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Studio 5000</li>
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">PLCopen XML</li>
+              </ul>
+              <div class="mt-5 rounded-sm border border-line bg-field px-2 py-3">
+                <svg viewBox="0 0 440 170" class="w-full" role="img" aria-label="A three-step Petri net with a timer running in the last step">
+                  <g class="fill-none stroke-ink-3" stroke-width="1.5">
+                    <path d="M58 64H90M104 64H136M178 64H210M224 64H256M298 64H330" />
+                    <path d="M344 64H384Q392 64 392 72V140Q392 148 384 148H16Q8 148 8 140V72Q8 64 15 64" />
+                  </g>
+                  <g class="fill-ink-3">
+                    <path d="M22 64l-7-4v8zM96 64l-7-4v8zM142 64l-7-4v8zM216 64l-7-4v8zM262 64l-7-4v8zM336 64l-7-4v8z" />
+                  </g>
+                  <circle cx="40" cy="64" r="18" class="fill-surface stroke-ink-2" stroke-width="1.5" />
+                  <circle cx="160" cy="64" r="18" class="fill-surface stroke-ink-2" stroke-width="1.5" />
+                  <circle cx="280" cy="64" r="18" class="fill-surface stroke-accent" stroke-width="3" />
+                  <circle cx="280" cy="64" r="4.5" class="fill-ink" />
+                  <rect x="96" y="46" width="8" height="36" class="fill-ink-3" fill-opacity="0.4" />
+                  <rect x="216" y="46" width="8" height="36" class="fill-ink-3" fill-opacity="0.4" />
+                  <rect x="336" y="46" width="8" height="36" class="fill-surface stroke-indigo" stroke-width="1.5" />
+                  <rect x="336" y="60.4" width="8" height="21.6" class="fill-indigo" />
+                  <g class="fill-ink" font-size="13" font-weight="600" text-anchor="middle">
+                    <text x="40" y="106">IDLE</text>
+                    <text x="160" y="106">FEEDING</text>
+                    <text x="280" y="106">DWELL</text>
+                  </g>
+                  <g class="font-mono" font-size="11" text-anchor="middle">
+                    <text x="160" y="123" class="fill-ink-3">feed_down</text>
+                    <text x="280" y="123" class="fill-green-ink">spindle</text>
+                    <text x="100" y="36" class="fill-ink-3">start</text>
+                    <text x="220" y="36" class="fill-ink-3">limit_down</text>
+                    <text x="340" y="36" class="fill-indigo-ink">1.5 s</text>
+                  </g>
+                </svg>
+              </div>
+              <a
+                href="/petri/"
+                class="mt-5 inline-flex h-9 items-center gap-2 self-start rounded-sm border border-accent-hover bg-accent px-4 text-[12px] font-bold uppercase tracking-[0.06em] text-on-accent transition-colors hover:bg-accent-hover"
+                data-testid="home-petri"
+                >Open PetriPLC
+                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg
+              ></a>
+            </div>
+          </article>
+
+          <article class="flex flex-col rounded-sm border border-line bg-surface">
+            <div class="flex h-9 items-center gap-2 border-b border-line bg-strip px-3">
+              <img src="/fmea-icon.svg" alt="" class="h-5 w-5" />
+              <h3 class="text-[12px] font-bold uppercase tracking-[0.08em]">FMEA</h3>
+              <span class="ml-auto font-mono text-[11px] text-ink-3">/fmea</span>
+            </div>
+            <div class="flex flex-1 flex-col p-5">
+              <p class="text-[22px] font-semibold leading-tight">Failure modes, ranked.</p>
+              <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
+                Failure Mode and Effects Analysis with AIAG-VDA action priority and AI-suggested failure modes. Comes with
+                a 75-mode aluminum hot rolling mill study.
+              </p>
+              <ul class="mt-4 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Action priority</li>
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Risk dashboard</li>
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Word import</li>
+                <li class="rounded-sm border border-line bg-raised px-2 py-0.5">AI suggestions</li>
+              </ul>
+              <div class="mt-5 overflow-hidden rounded-sm border border-line bg-field text-[13px]" aria-hidden="true">
+                <div
+                  class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 border-b border-line bg-strip px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.06em] text-ink-2"
+                >
+                  <span>Failure mode</span><span class="text-center">S</span><span class="text-center">O</span
+                  ><span class="text-center">D</span><span class="text-center">AP</span>
+                </div>
+                <div class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 border-b border-line px-3 py-2">
+                  <span class="truncate">Bearing race spalling and seizure</span>
+                  <span class="text-center font-mono text-ink-2">7</span><span class="text-center font-mono text-ink-2">4</span
+                  ><span class="text-center font-mono text-ink-2">5</span>
+                  <span class="rounded-sm bg-red text-center text-[11px] font-bold leading-5 text-white">H</span>
+                </div>
+                <div class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 border-b border-line px-3 py-2">
+                  <span class="truncate">Valve spool stick or null shift</span>
+                  <span class="text-center font-mono text-ink-2">8</span><span class="text-center font-mono text-ink-2">6</span
+                  ><span class="text-center font-mono text-ink-2">4</span>
+                  <span class="rounded-sm bg-orange text-center text-[11px] font-bold leading-5 text-black">M</span>
+                </div>
+                <div class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 px-3 py-2">
+                  <span class="truncate">Bacterial/fungal colonization</span>
+                  <span class="text-center font-mono text-ink-2">4</span><span class="text-center font-mono text-ink-2">7</span
+                  ><span class="text-center font-mono text-ink-2">6</span>
+                  <span class="rounded-sm bg-green/15 text-center text-[11px] font-bold leading-5 text-green-ink">L</span>
+                </div>
+              </div>
+              <a
+                href="/fmea/"
+                class="mt-5 inline-flex h-9 items-center gap-2 self-start rounded-sm border border-accent-hover bg-accent px-4 text-[12px] font-bold uppercase tracking-[0.06em] text-on-accent transition-colors hover:bg-accent-hover"
+                data-testid="home-fmea"
+                >Open FMEA
+                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg
+              ></a>
+            </div>
+          </article>
+
+          <article class="flex flex-col rounded-sm border border-line bg-surface md:col-span-2">
+            <div class="flex h-9 items-center gap-2 border-b border-line bg-strip px-3">
+              <img src="/yield-icon.svg" alt="" class="h-5 w-5" />
+              <h3 class="text-[12px] font-bold uppercase tracking-[0.08em]">Yield</h3>
+              <span class="ml-auto font-mono text-[11px] text-ink-3">/yield</span>
+            </div>
+            <div class="flex flex-1 flex-col gap-5 p-5 md:flex-row">
+              <div class="flex flex-1 flex-col">
+                <p class="text-[22px] font-semibold leading-tight">Furnace energy, scored.</p>
+                <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
+                  Scores each regenerative burner pair from 0 to 100 with the US DOE available-heat method, turns the gaps
+                  into a costed action plan, and keeps a live FMEA that reacts to the readings. Runs on a demo melt shop
+                  with three sidewell furnaces and a rotary kiln.
+                </p>
+                <ul class="mt-4 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
+                  <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Combustion score</li>
+                  <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Costed action plan</li>
+                  <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Live FMEA</li>
+                  <li class="rounded-sm border border-line bg-raised px-2 py-0.5">Energy scheduling</li>
+                </ul>
+                <a
+                  href="/yield/"
+                  class="mt-5 inline-flex h-9 items-center gap-2 self-start rounded-sm border border-accent-hover bg-accent px-4 text-[12px] font-bold uppercase tracking-[0.06em] text-on-accent transition-colors hover:bg-accent-hover md:mt-auto"
+                  data-testid="home-yield"
+                  >Open Yield
+                  <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg
+                ></a>
+              </div>
+              <div class="rounded-sm border border-line bg-field p-4 md:w-[46%] md:shrink-0" aria-hidden="true">
+                <div class="flex items-center gap-4">
+                  <svg viewBox="0 0 80 80" class="h-20 w-20 shrink-0">
+                    <circle cx="40" cy="40" r="34" fill="none" class="stroke-fill-strong" stroke-width="7" />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="34"
+                      fill="none"
+                      class="stroke-orange"
+                      stroke-width="7"
+                      stroke-dasharray="132.4 213.6"
+                      transform="rotate(-90 40 40)"
+                    />
+                    <text x="40" y="47" text-anchor="middle" class="fill-ink font-mono" font-size="21" font-weight="500">62</text>
+                  </svg>
+                  <div class="min-w-0">
+                    <p class="text-[15px] font-bold uppercase tracking-[0.04em]">RB-02 Sidewell B</p>
+                    <span
+                      class="mt-1 inline-block rounded-sm bg-orange px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em] text-black"
+                      >Degraded</span
+                    >
+                    <p class="mt-1.5 text-[13px] text-ink-2">
+                      <span class="font-mono font-medium text-green-ink">$74k a year</span> recoverable
+                    </p>
+                  </div>
+                </div>
+                <div class="mt-4 space-y-2.5 text-[12px]">
+                  <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
+                    <span class="font-semibold uppercase tracking-[0.04em] text-ink-2">Thermal recovery</span
+                    ><span class="text-right font-mono text-ink">65</span>
+                    <div class="col-span-2 mt-1 h-1.5 bg-fill-strong"><div class="h-full bg-orange" style="width: 65%"></div></div>
+                  </div>
+                  <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
+                    <span class="font-semibold uppercase tracking-[0.04em] text-ink-2">Combustion control</span
+                    ><span class="text-right font-mono text-ink">31</span>
+                    <div class="col-span-2 mt-1 h-1.5 bg-fill-strong"><div class="h-full bg-red" style="width: 31%"></div></div>
+                  </div>
+                  <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
+                    <span class="font-semibold uppercase tracking-[0.04em] text-ink-2">Media bed integrity</span
+                    ><span class="text-right font-mono text-ink">70</span>
+                    <div class="col-span-2 mt-1 h-1.5 bg-fill-strong"><div class="h-full bg-orange" style="width: 70%"></div></div>
+                  </div>
+                  <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
+                    <span class="font-semibold uppercase tracking-[0.04em] text-ink-2">Reversal cycle</span
+                    ><span class="text-right font-mono text-ink">71</span>
+                    <div class="col-span-2 mt-1 h-1.5 bg-fill-strong"><div class="h-full bg-orange" style="width: 71%"></div></div>
+                  </div>
+                  <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
+                    <span class="font-semibold uppercase tracking-[0.04em] text-ink-2">Emissions</span
+                    ><span class="text-right font-mono text-ink">100</span>
+                    <div class="col-span-2 mt-1 h-1.5 bg-fill-strong"><div class="h-full bg-green" style="width: 100%"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
-      <section id="apps" class="mx-auto grid max-w-[1024px] scroll-mt-16 gap-5 px-4 sm:px-6 md:grid-cols-2" aria-label="Apps">
-        <article class="flex flex-col overflow-hidden rounded-[28px] bg-surface shadow-card">
-          <div class="flex flex-1 flex-col p-8 sm:p-10">
-            <img src="/petri-icon.svg" alt="" class="h-14 w-14 drop-shadow-md" />
-            <h2 class="mt-6 text-[32px] font-semibold leading-tight tracking-tight">PetriPLC</h2>
-            <p class="mt-1 text-[21px] font-semibold leading-snug tracking-tight text-ink-2">
-              From a description to PLC code.
-            </p>
-            <p class="mt-4 text-[17px] leading-relaxed text-ink-2">
-              Describe a machine in plain words. Get a Petri net you can simulate and check, then generate IEC 61131-3
-              code.
-            </p>
-            <ul class="mt-5 flex flex-wrap gap-2 text-[12px] font-medium text-ink-2">
-              <li class="rounded-full bg-fill px-3 py-1">Structured Text</li>
-              <li class="rounded-full bg-fill px-3 py-1">Siemens SCL</li>
-              <li class="rounded-full bg-fill px-3 py-1">Studio 5000</li>
-              <li class="rounded-full bg-fill px-3 py-1">PLCopen XML</li>
-            </ul>
-            <a
-              href="/petri/"
-              class="mt-auto inline-flex items-center gap-1 self-start pt-7 text-[17px] text-accent hover:underline"
-              data-testid="home-petri"
-              >Open PetriPLC
-              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg
-            ></a>
-          </div>
-          <div class="mx-4 mb-4 rounded-[20px] bg-canvas px-3 py-4 sm:mx-6 sm:mb-6">
-            <svg viewBox="0 0 440 170" class="w-full" role="img" aria-label="A three-step Petri net with a timer running in the last step">
-              <g class="fill-none stroke-ink-3" stroke-width="1.5">
-                <path d="M58 64H90M104 64H136M178 64H210M224 64H256M298 64H330" />
-                <path d="M344 64H384Q392 64 392 72V140Q392 148 384 148H16Q8 148 8 140V72Q8 64 15 64" />
-              </g>
-              <g class="fill-ink-3">
-                <path d="M22 64l-7-4v8zM96 64l-7-4v8zM142 64l-7-4v8zM216 64l-7-4v8zM262 64l-7-4v8zM336 64l-7-4v8z" />
-              </g>
-              <circle cx="40" cy="64" r="18" class="fill-surface stroke-ink-3" stroke-width="1.5" />
-              <circle cx="160" cy="64" r="18" class="fill-surface stroke-ink-3" stroke-width="1.5" />
-              <circle cx="280" cy="64" r="27" class="fill-accent" fill-opacity="0.12" />
-              <circle cx="280" cy="64" r="18" class="fill-surface stroke-accent" stroke-width="2.5" />
-              <circle cx="280" cy="64" r="4.5" class="fill-ink" />
-              <rect x="96" y="46" width="8" height="36" rx="2" class="fill-ink-3" fill-opacity="0.35" />
-              <rect x="216" y="46" width="8" height="36" rx="2" class="fill-ink-3" fill-opacity="0.35" />
-              <rect x="336" y="46" width="8" height="36" rx="2" class="fill-surface stroke-indigo" stroke-width="1.5" />
-              <rect x="336" y="60.4" width="8" height="21.6" rx="2" class="fill-indigo" />
-              <g class="fill-ink" font-size="13" font-weight="500" text-anchor="middle">
-                <text x="40" y="106">Idle</text>
-                <text x="160" y="106">Feeding</text>
-                <text x="280" y="106">Dwell</text>
-              </g>
-              <g class="font-mono" font-size="11" text-anchor="middle">
-                <text x="160" y="123" class="fill-ink-3">feed_down</text>
-                <text x="280" y="123" class="fill-green-ink">spindle</text>
-                <text x="100" y="36" class="fill-ink-3">start</text>
-                <text x="220" y="36" class="fill-ink-3">limit_down</text>
-                <text x="340" y="36" class="fill-indigo-ink">1.5 s</text>
-              </g>
-            </svg>
-          </div>
-        </article>
-
-        <article class="flex flex-col overflow-hidden rounded-[28px] bg-surface shadow-card">
-          <div class="flex flex-1 flex-col p-8 sm:p-10">
-            <img src="/fmea-icon.svg" alt="" class="h-14 w-14 drop-shadow-md" />
-            <h2 class="mt-6 text-[32px] font-semibold leading-tight tracking-tight">FMEA</h2>
-            <p class="mt-1 text-[21px] font-semibold leading-snug tracking-tight text-ink-2">Failure modes, ranked.</p>
-            <p class="mt-4 text-[17px] leading-relaxed text-ink-2">
-              Failure Mode and Effects Analysis with AIAG-VDA action priority and AI-suggested failure modes. Comes with
-              a 75-mode aluminum hot rolling mill study.
-            </p>
-            <ul class="mt-5 flex flex-wrap gap-2 text-[12px] font-medium text-ink-2">
-              <li class="rounded-full bg-fill px-3 py-1">Action priority</li>
-              <li class="rounded-full bg-fill px-3 py-1">Risk dashboard</li>
-              <li class="rounded-full bg-fill px-3 py-1">Word import</li>
-              <li class="rounded-full bg-fill px-3 py-1">AI suggestions</li>
-            </ul>
-            <a
-              href="/fmea/"
-              class="mt-auto inline-flex items-center gap-1 self-start pt-7 text-[17px] text-accent hover:underline"
-              data-testid="home-fmea"
-              >Open FMEA
-              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg
-            ></a>
-          </div>
-          <div class="mx-4 mb-4 rounded-[20px] bg-canvas p-3 sm:mx-6 sm:mb-6 sm:p-4" aria-hidden="true">
-            <div class="overflow-hidden rounded-xl bg-surface text-[13px] shadow-card">
-              <div
-                class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 border-b border-line px-4 py-2 text-[11px] font-semibold text-ink-3"
-              >
-                <span>Failure mode</span><span class="text-center">S</span><span class="text-center">O</span
-                ><span class="text-center">D</span><span class="text-center">AP</span>
-              </div>
-              <div class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 border-b border-line px-4 py-2.5">
-                <span class="truncate">Bearing race spalling and seizure</span>
-                <span class="text-center tabular-nums text-ink-2">7</span><span class="text-center tabular-nums text-ink-2">4</span
-                ><span class="text-center tabular-nums text-ink-2">5</span>
-                <span class="rounded-full bg-red/15 text-center text-[11px] font-semibold leading-5 text-red-ink">H</span>
-              </div>
-              <div class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 border-b border-line px-4 py-2.5">
-                <span class="truncate">Valve spool stick or null shift</span>
-                <span class="text-center tabular-nums text-ink-2">8</span><span class="text-center tabular-nums text-ink-2">6</span
-                ><span class="text-center tabular-nums text-ink-2">4</span>
-                <span class="rounded-full bg-orange/15 text-center text-[11px] font-semibold leading-5 text-orange-ink">M</span>
-              </div>
-              <div class="grid grid-cols-[1fr_1.5rem_1.5rem_1.5rem_2rem] items-center gap-x-2 px-4 py-2.5">
-                <span class="truncate">Bacterial/fungal colonization</span>
-                <span class="text-center tabular-nums text-ink-2">4</span><span class="text-center tabular-nums text-ink-2">7</span
-                ><span class="text-center tabular-nums text-ink-2">6</span>
-                <span class="rounded-full bg-green/15 text-center text-[11px] font-semibold leading-5 text-green-ink">L</span>
-              </div>
+      <section class="mx-auto mt-12 max-w-[1120px] px-4 sm:px-6" aria-labelledby="why">
+        <div class="mb-4 flex items-end justify-between border-b border-line pb-2">
+          <h2 id="why" class="text-[13px] font-bold uppercase tracking-[0.1em] text-ink-2">Built for the plant floor</h2>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div class="rounded-sm border border-line bg-surface">
+            <div class="flex h-9 items-center gap-2 border-b border-line bg-strip px-3">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 text-ink-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              <h3 class="text-[12px] font-bold uppercase tracking-[0.08em]">Standards built in</h3>
             </div>
-          </div>
-        </article>
-
-        <article class="flex flex-col overflow-hidden rounded-[28px] bg-surface shadow-card md:col-span-2 md:flex-row">
-          <div class="flex flex-1 flex-col p-8 sm:p-10">
-            <img src="/yield-icon.svg" alt="" class="h-14 w-14 drop-shadow-md" />
-            <h2 class="mt-6 text-[32px] font-semibold leading-tight tracking-tight">Yield</h2>
-            <p class="mt-1 text-[21px] font-semibold leading-snug tracking-tight text-ink-2">Furnace energy, scored.</p>
-            <p class="mt-4 text-[17px] leading-relaxed text-ink-2">
-              Scores each regenerative burner pair from 0 to 100 with the US DOE available-heat method, turns the gaps
-              into a costed action plan, and keeps a live FMEA that reacts to the readings. Runs on a demo melt shop
-              with three sidewell furnaces and a rotary kiln.
+            <p class="p-4 text-[15px] leading-relaxed text-ink-2">
+              IEC 61131-3 code for four targets, action priority from the AIAG-VDA tables, and the US DOE available-heat
+              method.
             </p>
-            <ul class="mt-5 flex flex-wrap gap-2 text-[12px] font-medium text-ink-2">
-              <li class="rounded-full bg-fill px-3 py-1">Combustion score</li>
-              <li class="rounded-full bg-fill px-3 py-1">Costed action plan</li>
-              <li class="rounded-full bg-fill px-3 py-1">Live FMEA</li>
-              <li class="rounded-full bg-fill px-3 py-1">Energy scheduling</li>
-            </ul>
-            <a
-              href="/yield/"
-              class="mt-auto inline-flex items-center gap-1 self-start pt-7 text-[17px] text-accent hover:underline"
-              data-testid="home-yield"
-              >Open Yield
-              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg
-            ></a>
           </div>
-          <div
-            class="mx-4 mb-4 flex items-center rounded-[20px] bg-canvas p-4 sm:mx-6 sm:mb-6 sm:p-5 md:my-6 md:ml-0 md:w-[46%] md:shrink-0"
-            aria-hidden="true"
-          >
-            <div class="w-full rounded-2xl bg-surface p-5 shadow-card">
-              <div class="flex items-center gap-4">
-                <svg viewBox="0 0 80 80" class="h-20 w-20 shrink-0">
-                  <circle cx="40" cy="40" r="34" fill="none" class="stroke-fill-strong" stroke-width="7" />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="34"
-                    fill="none"
-                    class="stroke-orange"
-                    stroke-width="7"
-                    stroke-linecap="round"
-                    stroke-dasharray="132.4 213.6"
-                    transform="rotate(-90 40 40)"
-                  />
-                  <text x="40" y="47" text-anchor="middle" class="fill-ink" font-size="22" font-weight="600">62</text>
-                </svg>
-                <div class="min-w-0">
-                  <p class="text-[15px] font-semibold tracking-tight">RB-02 Sidewell B</p>
-                  <span class="mt-1 inline-block rounded-full bg-orange/15 px-2 py-0.5 text-[11px] font-semibold text-orange-ink"
-                    >Degraded</span
-                  >
-                  <p class="mt-1.5 text-[13px] text-ink-2">
-                    <span class="font-semibold text-green-ink">$74k a year</span> recoverable
-                  </p>
-                </div>
-              </div>
-              <div class="mt-5 space-y-2.5 text-[12px]">
-                <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
-                  <span class="text-ink-2">Thermal recovery</span><span class="text-right tabular-nums text-ink">65</span>
-                  <div class="col-span-2 mt-1 h-1.5 rounded-full bg-fill"><div class="h-full rounded-full bg-orange" style="width: 65%"></div></div>
-                </div>
-                <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
-                  <span class="text-ink-2">Combustion control</span><span class="text-right tabular-nums text-ink">31</span>
-                  <div class="col-span-2 mt-1 h-1.5 rounded-full bg-fill"><div class="h-full rounded-full bg-red" style="width: 31%"></div></div>
-                </div>
-                <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
-                  <span class="text-ink-2">Media bed integrity</span><span class="text-right tabular-nums text-ink">70</span>
-                  <div class="col-span-2 mt-1 h-1.5 rounded-full bg-fill"><div class="h-full rounded-full bg-orange" style="width: 70%"></div></div>
-                </div>
-                <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
-                  <span class="text-ink-2">Reversal cycle</span><span class="text-right tabular-nums text-ink">71</span>
-                  <div class="col-span-2 mt-1 h-1.5 rounded-full bg-fill"><div class="h-full rounded-full bg-orange" style="width: 71%"></div></div>
-                </div>
-                <div class="grid grid-cols-[1fr_2.5rem] items-center gap-x-3">
-                  <span class="text-ink-2">Emissions</span><span class="text-right tabular-nums text-ink">100</span>
-                  <div class="col-span-2 mt-1 h-1.5 rounded-full bg-fill"><div class="h-full rounded-full bg-green" style="width: 100%"></div></div>
-                </div>
-              </div>
+          <div class="rounded-sm border border-line bg-surface">
+            <div class="flex h-9 items-center gap-2 border-b border-line bg-strip px-3">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 text-ink-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+              </svg>
+              <h3 class="text-[12px] font-bold uppercase tracking-[0.08em]">AI drafts, you decide</h3>
             </div>
-          </div>
-        </article>
-      </section>
-
-      <section class="mx-auto mt-24 max-w-[1024px] px-4 sm:px-6" aria-labelledby="why">
-        <h2 id="why" class="text-center text-[32px] font-semibold leading-tight tracking-tight sm:text-[40px]">
-          Built for the plant floor.
-        </h2>
-        <div class="mt-10 grid gap-5 sm:grid-cols-3">
-          <div class="rounded-[22px] bg-surface p-7 shadow-card">
-            <svg viewBox="0 0 24 24" class="h-8 w-8 text-accent" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-            <h3 class="mt-4 text-[19px] font-semibold tracking-tight">Standards built in</h3>
-            <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
-              IEC 61131-3 code for four targets, action priority from the AIAG-VDA tables, and the US DOE
-              available-heat method.
-            </p>
-          </div>
-          <div class="rounded-[22px] bg-surface p-7 shadow-card">
-            <svg viewBox="0 0 24 24" class="h-8 w-8 text-purple" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-              <path d="M20 3v4M22 5h-4M4 17v2M5 18H3" />
-            </svg>
-            <h3 class="mt-4 text-[19px] font-semibold tracking-tight">AI drafts, you decide</h3>
-            <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
+            <p class="p-4 text-[15px] leading-relaxed text-ink-2">
               Gemini sketches the net and suggests failure modes. You review, edit or undo.
             </p>
           </div>
-          <div class="rounded-[22px] bg-surface p-7 shadow-card">
-            <svg viewBox="0 0 24 24" class="h-8 w-8 text-green" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8M10 19v-3.96 3.15M7 19h5" />
-              <rect width="6" height="10" x="16" y="12" rx="2" />
-            </svg>
-            <h3 class="mt-4 text-[19px] font-semibold tracking-tight">Nothing to install</h3>
-            <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
-              Runs in the browser, on a laptop, a tablet or a phone.
-            </p>
+          <div class="rounded-sm border border-line bg-surface">
+            <div class="flex h-9 items-center gap-2 border-b border-line bg-strip px-3">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 text-ink-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8M10 19v-3.96 3.15M7 19h5" />
+                <rect width="6" height="10" x="16" y="12" rx="2" />
+              </svg>
+              <h3 class="text-[12px] font-bold uppercase tracking-[0.08em]">Nothing to install</h3>
+            </div>
+            <p class="p-4 text-[15px] leading-relaxed text-ink-2">Runs in the browser, on a laptop, a tablet or a phone.</p>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="mt-24 border-t border-line">
-      <div class="mx-auto flex max-w-[1024px] flex-col gap-2 px-4 py-8 text-[12px] text-ink-3 sm:flex-row sm:justify-between sm:px-6">
-        <p>OT Workbench</p>
+    <footer class="mt-14 border-t border-black/40 bg-bar text-on-bar-2">
+      <div
+        class="mx-auto flex max-w-[1120px] flex-col gap-2 px-4 py-6 text-[12px] sm:flex-row sm:items-center sm:justify-between sm:px-6"
+      >
+        <p class="font-bold uppercase tracking-[0.1em] text-on-bar">OT Workbench</p>
         <p>PetriPLC writes process logic, not safety logic. Emergency stops and guarding stay in the safety circuit.</p>
       </div>
     </footer>
+
+    <script type="module" src="/src/home/main.ts"></script>
   </body>
 </html>

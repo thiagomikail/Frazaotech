@@ -66,12 +66,12 @@ const SOPModal = ({ action, onClose }) => {
                     <path d="M 100 200 L 100 250" stroke={c.ink3} strokeWidth="10" />
 
                     {/* Damper (Target) */}
-                    <rect x="80" y="210" width="40" height="10" fill={c.orange} rx="2" stroke={c.surface} strokeWidth="1" />
-                    <text x="150" y="220" fill={c.ink} fontSize="12" fontWeight="600">Damper linkage</text>
-                    <line x1="120" y1="215" x2="145" y2="215" stroke={c.orange} strokeWidth="1" strokeDasharray="2,2" />
+                    <rect x="80" y="210" width="40" height="10" fill={c.accent} stroke={c.surface} strokeWidth="1" />
+                    <text x="150" y="220" fill={c.ink} fontSize="12" fontWeight="700">DAMPER LINKAGE</text>
+                    <line x1="120" y1="215" x2="145" y2="215" stroke={c.accent} strokeWidth="1" strokeDasharray="2,2" />
 
                     {/* Fuel Line */}
-                    <path d="M 20 150 L 50 150" stroke={c.red} strokeWidth="4" />
+                    <path d="M 20 150 L 50 150" stroke={c.ink2} strokeWidth="4" />
                 </svg>
             );
         }
@@ -84,18 +84,18 @@ const SOPModal = ({ action, onClose }) => {
                 <text x="110" y="180" textAnchor="middle" fill={c.ink2} fontSize="11">Furnace 1</text>
 
                 {/* Pipe */}
-                <path d="M 170 150 L 250 150 L 250 100 L 320 100" fill="none" stroke={c.teal} strokeWidth="4" />
+                <path d="M 170 150 L 250 150 L 250 100 L 320 100" fill="none" stroke={c.ink2} strokeWidth="4" />
 
                 {/* Valve (Target) */}
                 <circle cx="250" cy="150" r="15" fill={c.surface} stroke={c.ink} strokeWidth="2" />
                 <path d="M 250 135 L 250 165 M 235 150 L 265 150" stroke={c.ink} strokeWidth="2" />
 
                 {/* Label for Valve */}
-                <rect x="220" y="180" width="60" height="24" rx="12" fill={c.surface} stroke={c.teal} strokeWidth="1.5" />
-                <text x="250" y="196" textAnchor="middle" fill={c.ink} fontSize="12" fontWeight="600">V-204</text>
+                <rect x="220" y="180" width="60" height="24" rx="2" fill={c.surface} stroke={c.accent} strokeWidth="1.5" />
+                <text x="250" y="196" textAnchor="middle" fill={c.ink} fontSize="12" fontWeight="700">V-204</text>
 
                 {/* Flow Arrow */}
-                <path d="M 190 140 L 210 150 L 190 160" fill={c.teal} opacity="0.5" />
+                <path d="M 190 140 L 210 150 L 190 160" fill={c.ink2} opacity="0.6" />
             </svg>
         );
     };
@@ -110,18 +110,18 @@ const SOPModal = ({ action, onClose }) => {
         >
             <div className="grid md:grid-cols-[minmax(300px,5fr)_7fr]">
                 {/* Left: steps */}
-                <div className="border-line p-6 md:border-r">
+                <div className="border-line p-4 md:border-r">
                     <SectionTitle>Target action</SectionTitle>
-                    <p className="text-[17px] font-medium leading-snug text-ink">{action.description}</p>
+                    <p className="text-[17px] font-semibold leading-snug text-ink">{action.description}</p>
                     <Badge tone="orange" className="mt-3">
                         <AlertTriangle size={12} />
                         {content.safetyMsg}
                     </Badge>
 
-                    <ol className="mt-6 divide-y divide-line overflow-hidden rounded-xl bg-fill/50">
+                    <ol className="mt-4 divide-y divide-line overflow-hidden rounded-sm border border-line bg-field">
                         {content.steps.map((step, idx) => (
                             <li key={idx} className="flex items-start gap-3 p-3">
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/12 text-[13px] font-semibold tabular-nums text-accent">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-line bg-raised font-mono text-[12px] font-medium tabular-nums text-ink">
                                     {idx + 1}
                                 </span>
                                 <p className="pt-0.5 text-[14px] leading-relaxed text-ink">{step}</p>
@@ -129,28 +129,29 @@ const SOPModal = ({ action, onClose }) => {
                         ))}
                     </ol>
 
-                    <Button variant="primary" size="lg" className="mt-6 w-full">
+                    <Button variant="primary" size="lg" className="mt-4 w-full">
                         <CheckCircle size={18} />
                         Confirm completion
                     </Button>
                 </div>
 
                 {/* Right: diagram */}
-                <div className="flex flex-col gap-4 p-6">
-                    <div className="text-right font-mono text-[11px] text-ink-3">{content.diagramTitle}</div>
+                <div className="flex flex-col gap-3 p-4">
+                    <div className="text-right font-mono text-[11px] uppercase text-ink-3">{content.diagramTitle}</div>
 
                     <div
-                        className="relative flex min-h-[280px] flex-1 items-center justify-center overflow-hidden rounded-xl border border-dashed border-line bg-fill/30 p-4"
+                        className="relative flex min-h-[280px] flex-1 items-center justify-center overflow-hidden rounded-sm border border-line bg-field p-4"
                         style={{
-                            backgroundImage: 'radial-gradient(var(--color-line) 1px, transparent 1px)',
+                            backgroundImage:
+                                'linear-gradient(var(--color-fill-strong) 1px, transparent 1px), linear-gradient(90deg, var(--color-fill-strong) 1px, transparent 1px)',
                             backgroundSize: '20px 20px',
                         }}
                     >
                         {renderDiagram()}
                     </div>
 
-                    <label className="block rounded-xl bg-fill/50 p-3">
-                        <span className="text-[12px] font-semibold text-ink-2">Operator notes</span>
+                    <label className="block rounded-sm border border-line bg-field p-3 focus-within:border-accent">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-2">Operator notes</span>
                         <textarea
                             className="mt-1 h-20 w-full resize-none bg-transparent text-[14px] text-ink placeholder:text-ink-3 focus:outline-none"
                             placeholder="Add optional observations…"

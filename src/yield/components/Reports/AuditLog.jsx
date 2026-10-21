@@ -3,8 +3,8 @@ import { List, User, Settings, AlertTriangle } from 'lucide-react';
 import { IconBadge, Panel, PanelBody, PanelHeader } from '../ui';
 
 const TYPE = {
-    user: { icon: User, tone: 'blue', label: 'User' },
-    system: { icon: Settings, tone: 'indigo', label: 'System' },
+    user: { icon: User, tone: 'gray', label: 'User' },
+    system: { icon: Settings, tone: 'gray', label: 'System' },
     alert: { icon: AlertTriangle, tone: 'orange', label: 'Alert' },
 };
 
@@ -22,20 +22,20 @@ const AuditLog = () => {
         <Panel className="h-full">
             <PanelHeader icon={List} title="Audit & event log" />
 
-            <PanelBody className="pb-2">
-                <ul className="divide-y divide-line">
+            <PanelBody>
+                <ul className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-field">
                     {logs.map((log) => {
                         const kind = TYPE[log.type];
                         return (
-                            <li key={log.id} className="flex items-center gap-3 py-2.5">
+                            <li key={log.id} className="flex items-center gap-3 px-3 py-2">
                                 <span title={kind.label}>
-                                    <IconBadge icon={kind.icon} tone={kind.tone} size={30} />
+                                    <IconBadge icon={kind.icon} tone={kind.tone} size={26} />
                                 </span>
                                 <div className="min-w-0 flex-1">
                                     <div className="truncate text-[13px] text-ink">{log.msg}</div>
                                     <div className="truncate text-[12px] text-ink-2">{log.user}</div>
                                 </div>
-                                <div className="shrink-0 text-[12px] tabular-nums text-ink-3">{log.time}</div>
+                                <div className="shrink-0 font-mono text-[12px] tabular-nums text-ink-2">{log.time}</div>
                             </li>
                         );
                     })}

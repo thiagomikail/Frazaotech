@@ -3,6 +3,10 @@ import { Upload, Loader2, AlertCircle } from 'lucide-react';
 import { parseWordDocument } from '../../utils/wordParser';
 import { useFMEA } from '../../context/FMEAContext';
 
+// A square button on the dark HMI title bar.
+const barButton =
+  'items-center h-8 px-3 rounded-sm border border-bar-line bg-bar-raised text-on-bar text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors enabled:hover:bg-bar-line disabled:opacity-40 disabled:cursor-not-allowed';
+
 const Toolbar: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -49,27 +53,27 @@ const Toolbar: React.FC = () => {
   };
 
   return (
-    <header className="h-[52px] border-b border-line bg-surface/80 backdrop-blur-xl backdrop-saturate-150 flex items-center px-4 justify-between gap-3 shrink-0 z-10 relative">
+    <header className="h-11 bg-bar text-on-bar border-b border-black/40 flex items-center px-3 justify-between gap-3 shrink-0 z-10 relative">
       <div className="flex items-center gap-3 min-w-0">
-        <a href="/" className="flex items-center gap-2 shrink-0" title="OT Workbench home">
-          <img src="/workbench-icon.svg" alt="" className="h-7 w-7" />
-          <span className="hidden sm:inline font-semibold text-[15px] tracking-tight text-ink">OT Workbench</span>
+        <a href="/" className="group flex items-center gap-2 shrink-0" title="OT Workbench home">
+          <img src="/workbench-icon.svg" alt="" className="h-6 w-6" />
+          <span className="hidden sm:inline text-[12px] font-semibold uppercase tracking-[0.08em] text-on-bar-2 group-hover:text-on-bar">OT Workbench</span>
         </a>
-        <div className="h-5 w-px bg-line shrink-0"></div>
+        <div className="h-5 w-px bg-bar-line shrink-0"></div>
         <div className="flex items-center gap-2 shrink-0">
           <img src="/fmea-icon.svg" alt="" className="h-6 w-6" />
-          <h1 className="text-[15px] font-medium text-ink-2">FMEA</h1>
+          <h1 className="text-[14px] font-bold uppercase tracking-[0.08em] text-on-bar">FMEA</h1>
         </div>
 
         {error && (
-          <div className="ml-1 flex items-center min-w-0 rounded-full bg-red/10 px-3 py-1 text-xs text-red-ink">
+          <div className="ml-1 flex items-center min-w-0 rounded-sm bg-red px-2 py-1 text-[12px] font-semibold text-white">
             <AlertCircle size={14} className="mr-1 shrink-0" />
             <span className="truncate">{error}</span>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-2 shrink-0 text-[13px] font-medium">
+      <div className="flex items-center gap-1.5 shrink-0">
         <input
           type="file"
           accept=".docx"
@@ -81,7 +85,7 @@ const Toolbar: React.FC = () => {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading || !selectedComponentId}
-          className="flex items-center h-8 px-3.5 rounded-full bg-fill enabled:hover:bg-fill-strong text-ink transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className={`${barButton} flex`}
           title={!selectedComponentId ? "Select a component first" : "Upload Word Document"}
           aria-label="Import .docx"
         >
@@ -89,14 +93,14 @@ const Toolbar: React.FC = () => {
           <span className="hidden sm:inline">Import .docx</span>
         </button>
 
-        <button className="hidden lg:flex items-center h-8 px-3.5 rounded-full bg-fill hover:bg-fill-strong text-ink transition-colors">
+        <button className={`${barButton} hidden lg:flex`}>
           Connect to CMMS
         </button>
-        <button className="hidden lg:flex items-center h-8 px-3.5 rounded-full bg-fill hover:bg-fill-strong text-ink transition-colors">
+        <button className={`${barButton} hidden lg:flex`}>
           Export to DVP&R
         </button>
-        <div className="hidden lg:block h-5 w-px bg-line mx-1"></div>
-        <button className="flex items-center h-8 px-3.5 rounded-full bg-accent hover:bg-accent-hover text-on-accent transition-colors">
+        <div className="hidden lg:block h-5 w-px bg-bar-line mx-1"></div>
+        <button className="flex items-center h-8 px-3 rounded-sm border border-accent-hover bg-accent hover:bg-accent-hover text-on-accent text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors">
           FRACAS Sync
         </button>
       </div>

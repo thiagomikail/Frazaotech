@@ -211,10 +211,10 @@ await check('home page opens every app', async () => {
 await check('the canvas follows the device appearance', async () => {
   const canvasBg = (page) => page.$eval('[data-testid="net-canvas"]', (el) => getComputedStyle(el.parentElement).backgroundColor);
   const light = await freshPage({ colorScheme: 'light' });
-  assert.equal(await canvasBg(light), 'rgb(255, 255, 255)');
+  assert.equal(await canvasBg(light), 'rgb(244, 244, 244)');
   await light.context().close();
   const dark = await freshPage({ colorScheme: 'dark' });
-  assert.equal(await canvasBg(dark), 'rgb(28, 28, 30)');
+  assert.equal(await canvasBg(dark), 'rgb(38, 38, 38)');
   await dark.context().close();
 });
 

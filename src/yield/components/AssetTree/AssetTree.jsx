@@ -14,15 +14,15 @@ const STATUS_LABEL = {
     maintenance: 'Maintenance',
 };
 
-/** Share of the plant's energy bill, as a label, a percentage and a thin bar. */
-const Meter = ({ label, value, bar, text }) => (
+/** Share of the plant's energy bill: a label, a reading and an analog bar. */
+const Meter = ({ label, value }) => (
     <div>
         <div className="mb-1 flex items-center justify-between text-[12px]">
-            <span className="text-ink-2">{label}</span>
-            <span className={`font-semibold tabular-nums ${text}`}>{value}%</span>
+            <span className="font-medium text-ink-2">{label}</span>
+            <span className="font-mono font-medium tabular-nums text-ink">{value}%</span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-fill">
-            <div className={`h-full rounded-full ${bar}`} style={{ width: `${value}%` }} />
+        <div className="h-2 overflow-hidden rounded-sm border border-line bg-field">
+            <div className="h-full bg-ink-3" style={{ width: `${value}%` }} />
         </div>
     </div>
 );
@@ -40,20 +40,20 @@ const AssetTree = ({ data, selectedId, onSelect }) => {
                 }
             />
 
-            <div className="shrink-0 px-5 pb-4 pt-2">
-                <div className="mb-2.5 flex items-center gap-2 text-[13px] font-semibold text-ink">
-                    <Zap size={15} className="text-orange" />
+            <div className="shrink-0 p-3">
+                <SectionTitle className="flex items-center gap-1.5">
+                    <Zap size={13} className="text-ink-2" />
                     Consumption
-                </div>
+                </SectionTitle>
                 <div className="space-y-2.5">
-                    <Meter label="Natural gas" value={78} bar="bg-orange" text="text-orange-ink" />
-                    <Meter label="Electricity" value={22} bar="bg-accent" text="text-accent" />
+                    <Meter label="Natural gas" value={78} />
+                    <Meter label="Electricity" value={22} />
                 </div>
             </div>
 
-            <PanelBody className="border-t border-line pt-4">
+            <PanelBody className="border-t border-line">
                 <SectionTitle>Plant assets</SectionTitle>
-                <ul className="-mx-2 space-y-0.5">
+                <ul className="divide-y divide-line overflow-hidden rounded-sm border border-line bg-field">
                     {data.map(asset => {
                         const on = selectedId === asset.id;
                         return (
@@ -63,22 +63,22 @@ const AssetTree = ({ data, selectedId, onSelect }) => {
                                     onClick={() => onSelect(asset.id)}
                                     aria-current={on ? 'true' : undefined}
                                     data-testid={`asset-${asset.id}`}
-                                    className={`flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors ${
-                                        on ? 'bg-accent text-on-accent' : 'text-ink hover:bg-fill'
+                                    className={`flex w-full items-center gap-3 px-2.5 py-2 text-left transition-colors ${
+                                        on ? 'bg-thumb text-on-thumb' : 'text-ink hover:bg-fill'
                                     }`}
                                 >
                                     <span
                                         title={STATUS_LABEL[asset.status]}
-                                        className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[asset.status]} ${on ? 'ring-2 ring-white/70' : ''}`}
+                                        className={`h-2.5 w-2.5 shrink-0 rounded-full border border-black/25 ${STATUS_DOT[asset.status]} ${on ? 'ring-2 ring-white/70' : ''}`}
                                     />
-                                    <span className={`min-w-0 flex-1 truncate text-[14px] ${on ? 'font-semibold' : 'font-medium'}`}>
+                                    <span className={`min-w-0 flex-1 truncate text-[14px] ${on ? 'font-bold' : 'font-semibold'}`}>
                                         {asset.name}
                                     </span>
                                     <span className="shrink-0 text-right leading-tight">
-                                        <span className="block text-[13px] font-semibold tabular-nums">
+                                        <span className="block font-mono text-[13px] font-medium tabular-nums">
                                             {asset.energy.currentLoad}
                                         </span>
-                                        <span className={`block text-[10px] ${on ? 'text-on-accent/80' : 'text-ink-3'}`}>
+                                        <span className={`block text-[10px] font-medium ${on ? 'text-on-thumb/80' : 'text-ink-3'}`}>
                                             MMBtu/hr
                                         </span>
                                     </span>

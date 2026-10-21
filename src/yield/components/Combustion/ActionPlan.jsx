@@ -14,8 +14,9 @@ import { Badge, PanelBody, PanelHeader, SectionTitle, Stat } from '../ui';
  * compete por um turno de manutencao.
  */
 
-/** Priority from the engine to a badge tone. */
-const PRIORITY_TONE = { HIGH: 'red', MEDIUM: 'orange', LOW: 'blue' };
+/** Priority from the engine to a badge tone, and to the card's left edge. */
+const PRIORITY_TONE = { HIGH: 'red', MEDIUM: 'orange', LOW: 'gray' };
+const PRIORITY_EDGE = { HIGH: 'border-l-red', MEDIUM: 'border-l-orange', LOW: 'border-l-ink-3' };
 
 const sentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
 
@@ -35,7 +36,7 @@ const ActionPlan = ({ analysis }) => {
                 title="Action plan"
                 action={
                     <Badge>
-                        {actions.length} {actions.length === 1 ? 'item' : 'items'}
+                        <span className="font-mono">{actions.length}</span> {actions.length === 1 ? 'item' : 'items'}
                     </Badge>
                 }
             />
@@ -44,21 +45,21 @@ const ActionPlan = ({ analysis }) => {
                 {actions.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center py-10 text-center">
                         <CheckCircle2 size={36} className="mb-3 text-green" />
-                        <div className="text-[15px] font-semibold text-ink">System within targets</div>
+                        <div className="text-[13px] font-bold uppercase tracking-[0.06em] text-ink">System within targets</div>
                         <div className="mt-1 text-[12px] text-ink-2">
                             No corrective action generated at current readings
                         </div>
                     </div>
                 ) : (
                     <>
-                        <div className="mb-3 grid grid-cols-2 gap-3 rounded-xl bg-fill px-3 py-2.5">
+                        <div className="mb-3 grid grid-cols-2 gap-3 rounded-sm border border-line bg-field px-3 py-2.5">
                             <Stat
                                 label="Recoverable"
                                 value={money(recoverableUsdPerYear)}
                                 unit="/yr"
                                 tone="green"
                             />
-                            <Stat label="Avoided" value={totalCo2.toFixed(0)} unit="tCO₂/yr" tone="blue" />
+                            <Stat label="Avoided" value={totalCo2.toFixed(0)} unit="tCO₂/yr" />
                         </div>
 
                         <div className="space-y-2">
@@ -66,19 +67,23 @@ const ActionPlan = ({ analysis }) => {
                                 const isOpen = open === a.id;
 
                                 return (
-                                    <div key={a.id} className="overflow-hidden rounded-xl border border-line" data-testid="plan-card">
+                                    <div
+                                        key={a.id}
+                                        className={`overflow-hidden rounded-sm border border-l-4 border-line bg-field ${PRIORITY_EDGE[a.priority] ?? 'border-l-ink-3'}`}
+                                        data-testid="plan-card"
+                                    >
                                         <button
                                             type="button"
                                             className="flex w-full items-start gap-3 px-3 py-2.5 text-left transition-colors hover:bg-fill"
                                             onClick={() => setOpen(isOpen ? null : a.id)}
                                             aria-expanded={isOpen}
                                         >
-                                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fill text-[12px] font-semibold tabular-nums text-ink-2">
+                                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-line bg-surface font-mono text-[12px] font-medium tabular-nums text-ink-2">
                                                 {i + 1}
                                             </span>
                                             <div className="min-w-0 flex-1">
-                                                <div className="text-[14px] font-medium leading-snug text-ink">{a.title}</div>
-                                                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-ink-2">
+                                                <div className="text-[14px] font-semibold leading-snug text-ink">{a.title}</div>
+                                                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
                                                     <Badge tone={PRIORITY_TONE[a.priority]}>{sentence(a.priority)}</Badge>
                                                     <span>{sentence(a.effort)} effort</span>
                                                     <span>{a.owner}</span>
@@ -87,16 +92,16 @@ const ActionPlan = ({ analysis }) => {
                                             <div className="shrink-0 text-right">
                                                 {a.impact.usdPerYear > 0 ? (
                                                     <>
-                                                        <div className="text-[15px] font-semibold tabular-nums text-green-ink">
+                                                        <div className="font-mono text-[15px] font-medium tabular-nums text-green-ink">
                                                             {money(a.impact.usdPerYear)}
-                                                            <span className="text-[11px] font-normal text-ink-2">/yr</span>
+                                                            <span className="font-sans text-[11px] font-normal text-ink-2">/yr</span>
                                                         </div>
-                                                        <div className="text-[11px] tabular-nums text-ink-3">
+                                                        <div className="font-mono text-[11px] tabular-nums text-ink-3">
                                                             {a.impact.mmbtuPerHour.toFixed(2)} MMBtu/hr
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <div className="text-[11px] text-ink-3">compliance / risk</div>
+                                                    <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-3">compliance / risk</div>
                                                 )}
                                             </div>
                                             {isOpen ? (
@@ -121,16 +126,16 @@ const ActionPlan = ({ analysis }) => {
 
                                                 {a.impact.usdPerYear > 0 && (
                                                     <div className="grid grid-cols-2 gap-2">
-                                                        <div className="rounded-lg bg-fill px-3 py-2">
-                                                            <div className="text-[11px] text-ink-2">Fuel saved</div>
-                                                            <div className="text-[13px] font-semibold tabular-nums text-ink">
-                                                                {a.impact.mmbtuPerYear.toFixed(0)} MMBtu/yr
+                                                        <div className="rounded-sm border border-line bg-surface px-3 py-2">
+                                                            <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">Fuel saved</div>
+                                                            <div className="mt-0.5 text-[13px] text-ink">
+                                                                <span className="font-mono font-medium tabular-nums">{a.impact.mmbtuPerYear.toFixed(0)}</span> MMBtu/yr
                                                             </div>
                                                         </div>
-                                                        <div className="rounded-lg bg-fill px-3 py-2">
-                                                            <div className="text-[11px] text-ink-2">CO₂ avoided</div>
-                                                            <div className="text-[13px] font-semibold tabular-nums text-ink">
-                                                                {a.impact.tCo2PerYear.toFixed(0)} t/yr
+                                                        <div className="rounded-sm border border-line bg-surface px-3 py-2">
+                                                            <div className="text-[10px] font-bold uppercase tracking-[0.06em] text-ink-2">CO₂ avoided</div>
+                                                            <div className="mt-0.5 text-[13px] text-ink">
+                                                                <span className="font-mono font-medium tabular-nums">{a.impact.tCo2PerYear.toFixed(0)}</span> t/yr
                                                             </div>
                                                         </div>
                                                     </div>

@@ -336,12 +336,11 @@ export default function NetCanvas() {
         style={{ cursor: mode === 'edit' ? 'move' : 'pointer' }}
         data-node={p.id}
       >
-        {marked && <circle r={PLACE_R + 7} fill={C.marked} opacity={0.12} />}
         <circle
           r={PLACE_R}
           fill={C.placeFill}
           stroke={marked ? C.marked : C.placeStroke}
-          strokeWidth={marked ? 2 : 1.5}
+          strokeWidth={marked ? 3 : 1.5}
         />
         {isSel('place', p.id) && (
           <circle r={PLACE_R + 5} fill="none" stroke={C.selected} strokeWidth={1.5} strokeDasharray="4 3" />
@@ -402,7 +401,7 @@ export default function NetCanvas() {
             y={-bar.h / 2 - 6}
             width={bar.w + 12}
             height={bar.h + 12}
-            rx={5}
+            rx={1}
             fill={C.ready}
           />
         )}
@@ -411,7 +410,6 @@ export default function NetCanvas() {
           y={-bar.h / 2}
           width={bar.w}
           height={bar.h}
-          rx={2}
           fill={st.status === 'disabled' ? C.disabled : color}
         />
         {st.status === 'blocked' && (
@@ -420,10 +418,9 @@ export default function NetCanvas() {
             y={-bar.h / 2}
             width={bar.w}
             height={bar.h}
-            rx={2}
-            fill={C.placeFill}
-            stroke={C.blocked}
-            strokeWidth={1.5}
+            fill="none"
+            stroke={C.outline}
+            strokeWidth={1}
           />
         )}
         {st.status === 'timing' && (
@@ -433,20 +430,18 @@ export default function NetCanvas() {
               y={-bar.h / 2}
               width={bar.w}
               height={bar.h}
-              rx={2}
               fill={C.placeFill}
               stroke={C.timing}
               strokeWidth={1.5}
             />
             {dir === 'TB' ? (
-              <rect x={-bar.w / 2} y={-bar.h / 2} width={bar.w * st.progress} height={bar.h} rx={2} fill={C.timing} />
+              <rect x={-bar.w / 2} y={-bar.h / 2} width={bar.w * st.progress} height={bar.h} fill={C.timing} />
             ) : (
               <rect
                 x={-bar.w / 2}
                 y={bar.h / 2 - bar.h * st.progress}
                 width={bar.w}
                 height={bar.h * st.progress}
-                rx={2}
                 fill={C.timing}
               />
             )}
@@ -458,7 +453,7 @@ export default function NetCanvas() {
             y={-bar.h / 2 - 5}
             width={bar.w + 10}
             height={bar.h + 10}
-            rx={4}
+            rx={1}
             fill="none"
             stroke={arcFrom === tr.id ? C.ready : C.selected}
             strokeWidth={1.5}
@@ -510,10 +505,14 @@ export default function NetCanvas() {
   const empty = net.places.length + net.transitions.length === 0;
 
   return (
-    <div ref={wrapRef} className="relative h-full w-full overflow-hidden select-none" style={{ background: C.bg }}>
+    <div
+      ref={wrapRef}
+      className="relative flex h-full w-full flex-col overflow-hidden select-none"
+      style={{ background: C.bg }}
+    >
       <svg
         ref={svgRef}
-        className="block h-full w-full touch-none"
+        className="block min-h-0 w-full flex-1 touch-none"
         onPointerDown={onBackgroundDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
@@ -528,7 +527,7 @@ export default function NetCanvas() {
             patternUnits="userSpaceOnUse"
             patternTransform={`translate(${view.x},${view.y}) scale(${view.k})`}
           >
-            <circle cx={1} cy={1} r={1} fill={C.grid} />
+            <path d="M24 0H0V24" fill="none" stroke={C.grid} strokeWidth={0.75} />
           </pattern>
           <marker
             id="petri-arrow"
@@ -587,7 +586,7 @@ export default function NetCanvas() {
                 />
                 {arc.weight > 1 && (
                   <g transform={`translate(${shape.mid.x},${shape.mid.y})`}>
-                    <rect x={-8} y={-8} width={16} height={16} rx={8} fill={C.bg} stroke={C.arc} />
+                    <rect x={-8} y={-8} width={16} height={16} rx={2} fill={C.bg} stroke={C.arc} />
                     <text y={4} fontSize={10} fill={C.text} textAnchor="middle" fontFamily={MONO}>
                       {arc.weight}
                     </text>
@@ -607,12 +606,12 @@ export default function NetCanvas() {
       {/* Mode and tools */}
       <div className="pointer-events-none absolute left-2 right-2 top-2 flex flex-wrap items-start justify-between gap-2">
         <div className="pointer-events-auto flex flex-wrap items-center gap-1.5">
-          <div className="flex gap-0.5 rounded-xl border border-line bg-raised/90 p-1 shadow-card backdrop-blur-xl text-[13px] font-medium">
+          <div className="flex divide-x divide-line overflow-hidden rounded-sm border border-line bg-raised">
             {(['sim', 'edit'] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => dispatch({ type: 'ui/mode', mode: m })}
-                className={`h-8 rounded-lg px-3 transition-colors ${mode === m ? 'bg-accent/12 text-accent' : 'text-ink-2 hover:bg-fill hover:text-ink'}`}
+                className={`h-7 px-3 text-[11px] font-bold uppercase tracking-[0.06em] transition-colors ${mode === m ? 'bg-thumb text-on-thumb' : 'text-ink-2 hover:bg-fill hover:text-ink'}`}
                 data-testid={`mode-${m}`}
               >
                 {t(m === 'sim' ? 'canvas.sim' : 'canvas.edit')}
@@ -620,7 +619,7 @@ export default function NetCanvas() {
             ))}
           </div>
           {mode === 'edit' && (
-            <div className="flex gap-0.5 rounded-xl border border-line bg-raised/90 p-1 shadow-card backdrop-blur-xl">
+            <div className="flex divide-x divide-line overflow-hidden rounded-sm border border-line bg-raised">
               {(
                 [
                   ['select', Hand, 'tool.select'],
@@ -653,7 +652,7 @@ export default function NetCanvas() {
             </div>
           )}
         </div>
-        <div className="pointer-events-auto flex gap-0.5 rounded-xl border border-line bg-raised/90 p-1 shadow-card backdrop-blur-xl">
+        <div className="pointer-events-auto flex divide-x divide-line overflow-hidden rounded-sm border border-line bg-raised">
           <IconButton label={t('canvas.zoomOut')} onClick={() => zoomCenter(1 / 1.25)}>
             <Minus size={15} />
           </IconButton>
@@ -687,8 +686,8 @@ export default function NetCanvas() {
       {empty ? (
         <EmptyState />
       ) : (
-        <div className="pointer-events-none absolute bottom-2 left-3 right-3 flex items-center gap-3 text-[11px]">
-          <p className="min-w-0 flex-1 truncate text-ink-3" title={hint}>
+        <div className="flex h-7 shrink-0 items-center gap-3 border-t border-line bg-strip px-3 text-[10px] font-semibold uppercase tracking-[0.06em]">
+          <p className="min-w-0 flex-1 truncate text-ink-2" title={hint}>
             {hint}
           </p>
           {mode === 'sim' && (
@@ -702,7 +701,7 @@ export default function NetCanvas() {
                 ] as const
               ).map(([s, label]) => (
                 <span key={s} className="flex items-center gap-1">
-                  <span className="inline-block h-2 w-3.5 rounded-sm" style={{ background: C[s] }} />
+                  <span className="inline-block h-2 w-3.5 border border-black/25" style={{ background: C[s] }} />
                   {t(label)}
                 </span>
               ))}
@@ -791,8 +790,8 @@ function IconButton({
       disabled={disabled}
       onClick={onClick}
       data-testid={testId}
-      className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors disabled:opacity-35 ${
-        active ? 'bg-accent/12 text-accent' : 'text-ink-2 hover:bg-fill hover:text-ink'
+      className={`flex h-7 w-7 items-center justify-center transition-colors disabled:opacity-35 ${
+        active ? 'bg-thumb text-on-thumb' : 'text-ink-2 hover:bg-fill hover:text-ink'
       }`}
     >
       {children}
@@ -805,14 +804,14 @@ function EmptyState() {
   return (
     <div className="absolute inset-0 flex items-center justify-center p-6">
       <div className="max-w-sm text-center">
-        <img src="/petri-icon.svg" alt="" className="mx-auto mb-4 h-14 w-14 drop-shadow-md" />
+        <img src="/petri-icon.svg" alt="" className="mx-auto mb-4 h-12 w-12" />
         <p className="mb-5 text-[15px] leading-snug text-ink-2">{t('canvas.empty')}</p>
         <div className="flex flex-wrap justify-center gap-2">
           {examples().map((ex) => (
             <button
               key={ex.id}
               onClick={() => actions.loadExample(ex)}
-              className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-[13px] text-accent shadow-sm transition-colors hover:border-accent hover:bg-accent hover:text-on-accent"
+              className="rounded-sm border border-line bg-raised px-3 py-1.5 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent hover:text-on-accent"
             >
               {ex.title}
             </button>

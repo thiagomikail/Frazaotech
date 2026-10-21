@@ -16,7 +16,7 @@ const ReportsLayout = () => {
     const [timeframe, setTimeframe] = useState('daily'); // 'daily' | 'yearly'
 
     return (
-        <div className="flex flex-col gap-4 lg:h-full">
+        <div className="flex flex-col gap-3 lg:h-full">
             {/* View Toggle */}
             <Segmented
                 options={VIEWS}
@@ -27,14 +27,14 @@ const ReportsLayout = () => {
             />
 
             {/* Content Grid: one third left, two thirds right */}
-            <div className="grid grid-cols-1 gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+            <div className="grid grid-cols-1 gap-3 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
                 {/* Left Column */}
                 <div className="min-h-[420px] lg:min-h-0">
                     {timeframe === 'daily' ? <ShiftSummary /> : <SustainabilityScorecard />}
                 </div>
 
                 {/* Right Column */}
-                <div className="grid grid-cols-1 gap-4 lg:min-h-0 lg:grid-rows-[minmax(0,1.2fr)_minmax(0,1fr)]">
+                <div className="grid grid-cols-1 gap-3 lg:min-h-0 lg:grid-rows-[minmax(0,1.2fr)_minmax(0,1fr)]">
                     <div className="min-h-[300px] lg:min-h-0">
                         {timeframe === 'daily' ? <CostDeviationChart /> : <EfficiencyHeatmap />}
                     </div>
